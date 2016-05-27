@@ -4,11 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ignore="http://www.galasoft.ch/ignore"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:Custom="http://www.galasoft.ch/mvvmlight" x:Class="ZoDream.Spider.MainWindow"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:Custom="http://www.galasoft.ch/mvvmlight" 
+    x:Class="ZoDream.Spider.MainWindow"
         mc:Ignorable="d ignore"
         Height="500"
         Width="600"
-        Title="ZoDream Spider"
+        Title="ZoDream Spider" Icon="Image/spider.ico" WindowStartupLocation="CenterScreen"
         >
 
     <Window.Resources>
@@ -29,22 +31,46 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <Grid/>
-        <ListBox Grid.Row="1">
+        <Grid>
+            <Menu>
+                <MenuItem Header="菜单">
+                    <MenuItem Header="新建任务" Command="{Binding NewCommand}"/>
+                    <MenuItem Header="打开任务" Command="{Binding OpenCommand}"/>
+                    <MenuItem Header="保存" Command="{Binding SaveCommand}"/>
+                    <MenuItem Header="另存为" Command="{Binding SaveAsCommand}"/>
+                </MenuItem>
+                <MenuItem Header="控制">
+                    <MenuItem Header="开始"/>
+                    <MenuItem Header="暂停"/>
+                    <MenuItem Header="停止"/>
+                </MenuItem>
+                <MenuItem Header="关于">
+                    <MenuItem Header="查看帮助"/>
+                    <MenuItem Header="关于 ZoDream Spider"/>
+                </MenuItem>
+            </Menu>
+        </Grid>
+        <ListBox x:Name="UrlTasks" Grid.Row="1">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="任务">
                         <MenuItem Header="新建" Command="{Binding NewCommand}"/>
-                        <MenuItem Header="打开"/>
-                        <MenuItem Header="保存"/>
+                        <MenuItem Header="打开" Command="{Binding OpenCommand}"/>
+                        <MenuItem Header="保存" Command="{Binding SaveCommand}"/>
                     </MenuItem>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中"/>
-                        <MenuItem Header="已完成"/>
-                        <MenuItem Header="全部"/>
+                        <MenuItem Header="选中" Command="{Binding DeleteCommand}"/>
+                        <MenuItem Header="已完成" Command="{Binding DeleteCompleteCommand}" CommandParameter="{Binding ElementName=UrlTasks,Path=SelectedIndex}"/>
+                        <MenuItem Header="全部" Command="{Binding ClearCommand}"/>
                     </MenuItem>
                 </ContextMenu>
             </ListBox.ContextMenu>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="Drop">
+                    <Custom:EventToCommand Command="{Binding FileDrogCommand, Mode=OneWay}"
+                                    PassEventArgsToCommand="True" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </ListBox>
         <TextBlock Grid.Row="2"/>
     </Grid>

@@ -1,6 +1,11 @@
-﻿using System.Windows;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System.Collections.Generic;
+using System.Net;
+using System.Windows;
 using System.Windows.Input;
 using ZoDream.Helper.Http;
+using ZoDream.Spider.Helper.Cookie;
+using ZoDream.Spider.Model;
 
 namespace ZoDream.Spider.View
 {
@@ -9,12 +14,18 @@ namespace ZoDream.Spider.View
     /// </summary>
     public partial class WebView : Window
     {
+        private NotificationMessageAction<List<HeaderItem>> _callBack;
+
         /// <summary>
         /// Initializes a new instance of the WebView class.
         /// </summary>
         public WebView()
         {
             InitializeComponent();
+            Messenger.Default.Register<NotificationMessageAction<List<HeaderItem>>>(this, "web", m =>
+            {
+                _callBack = m;
+            });
         }
 
         private void EnterBtn_Click(object sender, RoutedEventArgs e)
@@ -89,7 +100,15 @@ namespace ZoDream.Spider.View
 
         private void YesBtn_Click(object sender, RoutedEventArgs e)
         {
-
+            var rules = new List<HeaderItem> {
+                new HeaderItem(HttpRequestHeader.Accept, Accepts.Html),
+                new HeaderItem(HttpRequestHeader.Cookie, FullWebBrowserCookie.GetCookieInternal(Browser.Url, false)),
+                new HeaderItem(HttpRequestHeader.Referer, Browser.Url.ToString()),
+                new HeaderItem(HttpRequestHeader.UserAgent, UserAgents.Chrome)
+            };
+            _callBack.Execute(rules);
+            //_callBack.Execute(Browser.Document.Cookie);
+            Close();
         }
     }
 }

@@ -17,13 +17,15 @@ namespace ZoDream.Spider.ViewModel
     {
         private NotificationMessageAction<UrlItem> _callBack;
 
+        private NotificationMessageAction _close;
+
         private int _index = -1;
         /// <summary>
         /// Initializes a new instance of the RuleViewModel class.
         /// </summary>
         public RuleViewModel()
         {
-            Messenger.Default.Register<NotificationMessageAction<UrlItem>>(this, m=>
+            Messenger.Default.Register<NotificationMessageAction<UrlItem>>(this, "rule", m=>
             {
                 _callBack = m;
                 if (m.Sender == null)
@@ -36,6 +38,11 @@ namespace ZoDream.Spider.ViewModel
                 {
                     RuleList.Add(i);
                 }
+            });
+
+            Messenger.Default.Register<NotificationMessageAction>(this, "close", m =>
+            {
+                _close = m;
             });
         }
 
@@ -177,7 +184,7 @@ namespace ZoDream.Spider.ViewModel
             } else
             {
                 RuleList[_index] = item;
-                _index = 0;
+                _index = -1;
             }
             Kind = 0;
             Value1 = Value2 = string.Empty;
@@ -201,6 +208,12 @@ namespace ZoDream.Spider.ViewModel
         {
             if (string.IsNullOrWhiteSpace(Url)) return;
             _callBack.Execute(new UrlItem(Url, RuleList.ToList()));
+            Url = string.Empty;
+            RuleList.Clear();
+            _index = -1;
+            Kind = 0;
+            Value2 = Value1 = string.Empty;
+            _close.Execute();
         }
 
         private RelayCommand _newCommand;

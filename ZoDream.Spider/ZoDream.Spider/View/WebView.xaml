@@ -7,7 +7,7 @@
         xmlns:wf ="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="d ignore"
-        Title="浏览器">
+        Title="浏览器" Icon="/ZoDream.Spider;component/Image/spider.ico" WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.RowDefinitions>

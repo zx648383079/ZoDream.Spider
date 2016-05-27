@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZoDream.Spider.Model
 {
+    [Serializable]
     public class RuleItem
     {
         public RuleKinds Kind { get; set; }

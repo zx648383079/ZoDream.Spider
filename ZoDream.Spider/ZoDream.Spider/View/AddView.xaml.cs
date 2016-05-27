@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using GalaSoft.MvvmLight.Messaging;
+using System.Windows;
 
 namespace ZoDream.Spider.View
 {
@@ -13,6 +14,7 @@ namespace ZoDream.Spider.View
         public AddView()
         {
             InitializeComponent();
+            Messenger.Default.Send(new NotificationMessageAction(null, Close), "closeAdd");
         }
     }
 }

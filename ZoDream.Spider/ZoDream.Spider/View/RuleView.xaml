@@ -1,12 +1,13 @@
-﻿<Window x:Class="ZoDream.Spider.View.RuleView"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ignore="http://www.galasoft.ch/ignore"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:Custom="http://www.galasoft.ch/mvvmlight" x:Class="ZoDream.Spider.View.RuleView"
         mc:Ignorable="d ignore"
         Title="规则"
-        DataContext="{Binding Rule, Source={StaticResource Locator}}">
+        DataContext="{Binding Rule, Source={StaticResource Locator}}" Icon="/ZoDream.Spider;component/Image/spider.ico" WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -26,32 +27,37 @@
         <ListView x:Name="RuleList" Grid.Row="1" Grid.ColumnSpan="4" ItemsSource="{Binding RuleList}">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="网址规则" Width="200" DisplayMemberBinding="{Binding Path=Kind}"/>
-                    <GridViewColumn Header="参数1" Width="200" DisplayMemberBinding="{Binding Path=Value1}"/>
-                    <GridViewColumn Header="参数2" Width="200" DisplayMemberBinding="{Binding Path=Value2}"/>
+                    <GridViewColumn Header="网址规则" Width="200" DisplayMemberBinding="{Binding Kind}"/>
+                    <GridViewColumn Header="参数1" Width="200" DisplayMemberBinding="{Binding Value1}"/>
+                    <GridViewColumn Header="参数2" Width="200" DisplayMemberBinding="{Binding Value2}"/>
                 </GridView>
             </ListView.View>
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="新增" Command="{Binding NewCommand}"/>
-                    <MenuItem Header="修改" Command="{Binding EditCommand}" CommandParameter="{Binding ElementName=RuleList,Path=SelectedIndex}"/>
-                    <MenuItem Header="上移" Command="{Binding MoveUpCommand}"  CommandParameter="{Binding ElementName=RuleList,Path=SelectedIndex}"/>
-                    <MenuItem Header="下移" Command="{Binding MoveDownCommand}"  CommandParameter="{Binding ElementName=RuleList,Path=SelectedIndex}"/>
+                    <MenuItem Header="修改" Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
+                    <MenuItem Header="上移" Command="{Binding MoveUpCommand}"  CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
+                    <MenuItem Header="下移" Command="{Binding MoveDownCommand}"  CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中" Command="{Binding DeleteCommand}"  CommandParameter="{Binding ElementName=RuleList,Path=SelectedIndex}"/>
+                        <MenuItem Header="选中" Command="{Binding DeleteCommand}"  CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
                         <MenuItem Header="全部" Command="{Binding ClearCommand}"/>
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <Custom:EventToCommand  Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
         </ListView>
         <ComboBox Grid.Row="2" SelectedIndex="{Binding Kind}">
-            <ComboBoxItem>正则截取</ComboBoxItem>
-            <ComboBoxItem>普通截取</ComboBoxItem>
-            <ComboBoxItem>普通替换</ComboBoxItem>
-            <ComboBoxItem>正则替换</ComboBoxItem>
-            <ComboBoxItem>正则匹配</ComboBoxItem>
-            <ComboBoxItem>保存</ComboBoxItem>
-            <ComboBoxItem>导入</ComboBoxItem>
+            <ComboBoxItem Content="正则截取"/>
+            <ComboBoxItem Content="普通截取"/>
+            <ComboBoxItem Content="普通替换"/>
+            <ComboBoxItem Content="正则替换"/>
+            <ComboBoxItem Content="正则匹配"/>
+            <ComboBoxItem Content="保存"/>
+            <ComboBoxItem Content="导入"/>
         </ComboBox>
         <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Value1}"/>
         <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Value2}"/>

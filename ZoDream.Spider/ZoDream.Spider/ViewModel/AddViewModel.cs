@@ -1,7 +1,14 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Xml.Serialization;
+using ZoDream.Helper.Local;
+using ZoDream.Spider.Helper;
 using ZoDream.Spider.Model;
 using ZoDream.Spider.View;
 
@@ -15,11 +22,25 @@ namespace ZoDream.Spider.ViewModel
     /// </summary>
     public class AddViewModel : ViewModelBase
     {
+        private NotificationMessageAction _close;
+
         /// <summary>
         /// Initializes a new instance of the AddViewModel class.
         /// </summary>
         public AddViewModel()
         {
+            Messenger.Default.Register<NotificationMessageAction>(this, "closeAdd", m =>
+            {
+                _close = m;
+            });
+            foreach (var item in SpiderHelper.UrlRegex)
+            {
+                UrlList.Add(item);
+            }
+            foreach (var item in SpiderHelper.Headers)
+            {
+                HeaderList.Add(item);
+            }
         }
 
         /// <summary>
@@ -108,7 +129,52 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteImportCommand()
         {
+            _import(Open.ChooseFile());
+        }
 
+        private void _import(string file)
+        {
+            if (string.IsNullOrEmpty(file) || !File.Exists(file))
+            {
+                return;
+            }
+            var xml = new XmlSerializer(typeof(List<UrlItem>));
+            var stream = new FileStream(file, FileMode.Open);
+            var list = (List<UrlItem>)xml.Deserialize(stream);
+            stream.Close();
+            foreach (var item in list)
+            {
+                UrlList.Add(item);
+            }
+        }
+
+        private RelayCommand<DragEventArgs> _fileDrogCommand;
+
+        /// <summary>
+        /// Gets the FileDrogCommand.
+        /// </summary>
+        public RelayCommand<DragEventArgs> FileDrogCommand
+        {
+            get
+            {
+                return _fileDrogCommand
+                    ?? (_fileDrogCommand = new RelayCommand<DragEventArgs>(ExecuteFileDrogCommand));
+            }
+        }
+
+        private void ExecuteFileDrogCommand(DragEventArgs parameter)
+        {
+            if (parameter == null)
+            {
+                return;
+            }
+            var files = (System.Array)parameter.Data.GetData(DataFormats.FileDrop);
+            //        as FileInfo[];
+
+            foreach (string item in files)
+            {
+                _import(item);
+            }
         }
 
 
@@ -128,7 +194,15 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteExportCommand()
         {
-
+            var file = Open.ChooseSaveFile();
+            if (string.IsNullOrEmpty(file) || File.Exists(file))
+            {
+                return;
+            }
+            var xml = new XmlSerializer(typeof(List<UrlItem>));
+            var stream = new FileStream(file, FileMode.Create);
+            xml.Serialize(stream, UrlList.ToList());
+            stream.Close();
         }
 
         private RelayCommand _addCommand;
@@ -150,7 +224,7 @@ namespace ZoDream.Spider.ViewModel
             new RuleView().Show();
             Messenger.Default.Send(new NotificationMessageAction<UrlItem>(null, item=> {
                 UrlList.Add(new UrlItem(item.Url, item.Rults));
-            }));
+            }), "rule");
         }
 
         private RelayCommand<int> _editCommand;
@@ -174,7 +248,7 @@ namespace ZoDream.Spider.ViewModel
 
             Messenger.Default.Send(new NotificationMessageAction<UrlItem>(UrlList[index], null, item=> {
                 UrlList[index] = item;
-            }));
+            }), "rule");
         }
 
         private RelayCommand<int> _deleteCommand;
@@ -303,6 +377,12 @@ namespace ZoDream.Spider.ViewModel
         private void ExecuteWebCommand()
         {
             new WebView().Show();
+            Messenger.Default.Send(new NotificationMessageAction<List<HeaderItem>>(null, rules => {
+                foreach (var item in rules)
+                {
+                    HeaderList.Add(item);
+                }
+            }), "web");
         }
         
 
@@ -323,7 +403,7 @@ namespace ZoDream.Spider.ViewModel
         private void ExecuteEditHeaderCommand(int index)
         {
             if (index < 0 || index >= HeaderList.Count) return;
-            HeaderName = HeaderList[index].Name;
+            HeaderName = HeaderList[index].Name.ToString();
             HeaderValue = HeaderList[index].Value;
         }
 
@@ -388,7 +468,7 @@ namespace ZoDream.Spider.ViewModel
             }
             foreach (var item in HeaderList)
             {
-                if (item.Name == HeaderName)
+                if (item.Name.ToString() == HeaderName)
                 {
                     item.Value = HeaderValue;
                     return;
@@ -415,7 +495,11 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteSaveCommand()
         {
-
+            SpiderHelper.Headers = HeaderList.ToList();
+            SpiderHelper.UrlRegex = UrlList.ToList();
+            UrlList.Clear();
+            HeaderList.Clear();
+            _close.Execute();
         }
     }
 }

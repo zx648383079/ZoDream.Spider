@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ZoDream.Spider.Model
 {
+    [Serializable]
     public class UrlItem
     {
         public string Url { get; set; }
@@ -21,6 +22,10 @@ namespace ZoDream.Spider.Model
         {
             Url = url;
             Rults = rules;
+        }
+
+        public override string ToString() {
+            return $"有 {Rults.Count} 条规则";
         }
     }
 }
