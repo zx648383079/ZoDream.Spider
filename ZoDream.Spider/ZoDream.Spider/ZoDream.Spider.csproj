@@ -84,11 +84,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converter\BackgroundConverter.cs" />
     <Compile Include="Design\DesignDataService.cs" />
     <Compile Include="Helper\Cookie\FullWebBrowserCookie.cs" />
     <Compile Include="Helper\Cookie\NativeMethods.cs" />
+    <Compile Include="Helper\HtmlTask.cs" />
     <Compile Include="Helper\Http\SpiderRequest.cs" />
     <Compile Include="Helper\SpiderHelper.cs" />
+    <Compile Include="Helper\SpiderTask.cs" />
     <Compile Include="Model\DataItem.cs" />
     <Compile Include="Model\DataService.cs" />
     <Compile Include="Model\HeaderItem.cs" />

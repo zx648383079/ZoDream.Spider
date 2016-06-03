@@ -1,4 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converter="clr-namespace:ZoDream.Spider.Converter">
     
+    <converter:BackgroundConverter x:Key="BackgroundConverter"/>
+
+    <Style TargetType="ListBoxItem">
+        <Setter Property="Background" Value="{Binding Path=Status,Converter={StaticResource BackgroundConverter}}"/>
+    </Style>
 </ResourceDictionary>

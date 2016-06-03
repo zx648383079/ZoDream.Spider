@@ -9,5 +9,10 @@ namespace ZoDream.Spider.Helper
 
         public static List<UrlItem> UrlRegex;
 
+        public static int Count = 100;
+
+        public static string BaseUrl = string.Empty;
+
+        
     }
 }

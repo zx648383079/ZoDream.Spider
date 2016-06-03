@@ -1,11 +1,14 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using ZoDream.Helper.Local;
+using ZoDream.Spider.Helper;
 using ZoDream.Spider.Model;
 using ZoDream.Spider.View;
 
@@ -272,6 +275,71 @@ namespace ZoDream.Spider.ViewModel
             UrlList.Clear();
         }
 
+        private RelayCommand _startCommand;
+
+        /// <summary>
+        /// Gets the StartCommand.
+        /// </summary>
+        public RelayCommand StartCommand
+        {
+            get
+            {
+                return _startCommand
+                    ?? (_startCommand = new RelayCommand(ExecuteStartCommand));
+            }
+        }
+
+        private void ExecuteStartCommand()
+        {
+            _begin();
+        }
+
+        private RelayCommand _stopCommand;
+
+        /// <summary>
+        /// Gets the StopCommand.
+        /// </summary>
+        public RelayCommand StopCommand
+        {
+            get
+            {
+                return _stopCommand
+                    ?? (_stopCommand = new RelayCommand(ExecuteStopCommand));
+            }
+        }
+
+        private void ExecuteStopCommand()
+        {
+            _tokenSource.Cancel();
+            foreach (var item in UrlList)
+            {
+                item.Status = UrlStatus.None;
+            }
+        }
+
+        private RelayCommand _pauseCommand;
+
+        /// <summary>
+        /// Gets the PauseCommand.
+        /// </summary>
+        public RelayCommand PauseCommand
+        {
+            get
+            {
+                return _pauseCommand
+                    ?? (_pauseCommand = new RelayCommand(ExecutePauseCommand));
+            }
+        }
+
+        private void ExecutePauseCommand()
+        {
+            _tokenSource.Cancel();
+            foreach (var item in UrlList.Where(item => item.Status == UrlStatus.Waiting))
+            {
+                item.Status = UrlStatus.None;
+            }
+        }
+
 
         private void _showMessage(string message)
         {
@@ -282,6 +350,73 @@ namespace ZoDream.Spider.ViewModel
                 Message = string.Empty;
             });
         }
+
+
+        #region 私有属性
+        /// <summary>
+        /// 多线程控制
+        /// </summary>
+        private CancellationTokenSource _tokenSource;
+
+        /// <summary>
+        /// 线程锁
+        /// </summary>
+        private readonly object _object = new object();
+
+
+        #endregion
+
+        private void _begin()
+        {
+            #region 创造主线程，去分配多个下载线程
+            _tokenSource = new CancellationTokenSource();
+            var token = _tokenSource.Token;
+            Task.Factory.StartNew(() =>
+            {
+                var index = 0;
+                while (!token.IsCancellationRequested)
+                {
+                    #region 创建执行下载的线程数组
+                    var tasksLength = Math.Min(SpiderHelper.Count, UrlList.Count - index);
+                    var tasks = new Task[tasksLength];
+                    for (var i = 0; i < tasksLength; i++)
+                    {
+                        var index1 = index;
+                        tasks[i] = new Task(() =>
+                        {
+                            // 执行任务_begin(UrlList[index1]);
+                        });
+                        index++;
+                    }
+                    #endregion
+
+                    #region 监视线程数组完成
+                    var continuation = Task.Factory.ContinueWhenAll(tasks, (task) =>
+                    { }, token);
+                    foreach (var task in tasks)
+                    {
+                        task.Start();
+                    }
+                    while (!continuation.IsCompleted)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    #endregion
+                    //_changedStatus(index - tasksLength, tasksLength, UrlStatus.Completed);
+                    if (index >= UrlList.Count)
+                    {
+                        _tokenSource.Cancel();
+                        break;
+                    }
+                }
+                /*Application.Current.Dispatcher.Invoke(() =>
+                {
+                    IsEnable = true;
+                });*/
+            }, token);
+            #endregion
+        }
+
 
         ////public override void Cleanup()
         ////{
