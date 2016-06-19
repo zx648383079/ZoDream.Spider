@@ -222,7 +222,7 @@ namespace ZoDream.Spider.ViewModel
         private void ExecuteAddCommand()
         {
             new RuleView().Show();
-            Messenger.Default.Send(new NotificationMessageAction<UrlItem>(null, item=> {
+            Messenger.Default.Send(new NotificationMessageAction<UrlItem>(null, item => {
                 UrlList.Add(new UrlItem(item.Url, item.Rults));
             }), "rule");
         }

@@ -20,7 +20,7 @@ namespace ZoDream.Spider.ViewModel
     /// See http://www.mvvmlight.net
     /// </para>
     /// </summary>
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : ViewModelBase, IDisposable
     {
         private string _file;
 
@@ -417,6 +417,25 @@ namespace ZoDream.Spider.ViewModel
             #endregion
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+            if (_tokenSource == null) return;
+            _tokenSource.Cancel();
+            _tokenSource.Dispose();
+            _tokenSource = null;
+        }
+
+        ~MainViewModel()
+        {
+            Dispose(false);
+        }
 
         ////public override void Cleanup()
         ////{

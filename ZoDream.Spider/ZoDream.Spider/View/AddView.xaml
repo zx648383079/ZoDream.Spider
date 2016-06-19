@@ -7,7 +7,9 @@
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:Custom="http://www.galasoft.ch/mvvmlight" x:Class="ZoDream.Spider.View.AddView"
         mc:Ignorable="d ignore"
         Title="新建任务"
-        DataContext="{Binding Add, Source={StaticResource Locator}}" Icon="/ZoDream.Spider;component/Image/spider.ico" WindowStartupLocation="CenterScreen">
+        DataContext="{Binding Add, Source={StaticResource Locator}}" 
+        Icon="/ZoDream.Spider;component/Image/spider.ico" 
+        WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.ColumnDefinitions>
