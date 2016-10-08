@@ -5,9 +5,9 @@ namespace ZoDream.Spider.Helper
 {
     public class SpiderHelper
     {
-        public static List<HeaderItem> Headers;
+        public static List<HeaderItem> Headers = new List<HeaderItem>();
 
-        public static List<UrlItem> UrlRegex;
+        public static List<UrlItem> UrlRegex = new List<UrlItem>();
 
         public static int Count = 100;
 

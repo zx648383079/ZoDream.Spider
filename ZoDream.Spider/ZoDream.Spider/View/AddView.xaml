@@ -4,7 +4,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ignore="http://www.galasoft.ch/ignore"
-        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" xmlns:Custom="http://www.galasoft.ch/mvvmlight" x:Class="ZoDream.Spider.View.AddView"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
+        xmlns:Custom="http://www.galasoft.ch/mvvmlight" 
+        x:Class="ZoDream.Spider.View.AddView"
         mc:Ignorable="d ignore"
         Title="新建任务"
         DataContext="{Binding Add, Source={StaticResource Locator}}" 
@@ -39,7 +41,8 @@
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="规则">
-                        <MenuItem Header="增加" Command="{Binding AddCommand}"/>
+                        <MenuItem Header="增加" Command="{Binding 
+                            ommand}"/>
                         <MenuItem Header="修改" Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=UrlList}"/>
                         <MenuItem Header="打开" Command="{Binding ImportCommand}"/>
                         <MenuItem Header="保存" Command="{Binding ExportCommand}"/>

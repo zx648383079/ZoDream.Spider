@@ -13,6 +13,11 @@ namespace ZoDream.Spider.Model
 
         public List<RuleItem> Rults { get; set; }
 
+        public void DealHtml(string html)
+        {
+            // 处理
+        }
+
         public UrlItem()
         {
 
