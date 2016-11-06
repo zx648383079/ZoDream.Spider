@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -41,29 +42,9 @@ namespace ZoDream.Spider.ViewModel
             {
                 HeaderList.Add(item);
             }
-        }
 
-        /// <summary>
-        /// The <see cref="BaseUrl" /> property's name.
-        /// </summary>
-        public const string BaseUrlPropertyName = "BaseUrl";
-
-        private string _baseUrl = string.Empty;
-
-        /// <summary>
-        /// Sets and gets the BaseUrl property.
-        /// Changes to that property's value raise the PropertyChanged event. 
-        /// </summary>
-        public string BaseUrl
-        {
-            get
-            {
-                return _baseUrl;
-            }
-            set
-            {
-                Set(BaseUrlPropertyName, ref _baseUrl, value);
-            }
+            Count = SpiderHelper.Count;
+            BaseDirectory = SpiderHelper.BaseDirectory;
         }
 
         /// <summary>
@@ -86,6 +67,30 @@ namespace ZoDream.Spider.ViewModel
             set
             {
                 Set(CountPropertyName, ref _count, value);
+            }
+        }
+
+
+        /// <summary>
+        /// The <see cref="BaseDirectory" /> property's name.
+        /// </summary>
+        public const string BaseDirectoryPropertyName = "BaseDirectory";
+
+        private string _baseDirectory = string.Empty;
+
+        /// <summary>
+        /// Sets and gets the BaseDirectory property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public string BaseDirectory
+        {
+            get
+            {
+                return _baseDirectory;
+            }
+            set
+            {
+                Set(BaseDirectoryPropertyName, ref _baseDirectory, value);
             }
         }
 
@@ -112,20 +117,27 @@ namespace ZoDream.Spider.ViewModel
             }
         }
 
+        private RelayCommand _chooseCommand;
+
+        /// <summary>
+        /// Gets the ChooseCommand.
+        /// </summary>
+        public RelayCommand ChooseCommand => _chooseCommand
+                                             ?? (_chooseCommand = new RelayCommand(ExecuteChooseCommand));
+
+        private void ExecuteChooseCommand()
+        {
+            BaseDirectory = Open.ChooseFolder();
+        }
+
 
         private RelayCommand _importCommand;
 
         /// <summary>
         /// Gets the ImportCommand.
         /// </summary>
-        public RelayCommand ImportCommand
-        {
-            get
-            {
-                return _importCommand
-                    ?? (_importCommand = new RelayCommand(ExecuteImportCommand));
-            }
-        }
+        public RelayCommand ImportCommand => _importCommand
+                                             ?? (_importCommand = new RelayCommand(ExecuteImportCommand));
 
         private void ExecuteImportCommand()
         {
@@ -153,24 +165,15 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the FileDrogCommand.
         /// </summary>
-        public RelayCommand<DragEventArgs> FileDrogCommand
-        {
-            get
-            {
-                return _fileDrogCommand
-                    ?? (_fileDrogCommand = new RelayCommand<DragEventArgs>(ExecuteFileDrogCommand));
-            }
-        }
+        public RelayCommand<DragEventArgs> FileDrogCommand => _fileDrogCommand
+                                                              ?? (_fileDrogCommand = new RelayCommand<DragEventArgs>(ExecuteFileDrogCommand));
 
         private void ExecuteFileDrogCommand(DragEventArgs parameter)
         {
-            if (parameter == null)
-            {
-                return;
-            }
-            var files = (System.Array)parameter.Data.GetData(DataFormats.FileDrop);
+            var files = (System.Array) parameter?.Data.GetData(DataFormats.FileDrop);
             //        as FileInfo[];
 
+            if (files == null) return;
             foreach (string item in files)
             {
                 _import(item);
@@ -183,14 +186,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the ExportCommand.
         /// </summary>
-        public RelayCommand ExportCommand
-        {
-            get
-            {
-                return _exportCommand
-                    ?? (_exportCommand = new RelayCommand(ExecuteExportCommand));
-            }
-        }
+        public RelayCommand ExportCommand => _exportCommand
+                                             ?? (_exportCommand = new RelayCommand(ExecuteExportCommand));
 
         private void ExecuteExportCommand()
         {
@@ -210,14 +207,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the AddCommand.
         /// </summary>
-        public RelayCommand AddCommand
-        {
-            get
-            {
-                return _addCommand
-                    ?? (_addCommand = new RelayCommand(ExecuteAddCommand));
-            }
-        }
+        public RelayCommand AddCommand => _addCommand
+                                          ?? (_addCommand = new RelayCommand(ExecuteAddCommand));
 
         private void ExecuteAddCommand()
         {
@@ -232,14 +223,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the EditCommand.
         /// </summary>
-        public RelayCommand<int> EditCommand
-        {
-            get
-            {
-                return _editCommand
-                    ?? (_editCommand = new RelayCommand<int>(ExecuteEditCommand));
-            }
-        }
+        public RelayCommand<int> EditCommand => _editCommand
+                                                ?? (_editCommand = new RelayCommand<int>(ExecuteEditCommand));
 
         private void ExecuteEditCommand(int index)
         {
@@ -256,14 +241,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the DeleteCommand.
         /// </summary>
-        public RelayCommand<int> DeleteCommand
-        {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
-            }
-        }
+        public RelayCommand<int> DeleteCommand => _deleteCommand
+                                                  ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
 
         private void ExecuteDeleteCommand(int index)
         {
@@ -276,14 +255,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the ClearCommand.
         /// </summary>
-        public RelayCommand ClearCommand
-        {
-            get
-            {
-                return _clearCommand
-                    ?? (_clearCommand = new RelayCommand(ExecuteClearCommand));
-            }
-        }
+        public RelayCommand ClearCommand => _clearCommand
+                                            ?? (_clearCommand = new RelayCommand(ExecuteClearCommand));
 
         private void ExecuteClearCommand()
         {
@@ -365,14 +338,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the WebCommand.
         /// </summary>
-        public RelayCommand WebCommand
-        {
-            get
-            {
-                return _webCommand
-                    ?? (_webCommand = new RelayCommand(ExecuteWebCommand));
-            }
-        }
+        public RelayCommand WebCommand => _webCommand
+                                          ?? (_webCommand = new RelayCommand(ExecuteWebCommand));
 
         private void ExecuteWebCommand()
         {
@@ -391,14 +358,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the EditHeaderCommand.
         /// </summary>
-        public RelayCommand<int> EditHeaderCommand
-        {
-            get
-            {
-                return _editHeaderCommand
-                    ?? (_editHeaderCommand = new RelayCommand<int>(ExecuteEditHeaderCommand));
-            }
-        }
+        public RelayCommand<int> EditHeaderCommand => _editHeaderCommand
+                                                      ?? (_editHeaderCommand = new RelayCommand<int>(ExecuteEditHeaderCommand));
 
         private void ExecuteEditHeaderCommand(int index)
         {
@@ -412,17 +373,12 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the DeleteHeaderCommand.
         /// </summary>
-        public RelayCommand<int> DeleteHeaderCommand
-        {
-            get
-            {
-                return _deleteHeaderCommand
-                    ?? (_deleteHeaderCommand = new RelayCommand<int>(ExecuteDeleteHeaderCommand));
-            }
-        }
+        public RelayCommand<int> DeleteHeaderCommand => _deleteHeaderCommand
+                                                        ?? (_deleteHeaderCommand = new RelayCommand<int>(ExecuteDeleteHeaderCommand));
 
         private void ExecuteDeleteHeaderCommand(int index)
         {
+            Debug.WriteLine(index);
             if (index < 0 || index >= HeaderList.Count) return;
             HeaderList.RemoveAt(index);
         }
@@ -432,14 +388,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the ClearHeaderCommand.
         /// </summary>
-        public RelayCommand ClearHeaderCommand
-        {
-            get
-            {
-                return _clearHeaderCommand
-                    ?? (_clearHeaderCommand = new RelayCommand(ExecuteClearHeaderCommand));
-            }
-        }
+        public RelayCommand ClearHeaderCommand => _clearHeaderCommand
+                                                  ?? (_clearHeaderCommand = new RelayCommand(ExecuteClearHeaderCommand));
 
         private void ExecuteClearHeaderCommand()
         {
@@ -451,14 +401,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the SaveHeaderCommand.
         /// </summary>
-        public RelayCommand SaveHeaderCommand
-        {
-            get
-            {
-                return _saveHeaderCommand
-                    ?? (_saveHeaderCommand = new RelayCommand(ExecuteSaveHeaderCommand));
-            }
-        }
+        public RelayCommand SaveHeaderCommand => _saveHeaderCommand
+                                                 ?? (_saveHeaderCommand = new RelayCommand(ExecuteSaveHeaderCommand));
 
         private void ExecuteSaveHeaderCommand()
         {
@@ -468,11 +412,9 @@ namespace ZoDream.Spider.ViewModel
             }
             foreach (var item in HeaderList)
             {
-                if (item.Name.ToString() == HeaderName)
-                {
-                    item.Value = HeaderValue;
-                    return;
-                }
+                if (item.Name.ToString() != HeaderName) continue;
+                item.Value = HeaderValue;
+                return;
             }
             HeaderList.Add(new HeaderItem(HeaderName, HeaderValue));
             HeaderName = HeaderValue = string.Empty;
@@ -484,19 +426,15 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the SaveCommand.
         /// </summary>
-        public RelayCommand SaveCommand
-        {
-            get
-            {
-                return _saveCommand
-                    ?? (_saveCommand = new RelayCommand(ExecuteSaveCommand));
-            }
-        }
+        public RelayCommand SaveCommand => _saveCommand
+                                           ?? (_saveCommand = new RelayCommand(ExecuteSaveCommand));
 
         private void ExecuteSaveCommand()
         {
             SpiderHelper.Headers = HeaderList.ToList();
             SpiderHelper.UrlRegex = UrlList.ToList();
+            SpiderHelper.Count = Count;
+            SpiderHelper.BaseDirectory = BaseDirectory;
             UrlList.Clear();
             HeaderList.Clear();
             _close.Execute();

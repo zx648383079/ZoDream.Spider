@@ -1,14 +1,18 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using GalaSoft.MvvmLight.Messaging;
 using ZoDream.Helper.Local;
 using ZoDream.Spider.Helper;
+using ZoDream.Spider.Helper.Http;
 using ZoDream.Spider.Model;
 using ZoDream.Spider.View;
 
@@ -84,16 +88,10 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the NewCommand.
         /// </summary>
-        public RelayCommand NewCommand
-        {
-            get
-            {
-                return _newCommand
-                    ?? (_newCommand = new RelayCommand(ExecuteNewCommand));
-            }
-        }
+        public RelayCommand NewCommand => _newCommand
+                                          ?? (_newCommand = new RelayCommand(ExecuteNewCommand));
 
-        private void ExecuteNewCommand()
+        private static void ExecuteNewCommand()
         {
             new AddView().Show();
         }
@@ -103,21 +101,15 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the OpenCommand.
         /// </summary>
-        public RelayCommand OpenCommand
-        {
-            get
-            {
-                return _openCommand
-                    ?? (_openCommand = new RelayCommand(ExecuteOpenCommand));
-            }
-        }
+        public RelayCommand OpenCommand => _openCommand
+                                           ?? (_openCommand = new RelayCommand(ExecuteOpenCommand));
 
         private void ExecuteOpenCommand()
         {
             _import(Open.ChooseFile());
         }
 
-        private void _import(string file)
+        private static void _import(string file)
         {
             if (string.IsNullOrEmpty(file) || !File.Exists(file))
             {
@@ -130,24 +122,15 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the FileDrogCommand.
         /// </summary>
-        public RelayCommand<DragEventArgs> FileDrogCommand
-        {
-            get
-            {
-                return _fileDrogCommand
-                    ?? (_fileDrogCommand = new RelayCommand<DragEventArgs>(ExecuteFileDrogCommand));
-            }
-        }
+        public RelayCommand<DragEventArgs> FileDrogCommand => _fileDrogCommand
+                                                              ?? (_fileDrogCommand = new RelayCommand<DragEventArgs>(ExecuteFileDrogCommand));
 
-        private void ExecuteFileDrogCommand(DragEventArgs parameter)
+        private static void ExecuteFileDrogCommand(DragEventArgs parameter)
         {
-            if (parameter == null)
-            {
-                return;
-            }
-            var files = (System.Array)parameter.Data.GetData(DataFormats.FileDrop);
+            var files = (Array) parameter?.Data.GetData(DataFormats.FileDrop);
             //        as FileInfo[];
 
+            if (files == null) return;
             foreach (string item in files)
             {
                 _import(item);
@@ -159,14 +142,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the SaveCommand.
         /// </summary>
-        public RelayCommand SaveCommand
-        {
-            get
-            {
-                return _saveCommand
-                    ?? (_saveCommand = new RelayCommand(ExecuteSaveCommand));
-            }
-        }
+        public RelayCommand SaveCommand => _saveCommand
+                                           ?? (_saveCommand = new RelayCommand(ExecuteSaveCommand));
 
         private void ExecuteSaveCommand()
         {
@@ -178,18 +155,19 @@ namespace ZoDream.Spider.ViewModel
             _save();
         }
 
-        private void _saveAs()
-        {
-            _file = Open.ChooseSaveFile();
-            _save();
-        }
+        private RelayCommand _addCommand;
 
-        private void _save()
+        /// <summary>
+        /// Gets the AddCommand.
+        /// </summary>
+        public RelayCommand AddCommand => _addCommand
+                                          ?? (_addCommand = new RelayCommand(ExecuteAddCommand));
+
+        private void ExecuteAddCommand()
         {
-            if (string.IsNullOrEmpty(_file))
-            {
-                return;
-            }
+            new UrlView().Show();
+            Messenger.Default.Send(new NotificationMessageAction<IList<string>>(null, _addUrl), "url");
+
         }
 
         private RelayCommand _saveAsCommand;
@@ -197,14 +175,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the SaveAsCommand.
         /// </summary>
-        public RelayCommand SaveAsCommand
-        {
-            get
-            {
-                return _saveAsCommand
-                    ?? (_saveAsCommand = new RelayCommand(ExecuteSaveAsCommand));
-            }
-        }
+        public RelayCommand SaveAsCommand => _saveAsCommand
+                                             ?? (_saveAsCommand = new RelayCommand(ExecuteSaveAsCommand));
 
         private void ExecuteSaveAsCommand()
         {
@@ -216,14 +188,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the DeleteCommand.
         /// </summary>
-        public RelayCommand<int> DeleteCommand
-        {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
-            }
-        }
+        public RelayCommand<int> DeleteCommand => _deleteCommand
+                                                  ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
 
         private void ExecuteDeleteCommand(int index)
         {
@@ -236,18 +202,12 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the DeleteCompleteCommand.
         /// </summary>
-        public RelayCommand DeleteCompleteCommand
-        {
-            get
-            {
-                return _deleteCompleteCommand
-                    ?? (_deleteCompleteCommand = new RelayCommand(ExecuteDeleteCompleteCommand));
-            }
-        }
+        public RelayCommand DeleteCompleteCommand => _deleteCompleteCommand
+                                                     ?? (_deleteCompleteCommand = new RelayCommand(ExecuteDeleteCompleteCommand));
 
         private void ExecuteDeleteCompleteCommand()
         {
-            for (int i = UrlList.Count - 1; i >= 0; i --)
+            for (var i = UrlList.Count - 1; i >= 0; i --)
             {
                 if (UrlList[i].Status == UrlStatus.Success)
                 {
@@ -261,14 +221,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the ClearCommand.
         /// </summary>
-        public RelayCommand ClearCommand
-        {
-            get
-            {
-                return _clearCommand
-                    ?? (_clearCommand = new RelayCommand(ExecuteClearCommand));
-            }
-        }
+        public RelayCommand ClearCommand => _clearCommand
+                                            ?? (_clearCommand = new RelayCommand(ExecuteClearCommand));
 
         private void ExecuteClearCommand()
         {
@@ -280,14 +234,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the StartCommand.
         /// </summary>
-        public RelayCommand StartCommand
-        {
-            get
-            {
-                return _startCommand
-                    ?? (_startCommand = new RelayCommand(ExecuteStartCommand));
-            }
-        }
+        public RelayCommand StartCommand => _startCommand
+                                            ?? (_startCommand = new RelayCommand(ExecuteStartCommand));
 
         private void ExecuteStartCommand()
         {
@@ -299,14 +247,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the StopCommand.
         /// </summary>
-        public RelayCommand StopCommand
-        {
-            get
-            {
-                return _stopCommand
-                    ?? (_stopCommand = new RelayCommand(ExecuteStopCommand));
-            }
-        }
+        public RelayCommand StopCommand => _stopCommand
+                                           ?? (_stopCommand = new RelayCommand(ExecuteStopCommand));
 
         private void ExecuteStopCommand()
         {
@@ -322,14 +264,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the PauseCommand.
         /// </summary>
-        public RelayCommand PauseCommand
-        {
-            get
-            {
-                return _pauseCommand
-                    ?? (_pauseCommand = new RelayCommand(ExecutePauseCommand));
-            }
-        }
+        public RelayCommand PauseCommand => _pauseCommand
+                                            ?? (_pauseCommand = new RelayCommand(ExecutePauseCommand));
 
         private void ExecutePauseCommand()
         {
@@ -363,11 +299,15 @@ namespace ZoDream.Spider.ViewModel
         /// </summary>
         private readonly object _object = new object();
 
-
         #endregion
 
         private void _begin()
         {
+            if (UrlList.Count == 0 || string.IsNullOrEmpty(SpiderHelper.BaseDirectory))
+            {
+                _showMessage("网址为空，或保存文件夹为空！");
+                return;
+            }
             #region 创造主线程，去分配多个下载线程
             _tokenSource = new CancellationTokenSource();
             var token = _tokenSource.Token;
@@ -384,7 +324,7 @@ namespace ZoDream.Spider.ViewModel
                         var index1 = index;
                         tasks[i] = new Task(() =>
                         {
-                            // 执行任务_begin(UrlList[index1]);
+                            _begin(UrlList[index1]);
                         });
                         index++;
                     }
@@ -402,12 +342,10 @@ namespace ZoDream.Spider.ViewModel
                         Thread.Sleep(1000);
                     }
                     #endregion
-                    //_changedStatus(index - tasksLength, tasksLength, UrlStatus.Completed);
-                    if (index >= UrlList.Count)
-                    {
-                        _tokenSource.Cancel();
-                        break;
-                    }
+                    _changedStatus(index - tasksLength, tasksLength, UrlStatus.Success);
+                    if (index < UrlList.Count) continue;
+                    _tokenSource.Cancel();
+                    break;
                 }
                 /*Application.Current.Dispatcher.Invoke(() =>
                 {
@@ -415,6 +353,83 @@ namespace ZoDream.Spider.ViewModel
                 });*/
             }, token);
             #endregion
+        }
+
+        private void _changedStatus(int index, int length, UrlStatus status)
+        {
+            lock (_object)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    for (var i = 0; i < length; i++)
+                    {
+                        UrlList[index + i].Status = status;
+                    }
+                });
+
+            }
+        }
+
+        private void _begin(UrlTask urlTask)
+        {
+            var spider = new SpiderRequest()
+            {
+                Url = urlTask,
+                Rules = SpiderHelper.GetRules(urlTask.Url),
+                Headers = SpiderHelper.Headers
+            };
+            spider.Start();
+            if (spider.Results.Count < 1) return;
+            lock (_object)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    _addUrl(spider.Results);
+                });
+
+            }
+        }
+
+        private void _addUrl(IEnumerable<string> args)
+        {
+            foreach (var item in args)
+            {
+                _addUrl(item);
+            }
+        }
+
+        private void _addUrl(IEnumerable<UrlTask> args)
+        {
+            foreach (var item in args)
+            {
+                _addUrl(item);
+            }
+        }
+
+        private void _addUrl(string url)
+        {
+            _addUrl(new UrlTask(url));
+        }
+
+        private void _addUrl(UrlTask url)
+        {
+            if (url.Url.IndexOf("//", StringComparison.Ordinal) < 0 || !SpiderHelper.CanAdd(url.Url)) return;
+            UrlList.Add(url);
+            SpiderHelper.UrlList.Add(url.Url);
+        }
+
+        private void _saveAs()
+        {
+            _file = Open.ChooseSaveFile();
+            _save();
+        }
+
+        private void _save()
+        {
+            if (string.IsNullOrEmpty(_file))
+            {
+                return;
+            }
         }
 
         public void Dispose()

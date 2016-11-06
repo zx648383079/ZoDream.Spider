@@ -40,9 +40,9 @@
                     <MenuItem Header="另存为" Command="{Binding SaveAsCommand}"/>
                 </MenuItem>
                 <MenuItem Header="控制">
-                    <MenuItem Header="开始"/>
-                    <MenuItem Header="暂停"/>
-                    <MenuItem Header="停止"/>
+                    <MenuItem Header="开始" Command="{Binding StartCommand}"/>
+                    <MenuItem Header="暂停" Command="{Binding PauseCommand}"/>
+                    <MenuItem Header="停止" Command="{Binding StopCommand}"/>
                 </MenuItem>
                 <MenuItem Header="关于">
                     <MenuItem Header="查看帮助"/>
@@ -58,6 +58,7 @@
                         <MenuItem Header="打开" Command="{Binding OpenCommand}"/>
                         <MenuItem Header="保存" Command="{Binding SaveCommand}"/>
                     </MenuItem>
+                    <MenuItem Header="添加网址" Command="{Binding AddCommand}"/>
                     <MenuItem Header="删除">
                         <MenuItem Header="选中" Command="{Binding DeleteCommand}"/>
                         <MenuItem Header="已完成" Command="{Binding DeleteCompleteCommand}" CommandParameter="{Binding ElementName=UrlTasks,Path=SelectedIndex}"/>
@@ -72,6 +73,6 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListBox>
-        <TextBlock Grid.Row="2"/>
+        <TextBlock Grid.Row="2" Text="{Binding Message}"/>
     </Grid>
 </Window>

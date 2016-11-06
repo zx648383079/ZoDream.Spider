@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Net;
-using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.Marshal;
 
 namespace ZoDream.Spider.Helper.Cookie
 {
@@ -39,7 +39,7 @@ namespace ZoDream.Spider.Helper.Cookie
                 }
             }
 
-            int lastErrorCode = Marshal.GetLastWin32Error();
+            var lastErrorCode = GetLastWin32Error();
 
             if (throwIfNoCookie || (lastErrorCode != (int)NativeMethods.ErrorFlags.ERROR_NO_MORE_ITEMS))
             {

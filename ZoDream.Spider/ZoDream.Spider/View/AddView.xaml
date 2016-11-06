@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
-        xmlns:Custom="http://www.galasoft.ch/mvvmlight" 
+        xmlns:custom="http://www.galasoft.ch/mvvmlight" 
         x:Class="ZoDream.Spider.View.AddView"
         mc:Ignorable="d ignore"
         Title="新建任务"
@@ -27,11 +27,16 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="初始网址："/>
-        <TextBox Text="{Binding BaseUrl}" Grid.Column="1" Grid.ColumnSpan="2"/>
-        <TextBlock Text="线程数：" Grid.Row="1"/>
-        <TextBox Text="{Binding Count}" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2"/>
-        <ListView AllowDrop="True" x:Name="UrlList" Grid.Row="2" Grid.ColumnSpan="3" ItemsSource="{Binding UrlList}">
+        <TextBlock Text="线程数："/>
+        <TextBox Text="{Binding Count}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2"/>
+        
+        <TextBlock Text="保存路径：" Grid.Row="1" Grid.Column="0" />
+        <TextBox Text="{Binding BaseDirectory}" Grid.Row="1" Grid.Column="1" />
+        <Button Content="..." Command="{Binding ChooseCommand}" Grid.Row="1" Grid.Column="2"/>
+        
+        
+        <ListView AllowDrop="True" x:Name="UrlList" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
+                  ItemsSource="{Binding UrlList}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="网址规则" Width="300" DisplayMemberBinding="{Binding Url}"/>
@@ -41,8 +46,7 @@
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="规则">
-                        <MenuItem Header="增加" Command="{Binding 
-                            ommand}"/>
+                        <MenuItem Header="增加" Command="{Binding AddCommand}"/>
                         <MenuItem Header="修改" Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=UrlList}"/>
                         <MenuItem Header="打开" Command="{Binding ImportCommand}"/>
                         <MenuItem Header="保存" Command="{Binding ExportCommand}"/>
@@ -55,19 +59,19 @@
             </ListView.ContextMenu>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <Custom:EventToCommand Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=UrlList}"/>
+                    <custom:EventToCommand Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=UrlList}"/>
                 </i:EventTrigger>
                 <i:EventTrigger EventName="Drop">
-                    <Custom:EventToCommand Command="{Binding FileDrogCommand, Mode=OneWay}"
+                    <custom:EventToCommand Command="{Binding FileDrogCommand, Mode=OneWay}"
                                     PassEventArgsToCommand="True" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListView>
 
-        <ListView x:Name="HeaderList" Grid.Row="3" ItemsSource="{Binding HeaderList}" Grid.ColumnSpan="3">
+        <ListView x:Name="HeaderList" Grid.Row="3" ItemsSource="{Binding HeaderList}" Grid.ColumnSpan="3" Grid.Column="0">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <Custom:EventToCommand  Command="{Binding EditHeaderCommand}" CommandParameter="{Binding SelectedIndex, ElementName=HeaderList}"/>
+                    <custom:EventToCommand  Command="{Binding EditHeaderCommand}" CommandParameter="{Binding SelectedIndex, ElementName=HeaderList}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <ListView.View>
@@ -89,7 +93,7 @@
                 </ContextMenu>
             </ListView.ContextMenu>
         </ListView>
-        <ComboBox Grid.Row="4" Text="{Binding HeaderName}">
+        <ComboBox Grid.Row="4" Grid.Column="0" Text="{Binding HeaderName}">
             <ComboBoxItem Content="CacheControl"/>
             <ComboBoxItem Content="Connection"/>
             <ComboBoxItem Content="Date"/>

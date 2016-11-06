@@ -43,6 +43,7 @@ namespace ZoDream.Spider.Model
         正则替换,
         正则匹配,
         保存,
+        追加,
         导入
     }
 }

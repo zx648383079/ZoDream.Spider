@@ -16,5 +16,7 @@ namespace ZoDream.Spider.View
             InitializeComponent();
             Messenger.Default.Send(new NotificationMessageAction(null, Close), "closeAdd");
         }
+
+        
     }
 }

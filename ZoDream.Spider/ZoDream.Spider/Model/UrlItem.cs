@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZoDream.Spider.Helper;
 
 namespace ZoDream.Spider.Model
 {
@@ -13,9 +15,9 @@ namespace ZoDream.Spider.Model
 
         public List<RuleItem> Rults { get; set; }
 
-        public void DealHtml(string html)
+        public bool IsMatch(string url)
         {
-            // 处理
+            return Regex.IsMatch(url, Url);
         }
 
         public UrlItem()

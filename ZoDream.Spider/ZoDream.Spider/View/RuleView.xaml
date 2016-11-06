@@ -23,8 +23,8 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="匹配网址："/>
-        <TextBox Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Url}"/>
-        <ListView x:Name="RuleList" Grid.Row="1" Grid.ColumnSpan="4" ItemsSource="{Binding RuleList}">
+        <TextBox Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding Url}"/>
+        <ListView x:Name="RuleList" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" ItemsSource="{Binding RuleList}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="网址规则" Width="200" DisplayMemberBinding="{Binding Kind}"/>
@@ -50,13 +50,14 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListView>
-        <ComboBox Grid.Row="2" SelectedIndex="{Binding Kind}">
+        <ComboBox Grid.Row="2" Grid.Column="0" SelectedIndex="{Binding Kind}">
             <ComboBoxItem Content="正则截取"/>
             <ComboBoxItem Content="普通截取"/>
             <ComboBoxItem Content="普通替换"/>
             <ComboBoxItem Content="正则替换"/>
             <ComboBoxItem Content="正则匹配"/>
             <ComboBoxItem Content="保存"/>
+            <ComboBoxItem Content="追加"/>
             <ComboBoxItem Content="导入"/>
         </ComboBox>
         <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Value1}"/>

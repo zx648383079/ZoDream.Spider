@@ -41,6 +41,7 @@ namespace ZoDream.Spider.ViewModel
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AddViewModel>();
             SimpleIoc.Default.Register<RuleViewModel>();
+            SimpleIoc.Default.Register<UrlViewModel>();
         }
 
         /// <summary>
@@ -49,13 +50,7 @@ namespace ZoDream.Spider.ViewModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
-        public MainViewModel Main
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<MainViewModel>();
-            }
-        }
+        public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
 
         /// <summary>
         /// Gets the Rule property.
@@ -63,13 +58,7 @@ namespace ZoDream.Spider.ViewModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
-        public RuleViewModel Rule
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<RuleViewModel>();
-            }
-        }
+        public RuleViewModel Rule => ServiceLocator.Current.GetInstance<RuleViewModel>();
 
         /// <summary>
         /// Gets the Add property.
@@ -77,13 +66,15 @@ namespace ZoDream.Spider.ViewModel
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
             "CA1822:MarkMembersAsStatic",
             Justification = "This non-static member is needed for data binding purposes.")]
-        public AddViewModel Add
-        {
-            get
-            {
-                return ServiceLocator.Current.GetInstance<AddViewModel>();
-            }
-        }
+        public AddViewModel Add => ServiceLocator.Current.GetInstance<AddViewModel>();
+
+        /// <summary>
+        /// Gets the Url property.
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public UrlViewModel Url => ServiceLocator.Current.GetInstance<UrlViewModel>();
 
         /// <summary>
         /// Cleans up all the resources.
