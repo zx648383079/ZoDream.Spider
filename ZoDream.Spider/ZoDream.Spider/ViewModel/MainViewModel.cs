@@ -3,6 +3,7 @@ using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -165,6 +166,11 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteAddCommand()
         {
+            if (SpiderHelper.UrlRegex.Count == 0)
+            {
+                _showMessage("请设置规则！");
+                return;
+            }
             new UrlView().Show();
             Messenger.Default.Send(new NotificationMessageAction<IList<string>>(null, _addUrl), "url");
 

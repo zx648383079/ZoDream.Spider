@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity" 
-        xmlns:Custom="http://www.galasoft.ch/mvvmlight" 
-    x:Class="ZoDream.Spider.MainWindow"
+        xmlns:custom="http://www.galasoft.ch/mvvmlight" 
+        x:Class="ZoDream.Spider.MainWindow"
         mc:Ignorable="d ignore"
         Height="500"
         Width="600"
@@ -50,7 +50,7 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        <ListBox x:Name="UrlTasks" Grid.Row="1">
+        <ListBox x:Name="UrlTasks" Grid.Row="1" ItemsSource="{Binding UrlList}" DisplayMemberPath="{Binding Path=Url}">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="任务">
@@ -68,7 +68,7 @@
             </ListBox.ContextMenu>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="Drop">
-                    <Custom:EventToCommand Command="{Binding FileDrogCommand, Mode=OneWay}"
+                    <custom:EventToCommand Command="{Binding FileDrogCommand, Mode=OneWay}"
                                     PassEventArgsToCommand="True" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
