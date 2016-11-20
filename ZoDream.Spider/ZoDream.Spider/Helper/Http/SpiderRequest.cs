@@ -36,7 +36,7 @@ namespace ZoDream.Spider.Helper.Http
             {
                 return;
             }
-            var contentType = response.Headers[HttpRequestHeader.ContentType];
+            var contentType = response.Headers[HttpResponseHeader.ContentType];
             if (contentType.IndexOf("text/html", StringComparison.Ordinal) >= 0)
             {
                 var html = request.GetHtml(response);

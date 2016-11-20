@@ -17,6 +17,8 @@ namespace ZoDream.Spider.Helper
 
         public IList<RuleItem> Rules { get; set; }
 
+        public IDictionary<string, string> Matches { get; set; } = new Dictionary<string, string>();
+      
         public string Error { get; set; }
 
         /// <summary>
@@ -63,16 +65,16 @@ namespace ZoDream.Spider.Helper
                         Html.RegexReplace(item.Value1, item.Value2);
                         break;
                     case RuleKinds.正则匹配:
-
+                        Match(item.Value1);
                         break;
                     case RuleKinds.保存:
-                        SaveFile(item.Value1, item.Value2);
+                        SaveFile(GetFile(item.Value1), item.Value2);
                         break;
                     case RuleKinds.追加:
-                        AppendFile(item.Value1, item.Value2);
+                        AppendFile(GetFile(item.Value1), item.Value2);
                         break;
                     case RuleKinds.导入:
-                        ImportHtml(item.Value1, item.Value2);
+                        ImportHtml(GetFile(item.Value1), item.Value2);
                         break;
                     default:
                         break;
@@ -81,8 +83,29 @@ namespace ZoDream.Spider.Helper
             return string.IsNullOrEmpty(Error);
         }
 
-        
+        public void Match(string pattern)
+        {
+            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            var match = regex.Match(Html.Content);
+            foreach (var item in regex.GetGroupNames())
+            {
+                Matches.Add(item, match.Groups[item].Value);
+            }
+        }
 
+        public string GetFile(string file)
+        {
+            var matches = Regex.Matches(file, @"\{([^\{\}]+)\}");
+            foreach (Match match in matches)
+            {
+                if (Matches.ContainsKey(match.Groups[1].Value))
+                {
+                    file = file.Replace(match.Value, Matches[match.Groups[1].Value]);
+                }
+            }
+            return file;
+        }
+             
         public void SaveExcel(string file, MatchCollection matches)
         {
 

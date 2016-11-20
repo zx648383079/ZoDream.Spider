@@ -28,11 +28,8 @@ namespace ZoDream.Spider.ViewModel
             Messenger.Default.Register<NotificationMessageAction<UrlItem>>(this, "rule", m=>
             {
                 _callBack = m;
-                if (m.Sender == null)
-                {
-                    return;
-                }
                 var item = m.Sender as UrlItem;
+                if (item == null) return;
                 Url = item.Url;
                 foreach (var i in item.Rults)
                 {
@@ -195,14 +192,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the SaveCommand.
         /// </summary>
-        public RelayCommand SaveCommand
-        {
-            get
-            {
-                return _saveCommand
-                    ?? (_saveCommand = new RelayCommand(ExecuteSaveCommand));
-            }
-        }
+        public RelayCommand SaveCommand => _saveCommand
+                                           ?? (_saveCommand = new RelayCommand(ExecuteSaveCommand));
 
         private void ExecuteSaveCommand()
         {
@@ -221,14 +212,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the NewCommand.
         /// </summary>
-        public RelayCommand NewCommand
-        {
-            get
-            {
-                return _newCommand
-                    ?? (_newCommand = new RelayCommand(ExecuteNewCommand));
-            }
-        }
+        public RelayCommand NewCommand => _newCommand
+                                          ?? (_newCommand = new RelayCommand(ExecuteNewCommand));
 
         private void ExecuteNewCommand()
         {
@@ -242,14 +227,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the EditCommand.
         /// </summary>
-        public RelayCommand<int> EditCommand
-        {
-            get
-            {
-                return _editCommand
-                    ?? (_editCommand = new RelayCommand<int>(ExecuteEditCommand));
-            }
-        }
+        public RelayCommand<int> EditCommand => _editCommand
+                                                ?? (_editCommand = new RelayCommand<int>(ExecuteEditCommand));
 
         private void ExecuteEditCommand(int index)
         {
@@ -265,14 +244,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the DeleteCommand.
         /// </summary>
-        public RelayCommand<int> DeleteCommand
-        {
-            get
-            {
-                return _deleteCommand
-                    ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
-            }
-        }
+        public RelayCommand<int> DeleteCommand => _deleteCommand
+                                                  ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
 
         private void ExecuteDeleteCommand(int index)
         {
@@ -286,14 +259,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the MoveUpCommand.
         /// </summary>
-        public RelayCommand<int> MoveUpCommand
-        {
-            get
-            {
-                return _moveUpCommand
-                    ?? (_moveUpCommand = new RelayCommand<int>(ExecuteMoveUpCommand));
-            }
-        }
+        public RelayCommand<int> MoveUpCommand => _moveUpCommand
+                                                  ?? (_moveUpCommand = new RelayCommand<int>(ExecuteMoveUpCommand));
 
         private void ExecuteMoveUpCommand(int index)
         {
@@ -308,14 +275,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the MoveDownCommand.
         /// </summary>
-        public RelayCommand<int> MoveDownCommand
-        {
-            get
-            {
-                return _moveDownCommand
-                    ?? (_moveDownCommand = new RelayCommand<int>(ExecuteMoveDownCommand));
-            }
-        }
+        public RelayCommand<int> MoveDownCommand => _moveDownCommand
+                                                    ?? (_moveDownCommand = new RelayCommand<int>(ExecuteMoveDownCommand));
 
         private void ExecuteMoveDownCommand(int index)
         {
@@ -330,14 +291,8 @@ namespace ZoDream.Spider.ViewModel
         /// <summary>
         /// Gets the ClearCommand.
         /// </summary>
-        public RelayCommand ClearCommand
-        {
-            get
-            {
-                return _clearCommand
-                    ?? (_clearCommand = new RelayCommand(ExecuteClearCommand));
-            }
-        }
+        public RelayCommand ClearCommand => _clearCommand
+                                            ?? (_clearCommand = new RelayCommand(ExecuteClearCommand));
 
         private void ExecuteClearCommand()
         {
