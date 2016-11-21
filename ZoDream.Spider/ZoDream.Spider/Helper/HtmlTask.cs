@@ -18,7 +18,7 @@ namespace ZoDream.Spider.Helper
         public IList<RuleItem> Rules { get; set; }
 
         public IDictionary<string, string> Matches { get; set; } = new Dictionary<string, string>();
-      
+
         public string Error { get; set; }
 
         /// <summary>
@@ -47,10 +47,12 @@ namespace ZoDream.Spider.Helper
                         if (string.IsNullOrWhiteSpace(item.Value2))
                         {
                             Html.Narrow(item.Value1);
-                        } else if (Regex.IsMatch(item.Value2, "^[0-9]+$"))
+                        }
+                        else if (Regex.IsMatch(item.Value2, "^[0-9]+$"))
                         {
                             Html.NarrowWithTag(item.Value1, int.Parse(item.Value2));
-                        } else
+                        }
+                        else
                         {
                             Html.NarrowWithTag(item.Value1, item.Value2);
                         }
@@ -79,6 +81,18 @@ namespace ZoDream.Spider.Helper
                     default:
                         break;
                 }
+            }
+            try
+            {
+                var kind = Rules.Last().Kind;
+                if (kind != RuleKinds.保存 && kind != RuleKinds.追加 && kind != RuleKinds.导入)
+                {
+                    SaveFile(FullFile, "");
+                }
+            }
+            catch (Exception)
+            {
+                SaveFile(FullFile, "");
             }
             return string.IsNullOrEmpty(Error);
         }
