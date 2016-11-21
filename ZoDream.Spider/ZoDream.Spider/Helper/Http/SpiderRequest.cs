@@ -72,14 +72,14 @@ namespace ZoDream.Spider.Helper.Http
             var matches = Regex.Matches(html, @"(\<(a|img|link|script|embed|audio|object|video|param|source)[^\<\>]+(src|href|value|data)\s?=)\s?""?([^""\s\<\>]*)""?");
             foreach (Match item in matches)
             {
-                var url = item.Groups[2].Value;
+                var url = item.Groups[4].Value;
                 if (string.IsNullOrEmpty(url) 
                     || url.IndexOf("javascript:", StringComparison.Ordinal) >= 0 || url.IndexOf("#", StringComparison.Ordinal) == 0)
                 {
                     continue;
                 }
                 var uri = new UrlTask(GetAbsoluteUrl(url, Url.Url));
-                html = html.Replace(item.Value, item.Value.Replace(item.Groups[2].Value, GetRelativeUrl(Url.FullName, uri.FileName)));  // 需要相对路径
+                html = html.Replace(item.Value, item.Value.Replace(item.Groups[4].Value, GetRelativeUrl(Url.FullName, uri.FileName)));  // 需要相对路径
                 Results.Add(uri);
             }
         }

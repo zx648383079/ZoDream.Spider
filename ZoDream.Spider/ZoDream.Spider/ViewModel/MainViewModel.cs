@@ -317,7 +317,7 @@ namespace ZoDream.Spider.ViewModel
             var token = _tokenSource.Token;
             Task.Factory.StartNew(() =>
             {
-                var index = 0;
+                var index = _getStart();
                 while (!token.IsCancellationRequested)
                 {
                     #region 创建执行下载的线程数组
@@ -400,6 +400,18 @@ namespace ZoDream.Spider.ViewModel
             {
                 _addUrl(item);
             }
+        }
+
+        private int _getStart()
+        {
+            for (var i = 0; i < UrlList.Count; i++)
+            {
+                if (UrlList[i].Status == UrlStatus.None || UrlList[i].Status == UrlStatus.Waiting)
+                {
+                    return i;
+                }
+            }
+            return 0;
         }
 
         private void _addUrl(IEnumerable<UrlTask> args)
