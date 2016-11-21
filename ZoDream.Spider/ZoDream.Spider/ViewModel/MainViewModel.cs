@@ -114,6 +114,14 @@ namespace ZoDream.Spider.ViewModel
             {
                 return;
             }
+            using (var reader = Open.Reader(file))
+            {
+                string line;
+                while (null != (line = reader.ReadLine()))
+                {
+                    
+                }
+            }
         }
 
         private RelayCommand<DragEventArgs> _fileDrogCommand;
