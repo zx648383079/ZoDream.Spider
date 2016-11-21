@@ -110,14 +110,7 @@ namespace ZoDream.Spider.Helper
         public string GetFile(string file)
         {
             var matches = Regex.Matches(file, @"\{([^\{\}]+)\}");
-            foreach (Match match in matches)
-            {
-                if (Matches.ContainsKey(match.Groups[1].Value))
-                {
-                    file = file.Replace(match.Value, Matches[match.Groups[1].Value]);
-                }
-            }
-            return file;
+            return matches.Cast<Match>().Where(match => Matches.ContainsKey(match.Groups[1].Value)).Aggregate(file, (current, match) => current.Replace(match.Value, Matches[match.Groups[1].Value]));
         }
              
         public void SaveExcel(string file, MatchCollection matches)
@@ -132,7 +125,8 @@ namespace ZoDream.Spider.Helper
             {
                 template = Open.Read(templateFile);
             }
-            using (var writer = new StreamWriter(file, true, new UTF8Encoding(false)))
+            var fs = new FileStream(file, FileMode.Append);
+            using (var writer = new StreamWriter(fs, new UTF8Encoding(false)))
             {
                 writer.Write(template.Replace("{content}", Html.Content));
             }
@@ -149,7 +143,8 @@ namespace ZoDream.Spider.Helper
             {
                 file = FullFile;
             }
-            using (var writer = new StreamWriter(file, false, new UTF8Encoding(false)))
+            var fs = new FileStream(file, FileMode.Create);
+            using (var writer = new StreamWriter(fs, new UTF8Encoding(false)))
             {
                 writer.Write(template.Replace("{content}", Html.Content));
             }

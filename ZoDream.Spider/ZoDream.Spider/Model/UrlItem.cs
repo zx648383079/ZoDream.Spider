@@ -27,6 +27,10 @@ namespace ZoDream.Spider.Model
 
         public UrlItem(string url, List<RuleItem> rules)
         {
+            if (url == "*")
+            {
+                url = ".*";
+            }
             Url = url;
             Rults = rules;
         }

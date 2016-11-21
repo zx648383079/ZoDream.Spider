@@ -79,7 +79,7 @@ namespace ZoDream.Spider.Helper.Http
                     continue;
                 }
                 var uri = new UrlTask(GetAbsoluteUrl(url, Url.Url));
-                html = html.Replace(item.Value, item.Value.Replace(item.Groups[4].Value, GetRelativeUrl(Url.FullName, uri.FileName)));  // 需要相对路径
+                html = html.Replace(item.Value, item.Value.Replace(item.Groups[4].Value, GetRelativeUrl(Url.FullName, uri.FullName)));  // 需要相对路径
                 Results.Add(uri);
             }
         }
