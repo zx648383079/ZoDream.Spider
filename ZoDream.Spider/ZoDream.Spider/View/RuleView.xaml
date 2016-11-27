@@ -24,7 +24,7 @@
         </Grid.RowDefinitions>
         <TextBlock Text="匹配网址："/>
         <TextBox Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding Url}"/>
-        <ListView x:Name="RuleList" Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" ItemsSource="{Binding RuleList}">
+        <ListView Grid.Row="1" Grid.ColumnSpan="4" Grid.Column="0" ItemsSource="{Binding RuleList}" SelectedIndex="{Binding RuleIndex}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="网址规则" Width="200" DisplayMemberBinding="{Binding Kind}"/>
@@ -35,18 +35,18 @@
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="新增" Command="{Binding NewCommand}"/>
-                    <MenuItem Header="修改" Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
-                    <MenuItem Header="上移" Command="{Binding MoveUpCommand}"  CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
-                    <MenuItem Header="下移" Command="{Binding MoveDownCommand}"  CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
+                    <MenuItem Header="修改" Command="{Binding EditCommand}"/>
+                    <MenuItem Header="上移" Command="{Binding MoveUpCommand}"/>
+                    <MenuItem Header="下移" Command="{Binding MoveDownCommand}"/>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中" Command="{Binding DeleteCommand}"  CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
+                        <MenuItem Header="选中" Command="{Binding DeleteCommand}"/>
                         <MenuItem Header="全部" Command="{Binding ClearCommand}"/>
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <Custom:EventToCommand  Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=RuleList}"/>
+                    <Custom:EventToCommand  Command="{Binding EditCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListView>

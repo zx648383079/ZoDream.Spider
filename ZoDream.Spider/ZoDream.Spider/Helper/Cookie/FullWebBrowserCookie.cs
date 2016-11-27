@@ -36,7 +36,7 @@ namespace ZoDream.Spider.Helper.Cookie
                 }
             }
 
-            var lastErrorCode = GetLastWin32Error();
+            var lastErrorCode = 0;
 
             if (throwIfNoCookie || (lastErrorCode != (int)NativeMethods.ErrorFlags.ERROR_NO_MORE_ITEMS))
             {

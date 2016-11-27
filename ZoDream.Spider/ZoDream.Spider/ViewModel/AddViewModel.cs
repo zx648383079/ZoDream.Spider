@@ -144,6 +144,52 @@ namespace ZoDream.Spider.ViewModel
             }
         }
 
+        /// <summary>
+        /// The <see cref="UrlIndex" /> property's name.
+        /// </summary>
+        public const string UrlIndexPropertyName = "UrlIndex";
+
+        private int _urlIndex = -1;
+
+        /// <summary>
+        /// Sets and gets the UrlIndex property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int UrlIndex
+        {
+            get
+            {
+                return _urlIndex;
+            }
+            set
+            {
+                Set(UrlIndexPropertyName, ref _urlIndex, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="HeaderIndex" /> property's name.
+        /// </summary>
+        public const string HeaderIndexPropertyName = "HeaderIndex";
+
+        private int _headerIndex = -1;
+
+        /// <summary>
+        /// Sets and gets the HeaderIndex property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int HeaderIndex
+        {
+            get
+            {
+                return _headerIndex;
+            }
+            set
+            {
+                Set(HeaderIndexPropertyName, ref _headerIndex, value);
+            }
+        }
+
 
         /// <summary>
         /// The <see cref="BaseDirectory" /> property's name.
@@ -292,36 +338,36 @@ namespace ZoDream.Spider.ViewModel
             }), "rule");
         }
 
-        private RelayCommand<int> _editCommand;
+        private RelayCommand _editCommand;
 
         /// <summary>
         /// Gets the EditCommand.
         /// </summary>
-        public RelayCommand<int> EditCommand => _editCommand
-                                                ?? (_editCommand = new RelayCommand<int>(ExecuteEditCommand));
+        public RelayCommand EditCommand => _editCommand
+                                                ?? (_editCommand = new RelayCommand(ExecuteEditCommand));
 
-        private void ExecuteEditCommand(int index)
+        private void ExecuteEditCommand()
         {
-            if (index < 0 || index >= UrlList.Count) return;
+            if (UrlIndex < 0 || UrlIndex >= UrlList.Count) return;
             new RuleView().Show();
 
-            Messenger.Default.Send(new NotificationMessageAction<UrlItem>(UrlList[index], null, item=> {
-                UrlList[index] = item;
+            Messenger.Default.Send(new NotificationMessageAction<UrlItem>(UrlList[UrlIndex], null, item=> {
+                UrlList[UrlIndex] = item;
             }), "rule");
         }
 
-        private RelayCommand<int> _deleteCommand;
+        private RelayCommand _deleteCommand;
 
         /// <summary>
         /// Gets the DeleteCommand.
         /// </summary>
-        public RelayCommand<int> DeleteCommand => _deleteCommand
-                                                  ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
+        public RelayCommand DeleteCommand => _deleteCommand
+                                                  ?? (_deleteCommand = new RelayCommand(ExecuteDeleteCommand));
 
-        private void ExecuteDeleteCommand(int index)
+        private void ExecuteDeleteCommand()
         {
-            if (index < 0 || index >= HeaderList.Count) return;
-            UrlList.RemoveAt(index);
+            if (UrlIndex < 0 || UrlIndex >= HeaderList.Count) return;
+            UrlList.RemoveAt(UrlIndex);
         }
 
         private RelayCommand _clearCommand;
@@ -427,34 +473,33 @@ namespace ZoDream.Spider.ViewModel
         }
         
 
-        private RelayCommand<int> _editHeaderCommand;
+        private RelayCommand _editHeaderCommand;
 
         /// <summary>
         /// Gets the EditHeaderCommand.
         /// </summary>
-        public RelayCommand<int> EditHeaderCommand => _editHeaderCommand
-                                                      ?? (_editHeaderCommand = new RelayCommand<int>(ExecuteEditHeaderCommand));
+        public RelayCommand EditHeaderCommand => _editHeaderCommand
+                                                      ?? (_editHeaderCommand = new RelayCommand(ExecuteEditHeaderCommand));
 
-        private void ExecuteEditHeaderCommand(int index)
+        private void ExecuteEditHeaderCommand()
         {
-            if (index < 0 || index >= HeaderList.Count) return;
-            HeaderName = HeaderList[index].Name.ToString();
-            HeaderValue = HeaderList[index].Value;
+            if (HeaderIndex < 0 || HeaderIndex >= HeaderList.Count) return;
+            HeaderName = HeaderList[HeaderIndex].Name.ToString();
+            HeaderValue = HeaderList[HeaderIndex].Value;
         }
 
-        private RelayCommand<int> _deleteHeaderCommand;
+        private RelayCommand _deleteHeaderCommand;
 
         /// <summary>
         /// Gets the DeleteHeaderCommand.
         /// </summary>
-        public RelayCommand<int> DeleteHeaderCommand => _deleteHeaderCommand
-                                                        ?? (_deleteHeaderCommand = new RelayCommand<int>(ExecuteDeleteHeaderCommand));
+        public RelayCommand DeleteHeaderCommand => _deleteHeaderCommand
+                                                        ?? (_deleteHeaderCommand = new RelayCommand(ExecuteDeleteHeaderCommand));
 
-        private void ExecuteDeleteHeaderCommand(int index)
+        private void ExecuteDeleteHeaderCommand()
         {
-            Debug.WriteLine(index);
-            if (index < 0 || index >= HeaderList.Count) return;
-            HeaderList.RemoveAt(index);
+            if (HeaderIndex < 0 || HeaderIndex >= HeaderList.Count) return;
+            HeaderList.RemoveAt(HeaderIndex);
         }
 
         private RelayCommand _clearHeaderCommand;
@@ -516,8 +561,6 @@ namespace ZoDream.Spider.ViewModel
             SpiderHelper.TimeOut = TimeOut;
             SpiderHelper.BaseDirectory = BaseDirectory;
             SpiderHelper.UseBrowser = UseBrowser;
-            UrlList.Clear();
-            HeaderList.Clear();
             _close.Execute();
         }
     }

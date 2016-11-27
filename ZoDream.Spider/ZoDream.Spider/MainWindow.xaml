@@ -51,7 +51,7 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        <ListBox x:Name="UrlTasks" Grid.Row="1" ItemsSource="{Binding UrlList}" DisplayMemberPath="Url">
+        <ListBox Grid.Row="1" ItemsSource="{Binding UrlList}" DisplayMemberPath="Url" SelectedIndex="{Binding UrlIndex}">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="任务">
@@ -62,7 +62,7 @@
                     <MenuItem Header="添加网址" Command="{Binding AddCommand}"/>
                     <MenuItem Header="删除">
                         <MenuItem Header="选中" Command="{Binding DeleteCommand}"/>
-                        <MenuItem Header="已完成" Command="{Binding DeleteCompleteCommand}" CommandParameter="{Binding SelectedIndex,ElementName=UrlTasks}"/>
+                        <MenuItem Header="已完成" Command="{Binding DeleteCompleteCommand}"/>
                         <MenuItem Header="全部" Command="{Binding ClearCommand}"/>
                     </MenuItem>
                 </ContextMenu>

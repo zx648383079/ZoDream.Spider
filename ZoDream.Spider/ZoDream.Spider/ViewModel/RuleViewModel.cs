@@ -183,6 +183,29 @@ namespace ZoDream.Spider.ViewModel
             }
         }
 
+        /// <summary>
+        /// The <see cref="RuleIndex" /> property's name.
+        /// </summary>
+        public const string RuleIndexPropertyName = "RuleIndex";
+
+        private int _ruleIndex = -1;
+
+        /// <summary>
+        /// Sets and gets the RuleIndex property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int RuleIndex
+        {
+            get
+            {
+                return _ruleIndex;
+            }
+            set
+            {
+                Set(RuleIndexPropertyName, ref _ruleIndex, value);
+            }
+        }
+
         private RelayCommand _addCommand;
 
         /// <summary>
@@ -247,64 +270,66 @@ namespace ZoDream.Spider.ViewModel
             Value2 = Value1 = string.Empty;
         }
 
-        private RelayCommand<int> _editCommand;
+        private RelayCommand _editCommand;
 
         /// <summary>
         /// Gets the EditCommand.
         /// </summary>
-        public RelayCommand<int> EditCommand => _editCommand
-                                                ?? (_editCommand = new RelayCommand<int>(ExecuteEditCommand));
+        public RelayCommand EditCommand => _editCommand
+                                                ?? (_editCommand = new RelayCommand(ExecuteEditCommand));
 
-        private void ExecuteEditCommand(int index)
+        private void ExecuteEditCommand()
         {
-            if (index < 0 || index >= RuleList.Count) return;
-            _index = index;
-            Kind = (int)RuleList[index].Kind;
-            Value1 = RuleList[index].Value1;
-            Value2 = RuleList[index].Value2;
+            if (RuleIndex < 0 || RuleIndex >= RuleList.Count) return;
+            _index = RuleIndex;
+            Kind = (int)RuleList[RuleIndex].Kind;
+            Value1 = RuleList[RuleIndex].Value1;
+            Value2 = RuleList[RuleIndex].Value2;
         }
 
-        private RelayCommand<int> _deleteCommand;
+        private RelayCommand _deleteCommand;
 
         /// <summary>
         /// Gets the DeleteCommand.
         /// </summary>
-        public RelayCommand<int> DeleteCommand => _deleteCommand
-                                                  ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
+        public RelayCommand DeleteCommand => _deleteCommand
+                                                  ?? (_deleteCommand = new RelayCommand(ExecuteDeleteCommand));
 
-        private void ExecuteDeleteCommand(int index)
+        private void ExecuteDeleteCommand()
         {
-            if (index < 0 || index >= RuleList.Count) return;
-            RuleList.RemoveAt(index);
+            if (RuleIndex < 0 || RuleIndex >= RuleList.Count) return;
+            RuleList.RemoveAt(RuleIndex);
         }
 
 
-        private RelayCommand<int> _moveUpCommand;
+        private RelayCommand _moveUpCommand;
 
         /// <summary>
         /// Gets the MoveUpCommand.
         /// </summary>
-        public RelayCommand<int> MoveUpCommand => _moveUpCommand
-                                                  ?? (_moveUpCommand = new RelayCommand<int>(ExecuteMoveUpCommand));
+        public RelayCommand MoveUpCommand => _moveUpCommand
+                                                  ?? (_moveUpCommand = new RelayCommand(ExecuteMoveUpCommand));
 
-        private void ExecuteMoveUpCommand(int index)
+        private void ExecuteMoveUpCommand()
         {
-            if (index <= 0 || index >= RuleList.Count) return;
+            var index = RuleIndex;
+            if (index <= 1) return;
             var item = RuleList[index];
             RuleList[index] = RuleList[index - 1];
             RuleList[index - 1] = item;
         }
 
-        private RelayCommand<int> _moveDownCommand;
+        private RelayCommand _moveDownCommand;
 
         /// <summary>
         /// Gets the MoveDownCommand.
         /// </summary>
-        public RelayCommand<int> MoveDownCommand => _moveDownCommand
-                                                    ?? (_moveDownCommand = new RelayCommand<int>(ExecuteMoveDownCommand));
+        public RelayCommand MoveDownCommand => _moveDownCommand
+                                                    ?? (_moveDownCommand = new RelayCommand(ExecuteMoveDownCommand));
 
-        private void ExecuteMoveDownCommand(int index)
+        private void ExecuteMoveDownCommand()
         {
+            var index = RuleIndex;
             if (index < 0 || index > RuleList.Count - 2) return;
             var item = RuleList[index];
             RuleList[index] = RuleList[index + 1];

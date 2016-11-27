@@ -72,6 +72,29 @@ namespace ZoDream.Spider.ViewModel
             set { Set(UrlListPropertyName, ref _urlList, value); }
         }
 
+        /// <summary>
+        /// The <see cref="UrlIndex" /> property's name.
+        /// </summary>
+        public const string UrlIndexPropertyName = "UrlIndex";
+
+        private int _urlIndex = -1;
+
+        /// <summary>
+        /// Sets and gets the UrlIndex property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int UrlIndex
+        {
+            get
+            {
+                return _urlIndex;
+            }
+            set
+            {
+                Set(UrlIndexPropertyName, ref _urlIndex, value);
+            }
+        }
+
 
         private RelayCommand _newCommand;
 
@@ -105,11 +128,14 @@ namespace ZoDream.Spider.ViewModel
             {
                 return;
             }
+            _file = file;
             using (var reader = Open.Reader(file))
             {
                 var tag = "URL";
                 var xml = new StringBuilder();
                 string line;
+                var urls = new List<string>();
+                string[] args;
                 var regex = new Regex(@"^\[(\w+)\]$");
                 while (null != (line = reader.ReadLine()))
                 {
@@ -119,22 +145,13 @@ namespace ZoDream.Spider.ViewModel
                     }
                     if (regex.IsMatch(line))
                     {
-                        tag = regex.Match(line).Groups[1].Value;
+                        tag = regex.Match(line).Groups[1].Value.ToUpper();
+                        continue;
                     }
-                    string[] args;
-                    switch (tag.ToUpper())
+                    switch (tag)
                     {
                         case "URL":
-                            args = line.Split(new[] { '=' }, 3);
-                            if (string.IsNullOrWhiteSpace(args[2]))
-                            {
-                                continue;
-                            }
-                            _addUrl(new UrlTask(args[2])
-                            {
-                                Kind = (AssetKind)Enum.Parse(typeof(AssetKind), args[1]),
-                                Status = (UrlStatus)Enum.Parse(typeof(UrlStatus), args[0])
-                            });
+                            urls.Add(line);
                             break;
                         case "COUNT":
                             SpiderHelper.Count = Convert.ToInt32(line);
@@ -146,7 +163,11 @@ namespace ZoDream.Spider.ViewModel
                             SpiderHelper.UseBrowser = line == "Y";
                             break;
                         case "HEADER":
-                            args = line.Split(new [] { '='}, 2);
+                            args = line.Split(new[] {'='}, 2);
+                            if (args.Length < 2)
+                            {
+                                continue;
+                            }
                             SpiderHelper.Headers.Add(new HeaderItem(args[0], args[1]));
                             break;
                         case "DIRECTORY":
@@ -155,7 +176,6 @@ namespace ZoDream.Spider.ViewModel
                         case "REGEX":
                             xml.AppendLine(line);
                             break;
-                            
                     }
                 }
                 var text = xml.ToString();
@@ -163,6 +183,19 @@ namespace ZoDream.Spider.ViewModel
                 {
                     var xmler = new XmlSerializer(typeof(List<UrlItem>));
                     SpiderHelper.UrlRegex = (List<UrlItem>) xmler.Deserialize(new StringReader(text));
+                }
+                foreach (var url in urls)
+                {
+                    args = url.Split(new[] { '=' }, 3);
+                    if (args.Length < 3 || string.IsNullOrWhiteSpace(args[2]))
+                    {
+                        continue;
+                    }
+                    _addUrl(new UrlTask(args[2])
+                    {
+                        Kind = (AssetKind)Enum.Parse(typeof(AssetKind), args[1]),
+                        Status = (UrlStatus)Enum.Parse(typeof(UrlStatus), args[0])
+                    });
                 }
             }
             _showMessage("导入完成！");
@@ -242,18 +275,18 @@ namespace ZoDream.Spider.ViewModel
             _saveAs();
         }
 
-        private RelayCommand<int> _deleteCommand;
+        private RelayCommand _deleteCommand;
 
         /// <summary>
         /// Gets the DeleteCommand.
         /// </summary>
-        public RelayCommand<int> DeleteCommand => _deleteCommand
-                                                  ?? (_deleteCommand = new RelayCommand<int>(ExecuteDeleteCommand));
+        public RelayCommand DeleteCommand => _deleteCommand
+                                                  ?? (_deleteCommand = new RelayCommand(ExecuteDeleteCommand));
 
-        private void ExecuteDeleteCommand(int index)
+        private void ExecuteDeleteCommand()
         {
-            if (index < 0 || index >= UrlList.Count) return;
-            UrlList.RemoveAt(index);
+            if (UrlIndex < 0 || UrlIndex >= UrlList.Count) return;
+            UrlList.RemoveAt(UrlIndex);
         }
 
         private RelayCommand _deleteCompleteCommand;
@@ -390,6 +423,7 @@ namespace ZoDream.Spider.ViewModel
                 return;
             }
             _showMessage("程序启动。。。");
+            
             if (SpiderHelper.UseBrowser)
             {
                 _useBrowser(_getStart());
@@ -422,7 +456,7 @@ namespace ZoDream.Spider.ViewModel
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine($"{index1}, {ex.Message}");
+                                Debug.WriteLine($"{index1}, {ex.Message},{ex.TargetSite}");
                                 _changedStatus(index1, UrlStatus.Failure);
                             }
                         });
@@ -580,7 +614,8 @@ namespace ZoDream.Spider.ViewModel
 
         private void _addUrl(UrlTask url)
         {
-            if (url.Url.IndexOf("//", StringComparison.Ordinal) < 0 || !SpiderHelper.CanAdd(url.Url)) return;
+            if (url.Url.IndexOf("//", StringComparison.Ordinal) < 0 
+                || !SpiderHelper.CanAdd(url.Url)) return;
             UrlList.Add(url);
             SpiderHelper.UrlList.Add(url.Url);
         }

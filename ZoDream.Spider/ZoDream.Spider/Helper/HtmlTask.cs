@@ -102,7 +102,7 @@ namespace ZoDream.Spider.Helper
                 var kind = Rules.Last().Kind;
                 if (kind != RuleKinds.保存 && kind != RuleKinds.追加 && kind != RuleKinds.导入)
                 {
-                    SaveFile(FullFile, "");
+                    SaveFile(GetFile(FullFile));
                 }
             }
             catch (Exception)
@@ -146,6 +146,10 @@ namespace ZoDream.Spider.Helper
 
         public string GetFile(string file)
         {
+            if (string.IsNullOrWhiteSpace(file))
+            {
+                file = FullFile;
+            }
             var matches = Regex.Matches(file, @"\{([^\{\}]+)\}");
             file = matches.Cast<Match>().Where(match => Matches.ContainsKey(match.Groups[1].Value)).Aggregate(file, (current, match) => current.Replace(match.Value, Matches[match.Groups[1].Value]));
             if (file.IndexOf(":\\", StringComparison.Ordinal) < 0)
@@ -156,10 +160,10 @@ namespace ZoDream.Spider.Helper
             return file;
         }
 
-        public void AppendFile(string file, string templateFile)
+        public void AppendFile(string file, string templateFile = "")
         {
             var fs = new FileStream(file, FileMode.Append);
-            using (var writer = new StreamWriter(fs, new UTF8Encoding(false)))
+            using (var writer = new StreamWriter(fs, Encoding.UTF8))
             {
                 writer.Write(GetContent(GetTemplate(templateFile)));
             }
@@ -202,14 +206,10 @@ namespace ZoDream.Spider.Helper
             excel.Close();
         }
 
-        public void SaveFile(string file, string templateFile)
+        public void SaveFile(string file, string templateFile = "")
         {
-            if (string.IsNullOrWhiteSpace(file))
-            {
-                file = FullFile;
-            }
             var fs = new FileStream(file, FileMode.Create);
-            using (var writer = new StreamWriter(fs, new UTF8Encoding(false)))
+            using (var writer = new StreamWriter(fs, Encoding.UTF8))
             {
                 writer.BaseStream.Position = writer.BaseStream.Length;
                 writer.WriteLine();

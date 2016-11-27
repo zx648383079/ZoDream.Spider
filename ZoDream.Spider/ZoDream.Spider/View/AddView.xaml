@@ -56,8 +56,8 @@
         <Button Content="..." Command="{Binding ChooseCommand}" Grid.Row="1" Grid.Column="2"/>
 
 
-        <ListView AllowDrop="True" x:Name="UrlList" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
-                  ItemsSource="{Binding UrlList}">
+        <ListView AllowDrop="True" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
+                  ItemsSource="{Binding UrlList}" SelectedIndex="{Binding UrlIndex}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="网址规则" Width="300" DisplayMemberBinding="{Binding Url}"/>
@@ -68,19 +68,19 @@
                 <ContextMenu>
                     <MenuItem Header="规则">
                         <MenuItem Header="增加" Command="{Binding AddCommand}"/>
-                        <MenuItem Header="修改" Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=UrlList}"/>
+                        <MenuItem Header="修改" Command="{Binding EditCommand}"/>
                         <MenuItem Header="打开" Command="{Binding ImportCommand}"/>
                         <MenuItem Header="保存" Command="{Binding ExportCommand}"/>
                     </MenuItem>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中" Command="{Binding DeleteCommand}" CommandParameter="{Binding SelectedIndex, ElementName=UrlList}"/>
+                        <MenuItem Header="选中" Command="{Binding DeleteCommand}"/>
                         <MenuItem Header="全部" Command="{Binding ClearCommand}"/>
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <custom:EventToCommand Command="{Binding EditCommand}" CommandParameter="{Binding SelectedIndex, ElementName=UrlList}"/>
+                    <custom:EventToCommand Command="{Binding EditCommand}"/>
                 </i:EventTrigger>
                 <i:EventTrigger EventName="Drop">
                     <custom:EventToCommand Command="{Binding FileDrogCommand, Mode=OneWay}"
@@ -89,10 +89,11 @@
             </i:Interaction.Triggers>
         </ListView>
 
-        <ListView x:Name="HeaderList" Grid.Row="3" ItemsSource="{Binding HeaderList}" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}" Grid.ColumnSpan="3" Grid.Column="0">
+        <ListView Grid.Row="3" ItemsSource="{Binding HeaderList}" 
+                  IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}" SelectedIndex="{Binding HeaderIndex}" Grid.ColumnSpan="3" Grid.Column="0">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
-                    <custom:EventToCommand  Command="{Binding EditHeaderCommand}" CommandParameter="{Binding SelectedIndex, ElementName=HeaderList}"/>
+                    <custom:EventToCommand  Command="{Binding EditHeaderCommand}"/>
                 </i:EventTrigger>
             </i:Interaction.Triggers>
             <ListView.View>
@@ -104,11 +105,11 @@
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="请求头">
-                        <MenuItem Header="修改" Command="{Binding EditHeaderCommand}" CommandParameter="{Binding SelectedIndex, ElementName=HeaderList}"/>
+                        <MenuItem Header="修改" Command="{Binding EditHeaderCommand}"/>
                         <MenuItem Header="获取" Command="{Binding WebCommand}"/>
                     </MenuItem>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中" Command="{Binding DeleteHeaderCommand}" CommandParameter="{Binding SelectedIndex, ElementName=HeaderList}"/>
+                        <MenuItem Header="选中" Command="{Binding DeleteHeaderCommand}"/>
                         <MenuItem Header="全部" Command="{Binding ClearHeaderCommand}"/>
                     </MenuItem>
                 </ContextMenu>

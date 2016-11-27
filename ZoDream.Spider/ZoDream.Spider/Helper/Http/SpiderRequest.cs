@@ -59,6 +59,7 @@ namespace ZoDream.Spider.Helper.Http
 
             }
             // 文件下载，断点续传
+            FileHelper.CreateDirectory(Url.FullName);
             request.Download(response, Url.FullName);
         }
 
