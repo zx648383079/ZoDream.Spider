@@ -24,9 +24,14 @@ namespace ZoDream.Spider.Helper.Http
 
         public List<UrlTask> Results { get; set; } = new List<UrlTask>();
 
+        public int TimeOut { get; set; }
+
         public void Start()
         {
-            var request = new Request(Url.Url);
+            var request = new Request(Url.Url)
+            {
+                TimeOut = TimeOut
+            };
             foreach (var item in Headers)
             {
                 request.HeaderCollection.Add(item.Name, item.Value);
@@ -40,10 +45,10 @@ namespace ZoDream.Spider.Helper.Http
             if (contentType.IndexOf("text/html", StringComparison.Ordinal) >= 0)
             {
                 var html = request.GetHtml(response);
-                GetUrlFromHtml(ref html);
                 DealHtml(html);
                 return;
             }
+            FileHelper.CreateDirectory(Url.FullName);
             if (contentType.IndexOf("text/css", StringComparison.Ordinal) >= 0)
             {
                 
@@ -74,7 +79,9 @@ namespace ZoDream.Spider.Helper.Http
             {
                 var url = item.Groups[4].Value;
                 if (string.IsNullOrEmpty(url) 
-                    || url.IndexOf("javascript:", StringComparison.Ordinal) >= 0 || url.IndexOf("#", StringComparison.Ordinal) == 0)
+                    || url.IndexOf("javascript:", StringComparison.Ordinal) >= 0 
+                    || url.IndexOf("#", StringComparison.Ordinal) == 0 
+                    || url.IndexOf("data:", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     continue;
                 }
@@ -91,11 +98,25 @@ namespace ZoDream.Spider.Helper.Http
 
         public string GetRelativeUrl(string fromUrl, string toUrl)
         {
-            return FileHelper.MakeRelativePath(fromUrl, toUrl);
+            if (string.IsNullOrEmpty(fromUrl))
+            {
+                return toUrl;
+            };
+            if (string.IsNullOrEmpty(toUrl))
+            {
+                return "";
+            };
+
+            var fromUri = new Uri(fromUrl);
+            var toUri = new Uri(toUrl);
+
+            var relativeUri = fromUri.MakeRelativeUri(toUri);
+            return Uri.UnescapeDataString(relativeUri.ToString());
         }
 
         public void DealHtml(string html)
         {
+            GetUrlFromHtml(ref html);
             foreach (var item in Rules)
             {
                 var task = new HtmlTask(new Html(html), item.Rults) {FullFile = Url.FullName};

@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System.Collections.ObjectModel;
@@ -25,6 +26,7 @@ namespace ZoDream.Spider.ViewModel
         /// </summary>
         public RuleViewModel()
         {
+            
             Messenger.Default.Register<NotificationMessageAction<UrlItem>>(this, "rule", m=>
             {
                 _callBack = m;
@@ -41,6 +43,29 @@ namespace ZoDream.Spider.ViewModel
             {
                 _close = m;
             });
+        }
+
+        /// <summary>
+        /// The <see cref="KindName" /> property's name.
+        /// </summary>
+        public const string KindNamePropertyName = "KindName";
+
+        private Array _kindName = Enum.GetNames(typeof(RuleKinds));
+
+        /// <summary>
+        /// Sets and gets the KindName property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Array KindName
+        {
+            get
+            {
+                return _kindName;
+            }
+            set
+            {
+                Set(KindNamePropertyName, ref _kindName, value);
+            }
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight;
+﻿using System;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Xml.Serialization;
 using ZoDream.Helper.Local;
@@ -44,7 +46,10 @@ namespace ZoDream.Spider.ViewModel
             }
 
             Count = SpiderHelper.Count;
+            TimeOut = SpiderHelper.TimeOut;
             BaseDirectory = SpiderHelper.BaseDirectory;
+            UseBrowser = SpiderHelper.UseBrowser;
+
         }
 
         /// <summary>
@@ -53,6 +58,29 @@ namespace ZoDream.Spider.ViewModel
         public const string CountPropertyName = "Count";
 
         private int _count = 100;
+
+        /// <summary>
+        /// The <see cref="UseBrowser" /> property's name.
+        /// </summary>
+        public const string UseBrowserPropertyName = "UseBrowser";
+
+        private bool _useBrowser = false;
+
+        /// <summary>
+        /// Sets and gets the UseBrowser property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public bool UseBrowser
+        {
+            get
+            {
+                return _useBrowser;
+            }
+            set
+            {
+                Set(UseBrowserPropertyName, ref _useBrowser, value);
+            }
+        }
 
         /// <summary>
         /// Sets and gets the Count property.
@@ -67,6 +95,52 @@ namespace ZoDream.Spider.ViewModel
             set
             {
                 Set(CountPropertyName, ref _count, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="TimeOut" /> property's name.
+        /// </summary>
+        public const string TimeOutPropertyName = "TimeOut";
+
+        private int _timeOut = 10000;
+
+        /// <summary>
+        /// Sets and gets the TimeOut property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public int TimeOut
+        {
+            get
+            {
+                return _timeOut;
+            }
+            set
+            {
+                Set(TimeOutPropertyName, ref _timeOut, value);
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="HeaderKeys" /> property's name.
+        /// </summary>
+        public const string HeaderKeysPropertyName = "HeaderKeys";
+
+        private Array _headerKeys = Enum.GetNames(typeof(HttpRequestHeader));
+
+        /// <summary>
+        /// Sets and gets the HeaderKeys property.
+        /// Changes to that property's value raise the PropertyChanged event. 
+        /// </summary>
+        public Array HeaderKeys
+        {
+            get
+            {
+                return _headerKeys;
+            }
+            set
+            {
+                Set(HeaderKeysPropertyName, ref _headerKeys, value);
             }
         }
 
@@ -343,7 +417,7 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteWebCommand()
         {
-            new WebView().Show();
+            SpiderHelper.GetBrowser();
             Messenger.Default.Send(new NotificationMessageAction<List<HeaderItem>>(null, rules => {
                 foreach (var item in rules)
                 {
@@ -431,10 +505,17 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteSaveCommand()
         {
+            if (string.IsNullOrWhiteSpace(BaseDirectory))
+            {
+                MessageBox.Show("保持路径是必须的！");
+                return;
+            }
             SpiderHelper.Headers = HeaderList.ToList();
             SpiderHelper.UrlRegex = UrlList.ToList();
             SpiderHelper.Count = Count;
+            SpiderHelper.TimeOut = TimeOut;
             SpiderHelper.BaseDirectory = BaseDirectory;
+            SpiderHelper.UseBrowser = UseBrowser;
             UrlList.Clear();
             HeaderList.Clear();
             _close.Execute();

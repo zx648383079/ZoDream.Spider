@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using System;
+using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
 using System.Net;
 using System.Windows;
@@ -15,6 +16,8 @@ namespace ZoDream.Spider.View
     public partial class WebView : Window
     {
         private NotificationMessageAction<List<HeaderItem>> _callBack;
+
+        public Action<string> HtmlCallback { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the WebView class.
@@ -33,7 +36,7 @@ namespace ZoDream.Spider.View
             NavigateUrl(UrlTb.Text);
         }
 
-        private void NavigateUrl(string url)
+        public void NavigateUrl(string url)
         {
             url = Url.GetUrl(url, (SearchKind)SearchCb.SelectedIndex);
             UrlTb.Text = url;
@@ -65,6 +68,9 @@ namespace ZoDream.Spider.View
         private void Browser_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e)
         {
             //将所有的链接的目标，指向本窗体
+            if (Browser.Document == null) return;
+            HtmlCallback?.Invoke(Browser.DocumentText);
+
             foreach (System.Windows.Forms.HtmlElement archor in Browser.Document.Links)
             {
                 archor.SetAttribute("target", "_self");

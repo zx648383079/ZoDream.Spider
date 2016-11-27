@@ -50,15 +50,7 @@
                 </i:EventTrigger>
             </i:Interaction.Triggers>
         </ListView>
-        <ComboBox Grid.Row="2" Grid.Column="0" SelectedIndex="{Binding Kind}">
-            <ComboBoxItem Content="正则截取"/>
-            <ComboBoxItem Content="普通截取"/>
-            <ComboBoxItem Content="普通替换"/>
-            <ComboBoxItem Content="正则替换"/>
-            <ComboBoxItem Content="正则匹配"/>
-            <ComboBoxItem Content="保存"/>
-            <ComboBoxItem Content="追加"/>
-            <ComboBoxItem Content="导入"/>
+        <ComboBox Grid.Row="2" Grid.Column="0" ItemsSource="{Binding Path=KindName,Mode=OneTime}" SelectedIndex="{Binding Kind}">
         </ComboBox>
         <TextBox Grid.Column="1" Grid.Row="2" Text="{Binding Value1}"/>
         <TextBox Grid.Column="2" Grid.Row="2" Text="{Binding Value2}"/>

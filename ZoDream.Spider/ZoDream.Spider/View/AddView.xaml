@@ -8,10 +8,19 @@
         xmlns:custom="http://www.galasoft.ch/mvvmlight" 
         x:Class="ZoDream.Spider.View.AddView"
         mc:Ignorable="d ignore"
-        Title="新建任务"
+        Title="编辑任务"
         DataContext="{Binding Add, Source={StaticResource Locator}}" 
         Icon="/ZoDream.Spider;component/Image/spider.ico" 
         WindowStartupLocation="CenterScreen">
+
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Skins/AddSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -27,14 +36,26 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="线程数："/>
-        <TextBox Text="{Binding Count}" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2"/>
-        
+        <Grid Grid.ColumnSpan="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="线程数："/>
+            <TextBox Text="{Binding Count}" Grid.Column="1" Grid.Row="0" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}"/>
+            <TextBlock Grid.Column="2" Text="等待时间："/>
+            <TextBox Text="{Binding TimeOut}" Grid.Column="3" Grid.Row="0" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}"/>
+            <CheckBox Content="使用浏览器下载" IsChecked="{Binding UseBrowser}" Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>
+        </Grid>
+
         <TextBlock Text="保存路径：" Grid.Row="1" Grid.Column="0" />
         <TextBox Text="{Binding BaseDirectory}" Grid.Row="1" Grid.Column="1" />
         <Button Content="..." Command="{Binding ChooseCommand}" Grid.Row="1" Grid.Column="2"/>
-        
-        
+
+
         <ListView AllowDrop="True" x:Name="UrlList" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0"
                   ItemsSource="{Binding UrlList}">
             <ListView.View>
@@ -68,7 +89,7 @@
             </i:Interaction.Triggers>
         </ListView>
 
-        <ListView x:Name="HeaderList" Grid.Row="3" ItemsSource="{Binding HeaderList}" Grid.ColumnSpan="3" Grid.Column="0">
+        <ListView x:Name="HeaderList" Grid.Row="3" ItemsSource="{Binding HeaderList}" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}" Grid.ColumnSpan="3" Grid.Column="0">
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
                     <custom:EventToCommand  Command="{Binding EditHeaderCommand}" CommandParameter="{Binding SelectedIndex, ElementName=HeaderList}"/>
@@ -93,51 +114,10 @@
                 </ContextMenu>
             </ListView.ContextMenu>
         </ListView>
-        <ComboBox Grid.Row="4" Grid.Column="0" Text="{Binding HeaderName}">
-            <ComboBoxItem Content="CacheControl"/>
-            <ComboBoxItem Content="Connection"/>
-            <ComboBoxItem Content="Date"/>
-            <ComboBoxItem Content="KeepAlive"/>
-            <ComboBoxItem Content="Pragma"/>
-            <ComboBoxItem Content="Trailer"/>
-            <ComboBoxItem Content="TransferEncoding"/>
-            <ComboBoxItem Content="Upgrade"/>
-            <ComboBoxItem Content="Via"/>
-            <ComboBoxItem Content="Warning"/>
-            <ComboBoxItem Content="Allow"/>
-            <ComboBoxItem Content="ContentLength"/>
-            <ComboBoxItem Content="ContentType"/>
-            <ComboBoxItem Content="ContentEncoding"/>
-            <ComboBoxItem Content="ContentLanguage"/>
-            <ComboBoxItem Content="ContentLocation"/>
-            <ComboBoxItem Content="ContentMd5"/>
-            <ComboBoxItem Content="ContentRange"/>
-            <ComboBoxItem Content="Expires"/>
-            <ComboBoxItem Content="LastModified"/>
-            <ComboBoxItem Content="Accept"/>
-            <ComboBoxItem Content="AcceptCharset"/>
-            <ComboBoxItem Content="AcceptEncoding"/>
-            <ComboBoxItem Content="AcceptLanguage"/>
-            <ComboBoxItem Content="Authorization"/>
-            <ComboBoxItem Content="Cookie"/>
-            <ComboBoxItem Content="Expect"/>
-            <ComboBoxItem Content="From"/>
-            <ComboBoxItem Content="Host"/>
-            <ComboBoxItem Content="IfMatch"/>
-            <ComboBoxItem Content="IfModifiedSince"/>
-            <ComboBoxItem Content="IfNoneMatch"/>
-            <ComboBoxItem Content="IfRange"/>
-            <ComboBoxItem Content="IfUnmodifiedSince"/>
-            <ComboBoxItem Content="MaxForwards"/>
-            <ComboBoxItem Content="ProxyAuthorization"/>
-            <ComboBoxItem Content="Referer"/>
-            <ComboBoxItem Content="Range"/>
-            <ComboBoxItem Content="Te"/>
-            <ComboBoxItem Content="Translate"/>
-            <ComboBoxItem Content="UserAgent"/>
+        <ComboBox Grid.Row="4" ItemsSource="{Binding Path=HeaderKeys,Mode=OneTime}" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}" Grid.Column="0" Text="{Binding HeaderName}">
         </ComboBox>
-        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding HeaderValue}"/>
-        <Button Content="保存" Grid.Row="4" Grid.Column="2" Command="{Binding SaveHeaderCommand}"/>
+        <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding HeaderValue}" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}"/>
+        <Button Content="保存" Grid.Row="4" Grid.Column="2" Command="{Binding SaveHeaderCommand}" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}"/>
 
         <Button Content="确定" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Command="{Binding SaveCommand}"/>
     </Grid>

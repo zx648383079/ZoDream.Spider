@@ -3,11 +3,15 @@ using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Xml.Serialization;
 using GalaSoft.MvvmLight.Messaging;
 using ZoDream.Helper.Local;
 using ZoDream.Spider.Helper;
@@ -32,7 +36,6 @@ namespace ZoDream.Spider.ViewModel
         /// </summary>
         public MainViewModel()
         {
-
         }
 
         /// <summary>
@@ -48,14 +51,8 @@ namespace ZoDream.Spider.ViewModel
         /// </summary>
         public string Message
         {
-            get
-            {
-                return _message;
-            }
-            set
-            {
-                Set(MessagePropertyName, ref _message, value);
-            }
+            get { return _message; }
+            set { Set(MessagePropertyName, ref _message, value); }
         }
 
         /// <summary>
@@ -71,14 +68,8 @@ namespace ZoDream.Spider.ViewModel
         /// </summary>
         public ObservableCollection<UrlTask> UrlList
         {
-            get
-            {
-                return _urlList;
-            }
-            set
-            {
-                Set(UrlListPropertyName, ref _urlList, value);
-            }
+            get { return _urlList; }
+            set { Set(UrlListPropertyName, ref _urlList, value); }
         }
 
 
@@ -108,7 +99,7 @@ namespace ZoDream.Spider.ViewModel
             _import(Open.ChooseFile());
         }
 
-        private static void _import(string file)
+        private void _import(string file)
         {
             if (string.IsNullOrEmpty(file) || !File.Exists(file))
             {
@@ -116,12 +107,65 @@ namespace ZoDream.Spider.ViewModel
             }
             using (var reader = Open.Reader(file))
             {
+                var tag = "URL";
+                var xml = new StringBuilder();
                 string line;
+                var regex = new Regex(@"^\[(\w+)\]$");
                 while (null != (line = reader.ReadLine()))
                 {
-                    
+                    if (string.IsNullOrWhiteSpace(line))
+                    {
+                        continue;
+                    }
+                    if (regex.IsMatch(line))
+                    {
+                        tag = regex.Match(line).Groups[1].Value;
+                    }
+                    string[] args;
+                    switch (tag.ToUpper())
+                    {
+                        case "URL":
+                            args = line.Split(new[] { '=' }, 3);
+                            if (string.IsNullOrWhiteSpace(args[2]))
+                            {
+                                continue;
+                            }
+                            _addUrl(new UrlTask(args[2])
+                            {
+                                Kind = (AssetKind)Enum.Parse(typeof(AssetKind), args[1]),
+                                Status = (UrlStatus)Enum.Parse(typeof(UrlStatus), args[0])
+                            });
+                            break;
+                        case "COUNT":
+                            SpiderHelper.Count = Convert.ToInt32(line);
+                            break;
+                        case "TIMEOUT":
+                            SpiderHelper.TimeOut = Convert.ToInt32(line);
+                            break;
+                        case "USEBROWSER":
+                            SpiderHelper.UseBrowser = line == "Y";
+                            break;
+                        case "HEADER":
+                            args = line.Split(new [] { '='}, 2);
+                            SpiderHelper.Headers.Add(new HeaderItem(args[0], args[1]));
+                            break;
+                        case "DIRECTORY":
+                            SpiderHelper.BaseDirectory = line.TrimEnd('\\');
+                            break;
+                        case "REGEX":
+                            xml.AppendLine(line);
+                            break;
+                            
+                    }
+                }
+                var text = xml.ToString();
+                if (!string.IsNullOrWhiteSpace(text))
+                {
+                    var xmler = new XmlSerializer(typeof(List<UrlItem>));
+                    SpiderHelper.UrlRegex = (List<UrlItem>) xmler.Deserialize(new StringReader(text));
                 }
             }
+            _showMessage("导入完成！");
         }
 
         private RelayCommand<DragEventArgs> _fileDrogCommand;
@@ -130,9 +174,12 @@ namespace ZoDream.Spider.ViewModel
         /// Gets the FileDrogCommand.
         /// </summary>
         public RelayCommand<DragEventArgs> FileDrogCommand => _fileDrogCommand
-                                                              ?? (_fileDrogCommand = new RelayCommand<DragEventArgs>(ExecuteFileDrogCommand));
+                                                              ??
+                                                              (_fileDrogCommand =
+                                                                  new RelayCommand<DragEventArgs>(ExecuteFileDrogCommand))
+            ;
 
-        private static void ExecuteFileDrogCommand(DragEventArgs parameter)
+        private void ExecuteFileDrogCommand(DragEventArgs parameter)
         {
             var files = (Array) parameter?.Data.GetData(DataFormats.FileDrop);
             //        as FileInfo[];
@@ -215,11 +262,13 @@ namespace ZoDream.Spider.ViewModel
         /// Gets the DeleteCompleteCommand.
         /// </summary>
         public RelayCommand DeleteCompleteCommand => _deleteCompleteCommand
-                                                     ?? (_deleteCompleteCommand = new RelayCommand(ExecuteDeleteCompleteCommand));
+                                                     ??
+                                                     (_deleteCompleteCommand =
+                                                         new RelayCommand(ExecuteDeleteCompleteCommand));
 
         private void ExecuteDeleteCompleteCommand()
         {
-            for (var i = UrlList.Count - 1; i >= 0; i --)
+            for (var i = UrlList.Count - 1; i >= 0; i--)
             {
                 if (UrlList[i].Status == UrlStatus.Success)
                 {
@@ -265,9 +314,23 @@ namespace ZoDream.Spider.ViewModel
         private void ExecuteStopCommand()
         {
             _tokenSource.Cancel();
-            foreach (var item in UrlList)
+            _showMessage("程序已停止！");
+        }
+
+        private RelayCommand _resetCommand;
+
+        /// <summary>
+        /// Gets the ResetCommand.
+        /// </summary>
+        public RelayCommand ResetCommand => _resetCommand
+                                            ?? (_resetCommand = new RelayCommand(ExecuteResetCommand));
+
+        private void ExecuteResetCommand()
+        {
+            _tokenSource.Cancel();
+            foreach (var urlTask in UrlList)
             {
-                item.Status = UrlStatus.None;
+                urlTask.Status = UrlStatus.None;
             }
         }
 
@@ -286,6 +349,7 @@ namespace ZoDream.Spider.ViewModel
             {
                 item.Status = UrlStatus.None;
             }
+            _showMessage("程序已暂停！");
         }
 
 
@@ -301,6 +365,7 @@ namespace ZoDream.Spider.ViewModel
 
 
         #region 私有属性
+
         /// <summary>
         /// 多线程控制
         /// </summary>
@@ -320,7 +385,15 @@ namespace ZoDream.Spider.ViewModel
                 _showMessage("网址为空，或保存文件夹为空！");
                 return;
             }
+            _showMessage("程序启动。。。");
+            if (SpiderHelper.UseBrowser)
+            {
+                _useBrowser(_getStart());
+                return;
+            }
+
             #region 创造主线程，去分配多个下载线程
+
             _tokenSource = new CancellationTokenSource();
             var token = _tokenSource.Token;
             Task.Factory.StartNew(() =>
@@ -329,6 +402,7 @@ namespace ZoDream.Spider.ViewModel
                 while (!token.IsCancellationRequested)
                 {
                     #region 创建执行下载的线程数组
+
                     var tasksLength = Math.Min(SpiderHelper.Count, UrlList.Count - index);
                     var tasks = new Task[tasksLength];
                     for (var i = 0; i < tasksLength; i++)
@@ -336,7 +410,18 @@ namespace ZoDream.Spider.ViewModel
                         var index1 = index;
                         tasks[i] = new Task(() =>
                         {
-                            _begin(UrlList[index1]);
+                            _changedStatus(index1, UrlStatus.Waiting);
+                            try
+                            {
+                                _begin(UrlList[index1]);
+                                _changedStatus(index1, UrlStatus.Success);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"{index1}, {ex.Message}");
+                                _changedStatus(index1, UrlStatus.Failure);
+                            }
+
                         });
                         index++;
                     }
@@ -354,9 +439,9 @@ namespace ZoDream.Spider.ViewModel
                         Thread.Sleep(1000);
                     }
                     #endregion
-                    _changedStatus(index - tasksLength, tasksLength, UrlStatus.Success);
                     if (index < UrlList.Count) continue;
                     _tokenSource.Cancel();
+                    _showMessage("程序执行完成。。。");
                     break;
                 }
                 /*Application.Current.Dispatcher.Invoke(() =>
@@ -367,16 +452,44 @@ namespace ZoDream.Spider.ViewModel
             #endregion
         }
 
-        private void _changedStatus(int index, int length, UrlStatus status)
+        /// <summary>
+        /// 使用浏览器下载
+        /// </summary>
+        /// <param name="index"></param>
+        private void _useBrowser(int index)
+        {
+            var urlTask = UrlList[index];
+            urlTask.Status = UrlStatus.Waiting;
+            SpiderHelper.GetBrowser().HtmlCallback = html =>
+            {
+                var spider = new SpiderRequest()
+                {
+                    Url = urlTask,
+                    Rules = SpiderHelper.GetRules(urlTask.Url),
+                };
+                spider.DealHtml(html);
+                if (spider.Results.Count > 0)
+                {
+                    _addUrl(spider.Results);
+                }
+                urlTask.Status = UrlStatus.Success;
+                index++;
+                if (index >= UrlList.Count)
+                {
+                    return;
+                }
+                _useBrowser(index);
+            };
+            SpiderHelper.GetBrowser().NavigateUrl(urlTask.Url);
+        }
+
+        private void _changedStatus(int index, UrlStatus status)
         {
             lock (_object)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    for (var i = 0; i < length; i++)
-                    {
-                        UrlList[index + i].Status = status;
-                    }
+                    UrlList[index].Status = status;
                 });
 
             }
@@ -388,7 +501,8 @@ namespace ZoDream.Spider.ViewModel
             {
                 Url = urlTask,
                 Rules = SpiderHelper.GetRules(urlTask.Url),
-                Headers = SpiderHelper.Headers
+                Headers = SpiderHelper.Headers,
+                TimeOut = SpiderHelper.TimeOut
             };
             spider.Start();
             if (spider.Results.Count < 1) return;
@@ -454,6 +568,37 @@ namespace ZoDream.Spider.ViewModel
             {
                 return;
             }
+            using (var sw = new StreamWriter(_file, false, new UTF8Encoding(false)))
+            {
+                sw.WriteLine("[URL]");
+                foreach (var urlTask in UrlList)
+                {
+                    sw.WriteLine($"{urlTask.Status}={urlTask.Kind}={urlTask.Url}");
+                }
+                sw.WriteLine();
+                sw.WriteLine("[COUNT]");
+                sw.WriteLine(SpiderHelper.Count);
+                sw.WriteLine();
+                sw.WriteLine("[TIMEOUT]");
+                sw.WriteLine(SpiderHelper.TimeOut);
+                sw.WriteLine();
+                sw.WriteLine("[USEBROWSER]");
+                sw.WriteLine(SpiderHelper.UseBrowser ? "Y" : "N");
+                sw.WriteLine();
+                sw.WriteLine("[DIRECTORY]");
+                sw.WriteLine(SpiderHelper.BaseDirectory);
+                sw.WriteLine();
+                sw.WriteLine("[HEADER]");
+                foreach (var item in SpiderHelper.Headers)
+                {
+                    sw.WriteLine($"{item.Name}={item.Value}");
+                }
+                sw.WriteLine();
+                sw.WriteLine("[REGEX]");
+                var xml = new XmlSerializer(typeof(List<UrlItem>));
+                xml.Serialize(sw, SpiderHelper.UrlRegex.ToList());
+            }
+            _showMessage("已成功保存到：" + _file);
         }
 
         public void Dispose()
@@ -476,11 +621,13 @@ namespace ZoDream.Spider.ViewModel
             Dispose(false);
         }
 
-        ////public override void Cleanup()
-        ////{
-        ////    // Clean up if needed
-
-        ////    base.Cleanup();
-        ////}
+        public override void Cleanup()
+        {
+            if (SpiderHelper.Browser != null)
+            {
+                SpiderHelper.Browser.Close();
+            }
+            base.Cleanup();
+        }
     }
 }

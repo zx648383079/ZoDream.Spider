@@ -5,26 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Media;
 using ZoDream.Spider.Model;
 
 namespace ZoDream.Spider.Converter
 {
-    public class BackgroundConverter : IValueConverter
+    public class IconConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             switch ((UrlStatus)value)
             {
-                
                 case UrlStatus.Waiting:
-                    return new SolidColorBrush(Colors.Yellow);
+                    return "等待中";
                 case UrlStatus.Success:
-                    return new SolidColorBrush(Colors.Green);
+                    return "下载成功";
                 case UrlStatus.Failure:
-                    return new SolidColorBrush(Colors.Red);
+                    return "下载失败";
                 default:
-                    return new SolidColorBrush(Colors.Transparent);
+                    return "";
             }
         }
 

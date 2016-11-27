@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using ZoDream.Helper.Http;
 using ZoDream.Spider.Model;
 using System.IO;
+using HtmlAgilityPack;
 using ZoDream.Helper.Local;
+using Microsoft.International.Converters.TraditionalChineseToSimplifiedConverter;
 
 namespace ZoDream.Spider.Helper
 {
@@ -69,8 +71,21 @@ namespace ZoDream.Spider.Helper
                     case RuleKinds.正则匹配:
                         Match(item.Value1);
                         break;
+                    case RuleKinds.简繁转换:
+                        TraditionalToSimplified(string.IsNullOrWhiteSpace(item.Value1) ||
+                                                item.Value1.Equals("Y", StringComparison.CurrentCultureIgnoreCase));
+                        break;
+                    case RuleKinds.XPath选择:
+                        XpathChoose(item.Value1, string.IsNullOrWhiteSpace(item.Value2) || item.Value2.Equals("Y", StringComparison.CurrentCultureIgnoreCase));
+                        break;
                     case RuleKinds.保存:
                         SaveFile(GetFile(item.Value1), item.Value2);
+                        break;
+                    case RuleKinds.Csv保存:
+                        SaveCsv(item.Value1, GetFile(item.Value2));
+                        break;
+                    case RuleKinds.Excel保存:
+                        SaveExcel(item.Value1, GetFile(item.Value2));
                         break;
                     case RuleKinds.追加:
                         AppendFile(GetFile(item.Value1), item.Value2);
@@ -107,38 +122,88 @@ namespace ZoDream.Spider.Helper
             }
         }
 
+        public void XpathChoose(string tag, bool isHtml)
+        {
+            var doc = new HtmlDocument();
+            doc.LoadHtml(Html.Content);
+            var nodes = doc.DocumentNode.SelectNodes(tag);
+            if (nodes.Count == 0)
+            {
+                return;
+            }
+            var sb = new StringBuilder();
+            foreach (var node in nodes)
+            {
+                sb.AppendLine(isHtml ? node.InnerHtml : node.InnerText);
+            }
+            Html.Content = sb.ToString();
+        }
+
+        public void TraditionalToSimplified(bool isTc)
+        {
+            Html.Content = ChineseConverter.Convert(Html.Content, isTc ? ChineseConversionDirection.TraditionalToSimplified : ChineseConversionDirection.SimplifiedToTraditional);
+        }
+
         public string GetFile(string file)
         {
             var matches = Regex.Matches(file, @"\{([^\{\}]+)\}");
-            return matches.Cast<Match>().Where(match => Matches.ContainsKey(match.Groups[1].Value)).Aggregate(file, (current, match) => current.Replace(match.Value, Matches[match.Groups[1].Value]));
-        }
-             
-        public void SaveExcel(string file, MatchCollection matches)
-        {
-
+            file = matches.Cast<Match>().Where(match => Matches.ContainsKey(match.Groups[1].Value)).Aggregate(file, (current, match) => current.Replace(match.Value, Matches[match.Groups[1].Value]));
+            if (file.IndexOf(":\\", StringComparison.Ordinal) < 0)
+            {
+                file = SpiderHelper.BaseDirectory + "\\" + file.TrimStart('\\');
+            }
+            FileHelper.CreateDirectory(file);
+            return file;
         }
 
         public void AppendFile(string file, string templateFile)
         {
-            var template = "{content}";
-            if (File.Exists(templateFile))
-            {
-                template = Open.Read(templateFile);
-            }
             var fs = new FileStream(file, FileMode.Append);
             using (var writer = new StreamWriter(fs, new UTF8Encoding(false)))
             {
-                writer.Write(template.Replace("{content}", Html.Content));
+                writer.Write(GetContent(GetTemplate(templateFile)));
             }
+        }
+
+        public void SaveCsv(string pattern, string file)
+        {
+            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            var tags = regex.GetGroupNames();
+            var csv = new Csv(file);
+            csv.WriteRow(tags);
+            var ms = regex.Matches(Html.Content);
+            foreach (Match item in ms)
+            {
+                foreach (var tag in tags)
+                {
+                    csv.AppendColumn(item.Groups[tag].Value);
+                }
+                csv.WriteRow();
+            }
+            csv.Close();
+        }
+
+        public void SaveExcel(string pattern, string file)
+        {
+            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
+            var tags = regex.GetGroupNames();
+            var excel = new ExcelHelper();
+            excel.Create();
+            var sheet = excel.AddSheet("sheet1");
+            excel.SetRow(sheet, tags);
+            var ms = regex.Matches(Html.Content);
+            var i = 0;
+            foreach (Match item in ms)
+            {
+                var args = tags.Select(tag => item.Groups[tag].Value).ToList();
+                excel.SetRow(sheet, tags, i ++);
+            }
+            excel.SaveAs(file);
+            excel.Close();
         }
 
         public void SaveFile(string file, string templateFile)
         {
-            var template = "{content}";
-            if (File.Exists(templateFile))
-            {
-                template = Open.Read(templateFile);
-            }
             if (string.IsNullOrWhiteSpace(file))
             {
                 file = FullFile;
@@ -146,7 +211,9 @@ namespace ZoDream.Spider.Helper
             var fs = new FileStream(file, FileMode.Create);
             using (var writer = new StreamWriter(fs, new UTF8Encoding(false)))
             {
-                writer.Write(template.Replace("{content}", Html.Content));
+                writer.BaseStream.Position = writer.BaseStream.Length;
+                writer.WriteLine();
+                writer.Write(GetContent(GetTemplate(templateFile)));
             }
         }
        
@@ -159,6 +226,22 @@ namespace ZoDream.Spider.Helper
             }
             var request = new Request(url);
             request.Post(param.Replace("{content}", Html.Content));
+        }
+
+        public string GetContent(string template)
+        {
+            var matches = Regex.Matches(template, @"\{([^\{\}]+)\}");
+            template = matches.Cast<Match>().Where(match => Matches.ContainsKey(match.Groups[1].Value)).Aggregate(template, (current, match) => current.Replace(match.Value, Matches[match.Groups[1].Value]));
+            return template.Replace("{content}", Html.Content);
+        }
+
+        public string GetTemplate(string file, string defaultTemplate = "{content}")
+        {
+            if (!string.IsNullOrWhiteSpace(file) && File.Exists(file))
+            {
+                return Open.Read(file);
+            }
+            return defaultTemplate;
         }
 
     }

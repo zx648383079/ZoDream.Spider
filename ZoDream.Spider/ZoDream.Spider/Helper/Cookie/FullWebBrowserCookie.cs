@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Net;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
-using System.Threading.Tasks;
 using static System.Runtime.InteropServices.Marshal;
 
 namespace ZoDream.Spider.Helper.Cookie
@@ -22,14 +19,14 @@ namespace ZoDream.Spider.Helper.Cookie
         public static string GetCookieInternal(Uri uri, bool throwIfNoCookie)
         {
             uint pchCookieData = 0;
-            string url = UriToString(uri);
-            uint flag = (uint)NativeMethods.InternetFlags.INTERNET_COOKIE_HTTPONLY;
+            var url = UriToString(uri);
+            const uint flag = (uint)NativeMethods.InternetFlags.INTERNET_COOKIE_HTTPONLY;
 
             //Gets the size of the string builder  
             if (NativeMethods.InternetGetCookieEx(url, null, null, ref pchCookieData, flag, IntPtr.Zero))
             {
                 pchCookieData++;
-                StringBuilder cookieData = new StringBuilder((int)pchCookieData);
+                var cookieData = new StringBuilder((int)pchCookieData);
 
                 //Read the cookie  
                 if (NativeMethods.InternetGetCookieEx(url, null, cookieData, ref pchCookieData, flag, IntPtr.Zero))
@@ -51,11 +48,11 @@ namespace ZoDream.Spider.Helper.Cookie
 
         private static void DemandWebPermission(Uri uri)
         {
-            string uriString = UriToString(uri);
+            var uriString = UriToString(uri);
 
             if (uri.IsFile)
             {
-                string localPath = uri.LocalPath;
+                var localPath = uri.LocalPath;
                 new FileIOPermission(FileIOPermissionAccess.Read, localPath).Demand();
             }
             else
@@ -68,7 +65,7 @@ namespace ZoDream.Spider.Helper.Cookie
         {
             if (uri == null)
             {
-                throw new ArgumentNullException("uri");
+                throw new ArgumentNullException(nameof(uri));
             }
 
             UriComponents components = (uri.IsAbsoluteUri ? UriComponents.AbsoluteUri : UriComponents.SerializationInfoString);

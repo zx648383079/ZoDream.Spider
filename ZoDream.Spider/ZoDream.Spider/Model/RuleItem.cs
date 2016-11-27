@@ -42,6 +42,10 @@ namespace ZoDream.Spider.Model
         普通替换,
         正则替换,
         正则匹配,
+        简繁转换,
+        XPath选择,
+        Csv保存,
+        Excel保存,
         保存,
         追加,
         导入
