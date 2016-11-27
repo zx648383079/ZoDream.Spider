@@ -300,6 +300,7 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteStartCommand()
         {
+            _isStop = false;
             _begin();
         }
 
@@ -313,6 +314,7 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteStopCommand()
         {
+            _isStop = true;
             _tokenSource.Cancel();
             _showMessage("程序已停止！");
         }
@@ -327,6 +329,7 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteResetCommand()
         {
+            _isStop = true;
             _tokenSource.Cancel();
             foreach (var urlTask in UrlList)
             {
@@ -344,6 +347,7 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecutePauseCommand()
         {
+            _isStop = true;
             _tokenSource.Cancel();
             foreach (var item in UrlList.Where(item => item.Status == UrlStatus.Waiting))
             {
@@ -421,7 +425,6 @@ namespace ZoDream.Spider.ViewModel
                                 Debug.WriteLine($"{index1}, {ex.Message}");
                                 _changedStatus(index1, UrlStatus.Failure);
                             }
-
                         });
                         index++;
                     }
@@ -452,6 +455,8 @@ namespace ZoDream.Spider.ViewModel
             #endregion
         }
 
+        private bool _isStop = true;
+
         /// <summary>
         /// 使用浏览器下载
         /// </summary>
@@ -460,6 +465,28 @@ namespace ZoDream.Spider.ViewModel
         {
             var urlTask = UrlList[index];
             urlTask.Status = UrlStatus.Waiting;
+            if (urlTask.Kind != AssetKind.Html)
+            {
+                try
+                {
+                    _begin(urlTask);
+                    _changedStatus(index, UrlStatus.Success);
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"{index}, {ex.Message}");
+                    _changedStatus(index, UrlStatus.Failure);
+                }
+                index++;
+                if (index >= UrlList.Count)
+                {
+                    _showMessage("下载完成！");
+                    return;
+                }
+                if (_isStop) return;
+                _useBrowser(index);
+                return;
+            }
             SpiderHelper.GetBrowser().HtmlCallback = html =>
             {
                 var spider = new SpiderRequest()
@@ -476,8 +503,10 @@ namespace ZoDream.Spider.ViewModel
                 index++;
                 if (index >= UrlList.Count)
                 {
+                    _showMessage("下载完成！");
                     return;
                 }
+                if (_isStop) return;
                 _useBrowser(index);
             };
             SpiderHelper.GetBrowser().NavigateUrl(urlTask.Url);
@@ -609,6 +638,7 @@ namespace ZoDream.Spider.ViewModel
 
         protected virtual void Dispose(bool disposing)
         {
+            _isStop = true;
             if (!disposing) return;
             if (_tokenSource == null) return;
             _tokenSource.Cancel();

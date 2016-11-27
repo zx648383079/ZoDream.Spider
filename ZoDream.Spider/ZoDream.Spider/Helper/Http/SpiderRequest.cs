@@ -42,7 +42,7 @@ namespace ZoDream.Spider.Helper.Http
                 return;
             }
             var contentType = response.Headers[HttpResponseHeader.ContentType];
-            if (contentType.IndexOf("text/html", StringComparison.Ordinal) >= 0)
+            if (contentType.IndexOf("text/html", StringComparison.Ordinal) >= 0 && Url.Kind == AssetKind.Html)
             {
                 var html = request.GetHtml(response);
                 DealHtml(html);
@@ -87,6 +87,24 @@ namespace ZoDream.Spider.Helper.Http
                 }
                 var uri = new UrlTask(GetAbsoluteUrl(url, Url.Url));
                 html = html.Replace(item.Value, item.Value.Replace(item.Groups[4].Value, GetRelativeUrl(Url.FullName, uri.FullName)));  // 需要相对路径
+                switch (item.Groups[2].Value.ToLower())
+                {
+                    case "a":
+                        uri.Kind = AssetKind.Html;
+                        break;
+                    case "link":
+                        uri.Kind = AssetKind.Css;
+                        break;
+                    case "img":
+                        uri.Kind = AssetKind.Image;
+                        break;
+                    case "script":
+                        uri.Kind = AssetKind.Js;
+                        break;
+                    default:
+                        uri.Kind = AssetKind.File;
+                        break;
+                }
                 Results.Add(uri);
             }
         }
