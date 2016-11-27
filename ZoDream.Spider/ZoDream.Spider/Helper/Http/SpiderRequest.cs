@@ -75,13 +75,13 @@ namespace ZoDream.Spider.Helper.Http
 
         public void GetUrlFromHtml(ref string html)
         {
-            var matches = Regex.Matches(html, @"(\<(a|img|link|script|embed|audio|object|video|param|source)[^\<\>]+(src|href|value|data)\s?=)\s?""?([^""\s\<\>]*)""?");
+            var matches = Regex.Matches(html, @"(\<(a|img|link|script|embed|audio|object|video|param|source)[^\<\>]+(src|href|value|data)\s?=)\s?[""']?([^""'\s\<\>]*)[""']?", RegexOptions.IgnoreCase);
             foreach (Match item in matches)
             {
                 var url = item.Groups[4].Value;
                 if (string.IsNullOrEmpty(url) 
                     || url.IndexOf("javascript:", StringComparison.Ordinal) >= 0 
-                    || url.IndexOf("#", StringComparison.Ordinal) == 0 
+                    || url.IndexOf("#", StringComparison.Ordinal) == 0
                     || url.IndexOf("data:", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     continue;

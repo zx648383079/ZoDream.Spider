@@ -2,9 +2,12 @@
 using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using ZoDream.Helper.Http;
+using ZoDream.Spider.Helper;
 using ZoDream.Spider.Helper.Cookie;
 using ZoDream.Spider.Model;
 
@@ -29,6 +32,13 @@ namespace ZoDream.Spider.View
             {
                 _callBack = m;
             });
+            Closing += WebView_Closing;
+        }
+
+        private void WebView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            SpiderHelper.Browser = null;
+            HtmlCallback = null;
         }
 
         private void EnterBtn_Click(object sender, RoutedEventArgs e)
@@ -61,7 +71,7 @@ namespace ZoDream.Spider.View
 
         private void Browser_NewWindow(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Browser.Url = new System.Uri(((System.Windows.Forms.WebBrowser)sender).StatusText);
+            Browser.Url = new Uri(((System.Windows.Forms.WebBrowser)sender).StatusText);
             e.Cancel = true;
         }
 
@@ -69,7 +79,7 @@ namespace ZoDream.Spider.View
         {
             //将所有的链接的目标，指向本窗体
             if (Browser.Document == null) return;
-            HtmlCallback?.Invoke(Browser.DocumentText);
+            HtmlCallback?.Invoke(GetHtml());
 
             foreach (System.Windows.Forms.HtmlElement archor in Browser.Document.Links)
             {
@@ -115,6 +125,16 @@ namespace ZoDream.Spider.View
             _callBack.Execute(rules);
             //_callBack.Execute(Browser.Document.Cookie);
             Close();
+        }
+
+        public string GetHtml()
+        {
+            if (Browser.Document == null || Browser.Document.Body == null)
+            {
+                return "";
+            }
+            return "<!DOCTYPE html><html>" + Browser.Document.GetElementsByTagName("html")[0].InnerHtml + "</html>";
+                //Encoding.UTF8.GetString(Encoding.GetEncoding(Browser.Document.Encoding).GetBytes(Browser.Document.Body.OuterHtml));
         }
     }
 }
