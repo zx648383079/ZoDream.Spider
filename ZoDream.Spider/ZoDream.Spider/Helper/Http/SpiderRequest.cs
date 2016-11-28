@@ -90,6 +90,7 @@ namespace ZoDream.Spider.Helper.Http
                 html = html.Replace(item.Value, item.Value.Replace(item.Groups[4].Value, GetRelativeUrl(Url.FullName, uri.FullName)));  // 需要相对路径
                 switch (item.Groups[2].Value.ToLower())
                 {
+                    case "iframe":
                     case "a":
                         uri.Kind = AssetKind.Html;
                         break;
