@@ -38,6 +38,7 @@ namespace ZoDream.Spider.Model
     public enum RuleKinds
     {
         正则截取,
+        网址提取,
         普通截取,
         普通替换,
         正则替换,
