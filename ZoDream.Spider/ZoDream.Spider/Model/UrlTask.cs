@@ -68,7 +68,7 @@ namespace ZoDream.Spider.Model
 
         public void GetRelative()
         {
-            var m = Regex.Match(Url, @"//[^/]+/(.*?)/?(([^/\?]*?(\.[\w]+)?(\?.+?)?)(#.+)?)$");
+            var m = Regex.Match(Url, @"//(.*?)/?(([^/\?]*?(\.[\w]+)?(\?.+?)?)(#.+)?)$");
             //m.Groups[1].Value 文件路径  
             //m.Groups[2].Value 文件名 
             //m.Groups[3].Value 文件名 不包含 #部分
