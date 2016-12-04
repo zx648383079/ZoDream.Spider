@@ -333,7 +333,10 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteStartCommand()
         {
-            _isStop = false;
+            lock (_object)
+            {
+                _isStop = false;
+            }
             _begin();
         }
 
@@ -347,7 +350,10 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteStopCommand()
         {
-            _isStop = true;
+            lock (_object)
+            {
+                _isStop = true;
+            }
             _tokenSource.Cancel();
             _showMessage("程序已停止！");
         }
@@ -362,7 +368,10 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecuteResetCommand()
         {
-            _isStop = true;
+            lock (_object)
+            {
+                _isStop = true;
+            }
             _tokenSource.Cancel();
             foreach (var urlTask in UrlList)
             {
@@ -380,7 +389,10 @@ namespace ZoDream.Spider.ViewModel
 
         private void ExecutePauseCommand()
         {
-            _isStop = true;
+            lock (_object)
+            {
+                _isStop = true;
+            }
             _tokenSource.Cancel();
             foreach (var item in UrlList.Where(item => item.Status == UrlStatus.Waiting))
             {

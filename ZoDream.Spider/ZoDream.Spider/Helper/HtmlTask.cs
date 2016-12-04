@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -41,6 +42,10 @@ namespace ZoDream.Spider.Helper
 
         public bool Run()
         {
+            if (Rules.Count == 0)
+            {
+                Rules.Add(new RuleItem(RuleKinds.保存, FullFile));
+            }
             foreach (var item in Rules)
             {
                 switch (item.Kind)
@@ -105,8 +110,9 @@ namespace ZoDream.Spider.Helper
                     SaveFile(GetFile(FullFile));
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Debug.WriteLine(ex.Message);
                 SaveFile(FullFile, "");
             }
             return string.IsNullOrEmpty(Error);
