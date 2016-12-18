@@ -76,6 +76,9 @@ namespace ZoDream.Spider.Helper
                     case RuleKinds.正则匹配:
                         Match(item.Value1);
                         break;
+                    case RuleKinds.替换HTML:
+                        Html.GetText();
+                        break;
                     case RuleKinds.简繁转换:
                         TraditionalToSimplified(string.IsNullOrWhiteSpace(item.Value1) ||
                                                 item.Value1.Equals("Y", StringComparison.CurrentCultureIgnoreCase));
