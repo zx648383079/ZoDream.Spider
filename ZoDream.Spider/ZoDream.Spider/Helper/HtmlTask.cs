@@ -29,6 +29,8 @@ namespace ZoDream.Spider.Helper
         /// </summary>
         public string FullFile { get; set; }
 
+        public Uri Url { get; set; }
+
         public HtmlTask()
         {
 
@@ -136,7 +138,7 @@ namespace ZoDream.Spider.Helper
             var doc = new HtmlDocument();
             doc.LoadHtml(Html.Content);
             var nodes = doc.DocumentNode.SelectNodes(tag);
-            if (nodes.Count == 0)
+            if (nodes == null || nodes.Count == 0)
             {
                 return;
             }
@@ -159,6 +161,9 @@ namespace ZoDream.Spider.Helper
             {
                 file = FullFile;
             }
+            file = file.Replace("{path}",
+                FullFile)
+                .Replace("{host}", Url.Host);
             var matches = Regex.Matches(file, @"\{([^\{\}]+)\}");
             file = matches.Cast<Match>().Where(match => Matches.ContainsKey(match.Groups[1].Value)).Aggregate(file, (current, match) => current.Replace(match.Value, Matches[match.Groups[1].Value]));
             if (file.IndexOf(":\\", StringComparison.Ordinal) < 0)
@@ -168,6 +173,7 @@ namespace ZoDream.Spider.Helper
             FileHelper.CreateDirectory(file);
             return file;
         }
+
 
         public void AppendFile(string file, string templateFile = "")
         {

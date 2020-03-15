@@ -82,7 +82,8 @@ namespace ZoDream.Spider.Helper.Http
                 if (string.IsNullOrEmpty(url) 
                     || url.IndexOf("javascript:", StringComparison.Ordinal) >= 0 
                     || url.IndexOf("#", StringComparison.Ordinal) == 0
-                    || url.IndexOf("data:", StringComparison.OrdinalIgnoreCase) >= 0)
+                    || url.IndexOf("data:", StringComparison.OrdinalIgnoreCase) >= 0
+                    || url.IndexOf("ed2k://", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     continue;
                 }
@@ -137,9 +138,10 @@ namespace ZoDream.Spider.Helper.Http
         public void DealHtml(string html)
         {
             GetUrlFromHtml(ref html);
+            var uri = new Uri(Url.Url);
             foreach (var item in Rules)
             {
-                var task = new HtmlTask(new Html(html), item.Rults) {FullFile = Url.FullName};
+                var task = new HtmlTask(new Html(html), item.Rults) {FullFile = Url.FullName, Url = uri};
                 task.Run();
             }
             
