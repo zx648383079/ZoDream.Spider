@@ -26,6 +26,7 @@ namespace ZoDream.Spider.ViewModel
     public class AddViewModel : ViewModelBase
     {
         private NotificationMessageAction _close;
+        private NotificationMessageAction _callabck;
 
         /// <summary>
         /// Initializes a new instance of the AddViewModel class.
@@ -35,6 +36,11 @@ namespace ZoDream.Spider.ViewModel
             Messenger.Default.Register<NotificationMessageAction>(this, "closeAdd", m =>
             {
                 _close = m;
+            });
+
+            Messenger.Default.Register<NotificationMessageAction>(this, "addTask", m =>
+            {
+                _callabck = m;
             });
             foreach (var item in SpiderHelper.UrlRegex)
             {
@@ -562,6 +568,7 @@ namespace ZoDream.Spider.ViewModel
             SpiderHelper.BaseDirectory = BaseDirectory;
             SpiderHelper.UseBrowser = UseBrowser;
             _close.Execute();
+            _callabck.Execute();
         }
     }
 }

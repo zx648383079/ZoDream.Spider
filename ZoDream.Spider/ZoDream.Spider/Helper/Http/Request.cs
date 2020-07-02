@@ -84,6 +84,11 @@ namespace ZoDream.Helper.Http
 
         public string Post(string param)
         {
+            return Post(param, "application/x-www-form-urlencoded");
+        }
+
+        public string Post(string param, string contentType)
+        {
             var request = GetRequest();
             _post(request, param);
             _setProperty(request);
@@ -174,10 +179,20 @@ namespace ZoDream.Helper.Http
             _post(request, Encoding.UTF8.GetBytes(args));
         }
 
+        private void _post(WebRequest request, string args, string contentType)
+        {
+            _post(request, Encoding.UTF8.GetBytes(args), contentType);
+        }
+
         private void _post(WebRequest request, byte[] args)
         {
+            _post(request, args, "application/x-www-form-urlencoded");
+        }
+
+        private void _post(WebRequest request, byte[] args, string contentType)
+        {
             Method = "POST";
-            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentType = contentType;
             request.ContentLength = args.Length;
             var stream = request.GetRequestStream();
             stream.Write(args, 0, args.Length);

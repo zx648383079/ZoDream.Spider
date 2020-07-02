@@ -11,6 +11,7 @@ using ZoDream.Helper.Http;
 using ZoDream.Spider.Helper;
 using ZoDream.Spider.Helper.Cookie;
 using ZoDream.Spider.Model;
+using System.Threading.Tasks;
 
 namespace ZoDream.Spider.View
 {
@@ -36,6 +37,12 @@ namespace ZoDream.Spider.View
             Closing += WebView_Closing;
         }
 
+        private void CoreWebView2_NewWindowRequested(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            e.Handled = true;
+            Browser.Source = new Uri(e.Uri);
+        }
+
         private void WebView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             SpiderHelper.Browser = null;
@@ -51,7 +58,7 @@ namespace ZoDream.Spider.View
         {
             url = Url.GetUrl(url, (SearchKind)SearchCb.SelectedIndex);
             UrlTb.Text = url;
-            Browser.Navigate(url);
+            //Browser.Navigate(url);
         }
 
         private void UrlTb_KeyDown(object sender, KeyEventArgs e)
@@ -62,37 +69,13 @@ namespace ZoDream.Spider.View
             }
         }
 
-        private void Browser_Navigated(object sender, System.Windows.Forms.WebBrowserNavigatedEventArgs e)
-        {
-            UrlTb.Text = Browser.Url.ToString();
-            Title = Browser.DocumentTitle;
-            BeforeBtn.Visibility = Browser.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
-            ForwardBtn.Visibility = Browser.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
-        }
 
         private void Browser_NewWindow(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            Browser.Url = new Uri(((System.Windows.Forms.WebBrowser)sender).StatusText);
+            //Browser.Url = new Uri(((System.Windows.Forms.WebBrowser)sender).StatusText);
             e.Cancel = true;
         }
 
-        private void Browser_DocumentCompleted(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e)
-        {
-            //将所有的链接的目标，指向本窗体
-            if (Browser.Document == null) return;
-            HtmlCallback?.Invoke(GetHtml());
-
-            foreach (System.Windows.Forms.HtmlElement archor in Browser.Document.Links)
-            {
-                archor.SetAttribute("target", "_self");
-            }
-
-            //将所有的FORM的提交目标，指向本窗体
-            foreach (System.Windows.Forms.HtmlElement form in Browser.Document.Forms)
-            {
-                form.SetAttribute("target", "_self");
-            }
-        }
 
         private void HomeBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -119,23 +102,52 @@ namespace ZoDream.Spider.View
         {
             var rules = new List<HeaderItem> {
                 new HeaderItem(HttpRequestHeader.Accept, Accepts.Html),
-                new HeaderItem(HttpRequestHeader.Cookie, FullWebBrowserCookie.GetCookieInternal(Browser.Url, false)),
-                new HeaderItem(HttpRequestHeader.Referer, Browser.Url.ToString()),
+                new HeaderItem(HttpRequestHeader.Cookie, FullWebBrowserCookie.GetCookieInternal(Browser.Source, false)),
+                new HeaderItem(HttpRequestHeader.Referer, Browser.Source.ToString()),
                 new HeaderItem(HttpRequestHeader.UserAgent, UserAgents.Chrome)
             };
             _callBack.Execute(rules);
-            //_callBack.Execute(Browser.Document.Cookie);
             Close();
         }
 
-        public string GetHtml()
+        public async Task<string> GetHtmlAsync()
         {
-            if (Browser.Document == null || Browser.Document.Body == null)
+            return await Browser.ExecuteScriptAsync("document.getElementsByTagName('html')[0].innerHTML");
+        }
+
+        private void Browser_NavigationStarting(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
+        {
+            
+        }
+
+        private void Browser_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        {
+            Title = Browser.CoreWebView2.DocumentTitle;
+            BeforeBtn.Visibility = Browser.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
+            ForwardBtn.Visibility = Browser.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
+
+            _ = DealHtmlAsync();
+        }
+
+        private async Task DealHtmlAsync()
+        {
+            var html = await GetHtmlAsync();
+            if (string.IsNullOrWhiteSpace(html))
             {
-                return "";
+                return;
             }
-            return "<!DOCTYPE html><html>" + Browser.Document.GetElementsByTagName("html")[0].InnerHtml + "</html>";
-                //Encoding.UTF8.GetString(Encoding.GetEncoding(Browser.Document.Encoding).GetBytes(Browser.Document.Body.OuterHtml));
+            HtmlCallback?.Invoke(html);
+            // _ = Browser.ExecuteScriptAsync("!function(){function c(a){var b,c,d;for(b=0;b<a.length;b++)c=a[b],d=c.getAttribute(\"target\"),\"_blank\"==d&&c.setAttribute(\"target\",\"_self\")}var a=document.getElementsByTagName(\"a\"),b=document.getElementsByTagName(\"form\");c(a),c(b)}();");
+        }
+
+        private void Browser_SourceChanged(object sender, Microsoft.Web.WebView2.Core.CoreWebView2SourceChangedEventArgs e)
+        {
+            UrlTb.Text = Browser.Source.ToString();
+        }
+
+        private void Browser_CoreWebView2Ready(object sender, EventArgs e)
+        {
+            Browser.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
         }
     }
 }

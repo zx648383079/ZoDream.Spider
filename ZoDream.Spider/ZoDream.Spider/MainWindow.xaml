@@ -36,10 +36,10 @@
                 <MenuItem Header="菜单">
                     <MenuItem Header="新建任务" Command="{Binding NewCommand}"/>
                     <MenuItem Header="打开任务" Command="{Binding OpenCommand}"/>
-                    <MenuItem Header="保存" Command="{Binding SaveCommand}"/>
-                    <MenuItem Header="另存为" Command="{Binding SaveAsCommand}"/>
+                    <MenuItem Header="保存" Command="{Binding SaveCommand}" Visibility="{Binding IsOpen, Converter={StaticResource VisibilityConverter}}"/>
+                    <MenuItem Header="另存为" Command="{Binding SaveAsCommand}" Visibility="{Binding IsOpen, Converter={StaticResource VisibilityConverter}}"/>
                 </MenuItem>
-                <MenuItem Header="控制">
+                <MenuItem Header="控制" Visibility="{Binding IsOpen, Converter={StaticResource VisibilityConverter}}">
                     <MenuItem Header="开始" Command="{Binding StartCommand}"/>
                     <MenuItem Header="暂停" Command="{Binding PauseCommand}"/>
                     <MenuItem Header="停止" Command="{Binding StopCommand}"/>

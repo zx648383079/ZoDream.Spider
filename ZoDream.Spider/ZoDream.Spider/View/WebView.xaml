@@ -3,8 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wfi ="clr-namespace:System.Windows.Forms.Integration;assembly=WindowsFormsIntegration"
-        xmlns:wf ="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         xmlns:ignore="http://www.galasoft.ch/ignore"
         mc:Ignorable="d ignore"
         Title="浏览器" Icon="/ZoDream.Spider;component/Image/spider.ico" WindowStartupLocation="CenterScreen">
@@ -38,10 +37,13 @@
             <Button x:Name="EnterBtn" Content="进入" Grid.Column="5" Click="EnterBtn_Click"/>
             <Button x:Name="YesBtn" Content="确定" Grid.Column="6" Click="YesBtn_Click"/>
         </Grid>
-        <wfi:WindowsFormsHost Grid.Row="1">
-            <wf:WebBrowser x:Name="Browser" Url="https://www.baidu.com" 
-                               ScriptErrorsSuppressed="True"
-                               Navigated="Browser_Navigated" NewWindow="Browser_NewWindow" DocumentCompleted="Browser_DocumentCompleted"/>
-        </wfi:WindowsFormsHost>
+        <Grid Grid.Row="1">
+            <wv2:WebView2 x:Name="Browser" 
+                          NavigationStarting="Browser_NavigationStarting"
+                          NavigationCompleted="Browser_NavigationCompleted"
+                          SourceChanged="Browser_SourceChanged"
+                          CoreWebView2Ready="Browser_CoreWebView2Ready"
+                          Source="https://www.baidu.com"/>
+        </Grid>
     </Grid>
 </Window>

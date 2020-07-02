@@ -5,6 +5,7 @@
 
     <converter:BackgroundConverter x:Key="BackgroundConverter"/>
     <converter:IconConverter x:Key="IconConverter"/>
+    <converter:VisibilityConverter x:Key="VisibilityConverter"/>
 
     <Style TargetType="ListBoxItem">
         <Setter Property="Background" Value="{Binding Path=Status, Converter={StaticResource BackgroundConverter}}"/>

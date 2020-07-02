@@ -11,12 +11,13 @@ using System.IO;
 using HtmlAgilityPack;
 using ZoDream.Helper.Local;
 using Microsoft.International.Converters.TraditionalChineseToSimplifiedConverter;
+using ZoDream.Spider.Helper.Http;
 
 namespace ZoDream.Spider.Helper
 {
     public class HtmlTask
     {
-        public Html Html { get; set; }
+        public HtmlObject Html { get; set; }
 
         public IList<RuleItem> Rules { get; set; }
 
@@ -31,12 +32,14 @@ namespace ZoDream.Spider.Helper
 
         public Uri Url { get; set; }
 
+        public SpiderRequest Spider;
+
         public HtmlTask()
         {
 
         }
 
-        public HtmlTask(Html html, IList<RuleItem> rules)
+        public HtmlTask(HtmlObject html, IList<RuleItem> rules)
         {
             Html = html;
             Rules = rules;
@@ -76,17 +79,20 @@ namespace ZoDream.Spider.Helper
                         Html.RegexReplace(item.Value1, item.Value2);
                         break;
                     case RuleKinds.正则匹配:
-                        Match(item.Value1);
+                        Html.Match(item.Value1, item.Value2);
+                        break;
+                    case RuleKinds.合并网页:
+                        MergeHtml(item.Value1);
                         break;
                     case RuleKinds.替换HTML:
-                        Html.GetText();
+                        Html.HtmlToText();
                         break;
                     case RuleKinds.简繁转换:
-                        TraditionalToSimplified(string.IsNullOrWhiteSpace(item.Value1) ||
+                        Html.TraditionalToSimplified(string.IsNullOrWhiteSpace(item.Value1) ||
                                                 item.Value1.Equals("Y", StringComparison.CurrentCultureIgnoreCase));
                         break;
                     case RuleKinds.XPath选择:
-                        XpathChoose(item.Value1, string.IsNullOrWhiteSpace(item.Value2) || item.Value2.Equals("Y", StringComparison.CurrentCultureIgnoreCase));
+                        Html.XpathChoose(item.Value1, string.IsNullOrWhiteSpace(item.Value2) || item.Value2.Equals("Y", StringComparison.CurrentCultureIgnoreCase));
                         break;
                     case RuleKinds.保存:
                         SaveFile(GetFile(item.Value1), item.Value2);
@@ -123,37 +129,6 @@ namespace ZoDream.Spider.Helper
             return string.IsNullOrEmpty(Error);
         }
 
-        public void Match(string pattern)
-        {
-            var regex = new Regex(pattern, RegexOptions.IgnoreCase);
-            var match = regex.Match(Html.Content);
-            foreach (var item in regex.GetGroupNames())
-            {
-                Matches.Add(item, match.Groups[item].Value);
-            }
-        }
-
-        public void XpathChoose(string tag, bool isHtml)
-        {
-            var doc = new HtmlDocument();
-            doc.LoadHtml(Html.Content);
-            var nodes = doc.DocumentNode.SelectNodes(tag);
-            if (nodes == null || nodes.Count == 0)
-            {
-                return;
-            }
-            var sb = new StringBuilder();
-            foreach (var node in nodes)
-            {
-                sb.AppendLine(isHtml ? node.InnerHtml : node.InnerText);
-            }
-            Html.Content = sb.ToString();
-        }
-
-        public void TraditionalToSimplified(bool isTc)
-        {
-            Html.Content = ChineseConverter.Convert(Html.Content, isTc ? ChineseConversionDirection.TraditionalToSimplified : ChineseConversionDirection.SimplifiedToTraditional);
-        }
 
         public string GetFile(string file)
         {
@@ -174,6 +149,32 @@ namespace ZoDream.Spider.Helper
             return file;
         }
 
+        public void MergeHtml(string tag)
+        {
+            if (Spider == null)
+            {
+                return;
+            }
+            foreach (HtmlValue item in Html)
+            {
+                if (item.Empty())
+                {
+                    continue;
+                }
+                if (!item.Data.ContainsKey(tag))
+                {
+                    continue;
+                }
+                var path = item.Data[tag];
+                if (string.IsNullOrWhiteSpace(path))
+                {
+                    continue;
+                }
+                var uri = new Uri(Url, path).ToString();
+                Spider.Results.Add(new UrlTask(uri) { Kind = AssetKind.Html });
+            }
+        }
+
 
         public void AppendFile(string file, string templateFile = "")
         {
@@ -190,14 +191,17 @@ namespace ZoDream.Spider.Helper
             var tags = regex.GetGroupNames();
             var csv = new Csv(file);
             csv.WriteRow(tags);
-            var ms = regex.Matches(Html.Content);
-            foreach (Match item in ms)
+            foreach (var val in Html)
             {
-                foreach (var tag in tags)
+                var ms = regex.Matches(val.ToString());
+                foreach (Match item in ms)
                 {
-                    csv.AppendColumn(item.Groups[tag].Value);
+                    foreach (var tag in tags)
+                    {
+                        csv.AppendColumn(item.Groups[tag].Value);
+                    }
+                    csv.WriteRow();
                 }
-                csv.WriteRow();
             }
             csv.Close();
         }
@@ -210,12 +214,15 @@ namespace ZoDream.Spider.Helper
             excel.Create();
             var sheet = excel.AddSheet("sheet1");
             excel.SetRow(sheet, tags);
-            var ms = regex.Matches(Html.Content);
-            var i = 0;
-            foreach (Match item in ms)
+            foreach (var val in Html)
             {
-                var args = tags.Select(tag => item.Groups[tag].Value).ToList();
-                excel.SetRow(sheet, tags, i ++);
+                var ms = regex.Matches(val.ToString());
+                var i = 0;
+                foreach (Match item in ms)
+                {
+                    var args = tags.Select(tag => item.Groups[tag].Value).ToList();
+                    excel.SetRow(sheet, tags, i++);
+                }
             }
             excel.SaveAs(file);
             excel.Close();
@@ -235,19 +242,24 @@ namespace ZoDream.Spider.Helper
 
         public void ImportHtml(string url, string param)
         {
+            var request = new Request(url);
             if (string.IsNullOrWhiteSpace(param))
             {
-                param = "content={content}";
+                request.Post(Html.ToJson(), "application/json");
+                return;
             }
-            var request = new Request(url);
-            request.Post(param.Replace("{content}", Html.Content));
+            request.Post(param.Replace("{content}", System.Web.HttpUtility.UrlEncode(Html.ToJson())));
         }
 
         public string GetContent(string template)
         {
+            if (template == "{content}")
+            {
+                return Html.ToString();
+            }
             var matches = Regex.Matches(template, @"\{([^\{\}]+)\}");
             template = matches.Cast<Match>().Where(match => Matches.ContainsKey(match.Groups[1].Value)).Aggregate(template, (current, match) => current.Replace(match.Value, Matches[match.Groups[1].Value]));
-            return template.Replace("{content}", Html.Content);
+            return template.Replace("{content}", Html.ToString());
         }
 
         public string GetTemplate(string file, string defaultTemplate = "{content}")

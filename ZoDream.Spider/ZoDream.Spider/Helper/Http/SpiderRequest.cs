@@ -141,7 +141,11 @@ namespace ZoDream.Spider.Helper.Http
             var uri = new Uri(Url.Url);
             foreach (var item in Rules)
             {
-                var task = new HtmlTask(new Html(html), item.Rults) {FullFile = Url.FullName, Url = uri};
+                var task = new HtmlTask(new HtmlObject(html), item.Rults) {
+                    FullFile = Url.FullName, 
+                    Url = uri,
+                    Spider = this
+                };
                 task.Run();
             }
             

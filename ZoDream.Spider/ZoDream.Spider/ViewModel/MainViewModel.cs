@@ -36,7 +36,17 @@ namespace ZoDream.Spider.ViewModel
         /// </summary>
         public MainViewModel()
         {
+
         }
+
+        private bool isOpen = false;
+
+        public bool IsOpen
+        {
+            get => isOpen;
+            set => Set(ref isOpen, value);
+        }
+
 
         /// <summary>
         /// The <see cref="Message" /> property's name.
@@ -104,9 +114,12 @@ namespace ZoDream.Spider.ViewModel
         public RelayCommand NewCommand => _newCommand
                                           ?? (_newCommand = new RelayCommand(ExecuteNewCommand));
 
-        private static void ExecuteNewCommand()
+        private void ExecuteNewCommand()
         {
             new AddView().Show();
+            Messenger.Default.Send(new NotificationMessageAction(null, () => {
+                IsOpen = true;
+            }), "addTask");
         }
 
         private RelayCommand _openCommand;
@@ -198,6 +211,7 @@ namespace ZoDream.Spider.ViewModel
                     });
                 }
             }
+            IsOpen = true;
             _showMessage("导入完成！");
         }
 
