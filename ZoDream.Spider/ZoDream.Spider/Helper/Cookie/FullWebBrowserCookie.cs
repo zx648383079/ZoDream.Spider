@@ -4,7 +4,6 @@ using System.Net;
 using System.Security;
 using System.Security.Permissions;
 using System.Text;
-using static System.Runtime.InteropServices.Marshal;
 
 namespace ZoDream.Spider.Helper.Cookie
 {

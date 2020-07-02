@@ -1,10 +1,7 @@
 ﻿using System;
 using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 using ZoDream.Helper.Http;
@@ -12,6 +9,7 @@ using ZoDream.Spider.Helper;
 using ZoDream.Spider.Helper.Cookie;
 using ZoDream.Spider.Model;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ZoDream.Spider.View
 {
@@ -58,6 +56,7 @@ namespace ZoDream.Spider.View
         {
             url = Url.GetUrl(url, (SearchKind)SearchCb.SelectedIndex);
             UrlTb.Text = url;
+            Browser.Source = new Uri(url);
             //Browser.Navigate(url);
         }
 
@@ -112,7 +111,12 @@ namespace ZoDream.Spider.View
 
         public async Task<string> GetHtmlAsync()
         {
-            return await Browser.ExecuteScriptAsync("document.getElementsByTagName('html')[0].innerHTML");
+            var html = await Browser.ExecuteScriptAsync("document.getElementsByTagName('html')[0].innerHTML");
+            if (string.IsNullOrWhiteSpace(html))
+            {
+                return html;
+            }
+            return "<!DOCTYPE html><html>" + JsonConvert.DeserializeObject(html) + "</html>";
         }
 
         private void Browser_NavigationStarting(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationStartingEventArgs e)
