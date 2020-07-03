@@ -42,6 +42,9 @@
   <PropertyGroup>
     <ApplicationIcon>Image\spider.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ChineseConverter, Version=1.0.0.0, Culture=neutral, PublicKeyToken=9ecab500adebae88, processorArchitecture=MSIL">
       <HintPath>..\packages\ChineseConverter.1.0.0\lib\net20\ChineseConverter.dll</HintPath>
@@ -146,6 +149,7 @@
     <Compile Include="Helper\Local\Open.cs" />
     <Compile Include="Helper\Local\TxtEncoder.cs" />
     <Compile Include="Helper\SpiderHelper.cs" />
+    <Compile Include="Helper\Utils.cs" />
     <Compile Include="Model\DataItem.cs" />
     <Compile Include="Model\DataService.cs" />
     <Compile Include="Model\HeaderItem.cs" />

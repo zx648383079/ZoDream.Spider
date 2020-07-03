@@ -19,6 +19,36 @@ namespace ZoDream.Spider.Helper
             return Data == null || Data.Count() == 0;
         }
 
+        public void Append(HtmlValue html)
+        {
+            if (html.Empty())
+            {
+                return;
+            }
+            Append(html.Data);
+        }
+
+        public void Append(Dictionary<string, string> data)
+        {
+            if (Data == null)
+            {
+                Data = new Dictionary<string, string>();
+            }
+            foreach (var item in data)
+            {
+                Data.Add(item.Key, item.Value);
+            }
+        }
+
+        public void Append(string key, string val)
+        {
+            if (Data == null)
+            {
+                Data = new Dictionary<string, string>();
+            }
+            Data.Add(key, val);
+        }
+
         public HtmlValue()
         {
 

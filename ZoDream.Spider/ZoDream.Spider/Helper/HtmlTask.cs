@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 using ZoDream.Helper.Http;
 using ZoDream.Spider.Model;
 using System.IO;
-using HtmlAgilityPack;
 using ZoDream.Helper.Local;
-using Microsoft.International.Converters.TraditionalChineseToSimplifiedConverter;
 using ZoDream.Spider.Helper.Http;
+using Newtonsoft.Json;
 
 namespace ZoDream.Spider.Helper
 {
@@ -95,18 +94,27 @@ namespace ZoDream.Spider.Helper
                         Html.XpathChoose(item.Value1, string.IsNullOrWhiteSpace(item.Value2) || item.Value2.Equals("Y", StringComparison.CurrentCultureIgnoreCase));
                         break;
                     case RuleKinds.保存:
+                        LoadTempleteFiles();
                         SaveFile(GetFile(item.Value1), item.Value2);
                         break;
+                    case RuleKinds.JSON保存:
+                        LoadTempleteFiles();
+                        SaveJsonFile(GetFile(item.Value1));
+                        break;
                     case RuleKinds.Csv保存:
+                        LoadTempleteFiles();
                         SaveCsv(item.Value1, GetFile(item.Value2));
                         break;
                     case RuleKinds.Excel保存:
+                        LoadTempleteFiles();
                         SaveExcel(item.Value1, GetFile(item.Value2));
                         break;
                     case RuleKinds.追加:
+                        LoadTempleteFiles();
                         AppendFile(GetFile(item.Value1), item.Value2);
                         break;
                     case RuleKinds.导入:
+                        LoadTempleteFiles();
                         ImportHtml(GetFile(item.Value1), item.Value2);
                         break;
                     default:
@@ -175,6 +183,56 @@ namespace ZoDream.Spider.Helper
             }
         }
 
+        protected void LoadTempleteFiles()
+        {
+            var folder = SpiderHelper.BaseDirectory + "\\__tmp\\" + Utils.Md5(Url.ToString());
+            if (!File.Exists(folder))
+            {
+                return;
+            }
+            var files = Open.GetAllFile(folder);
+            if (files.Count() < 1)
+            {
+                return;
+            }
+            var direct = new Dictionary<string, string>();
+            foreach (var item in files)
+            {
+                var content = Open.Read(item);
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    continue;
+                }
+                var val = JsonConvert.DeserializeObject<HtmlValue>(content);
+                if (val == null)
+                {
+                    continue;
+                }
+                if (val.Empty())
+                {
+                    continue;
+                }
+                foreach (var temp in val.Data)
+                {
+                    direct.Add(temp.Key, temp.Value);
+                }
+            }
+            if (direct.Count() < 1)
+            {
+                return;
+            }
+            foreach (HtmlValue item in Html)
+            {
+                item.Append(direct);
+            }
+        }
+
+        protected void SaveTempleteFile(string url, HtmlValue item)
+        {
+            var file = SpiderHelper.BaseDirectory + "\\__tmp\\" + Utils.Md5(url) + "\\" + Utils.Md5(Url.ToString());
+            FileHelper.CreateDirectory(file);
+            Open.Writer(file, JsonConvert.SerializeObject(item));
+        }
 
         public void AppendFile(string file, string templateFile = "")
         {
@@ -239,6 +297,10 @@ namespace ZoDream.Spider.Helper
             }
         }
        
+        public void SaveJsonFile(string file)
+        {
+            Open.Writer(file, Html.ToJson());
+        }
 
         public void ImportHtml(string url, string param)
         {

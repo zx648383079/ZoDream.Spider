@@ -50,6 +50,7 @@ namespace ZoDream.Spider.Model
         Csv保存,
         Excel保存,
         保存,
+        JSON保存,
         追加,
         导入
     }
