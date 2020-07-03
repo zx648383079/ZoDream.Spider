@@ -41,6 +41,7 @@ namespace ZoDream.Spider.Helper
 
         public IEnumerator GetEnumerator()
         {
+            Reset();
             return this;
         }
 

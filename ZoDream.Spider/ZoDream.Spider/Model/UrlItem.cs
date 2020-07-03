@@ -17,6 +17,10 @@ namespace ZoDream.Spider.Model
 
         public bool IsMatch(string url)
         {
+            if (Regex.IsMatch(Url, @"^\w+\.\w+(\.\w+)?$"))
+            {
+                return new Uri(url).Host == Url;
+            }
             return Regex.IsMatch(url, Url);
         }
 

@@ -368,7 +368,10 @@ namespace ZoDream.Spider.ViewModel
             {
                 _isStop = true;
             }
-            _tokenSource.Cancel();
+            if (_tokenSource != null)
+            {
+                _tokenSource.Cancel();
+            }
             _showMessage("程序已停止！");
         }
 
@@ -386,7 +389,10 @@ namespace ZoDream.Spider.ViewModel
             {
                 _isStop = true;
             }
-            _tokenSource.Cancel();
+            if (_tokenSource != null)
+            {
+                _tokenSource.Cancel();
+            }
             foreach (var urlTask in UrlList)
             {
                 urlTask.Status = UrlStatus.None;
@@ -407,7 +413,10 @@ namespace ZoDream.Spider.ViewModel
             {
                 _isStop = true;
             }
-            _tokenSource.Cancel();
+            if (_tokenSource != null)
+            {
+                _tokenSource.Cancel();
+            }
             foreach (var item in UrlList.Where(item => item.Status == UrlStatus.Waiting))
             {
                 item.Status = UrlStatus.None;
