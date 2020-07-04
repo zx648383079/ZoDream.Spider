@@ -61,16 +61,33 @@ namespace ZoDream.Spider.Helper.Http
             // 文件下载，断点续传
             FileHelper.CreateDirectory(Url.FullName);
             request.Download(response, Url.FullName);
+            if (Url.Kind == AssetKind.Css)
+            {
+                var html = Open.Read(Url.FullName);
+                GetUrlFromCss(ref html);
+                Open.Writer(Url.FullName, html);
+            }
         }
 
         public void GetUrlFromCss(ref string html)
         {
-
+            var matches = Regex.Matches(html, @"url\([""']?([^""'\s\<\>]*)[""']?\)", RegexOptions.IgnoreCase);
+            foreach (Match item in matches)
+            {
+                var uri = new UrlTask(GetAbsoluteUrl(item.Groups[1].Value, Url.Url))
+                {
+                    Kind = AssetKind.File
+                };
+                html = html.Replace(item.Value, 
+                    item.Value.Replace(item.Groups[1].Value, 
+                    GetRelativeUrl(Url.FullName, uri.FullName)));
+                Results.Add(uri);
+            }
         }
 
         public void GetUrlFromJs(ref string html)
         {
-
+            
         }
 
         public void GetUrlFromHtml(ref string html)
