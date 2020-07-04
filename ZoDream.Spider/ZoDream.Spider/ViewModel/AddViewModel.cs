@@ -36,26 +36,13 @@ namespace ZoDream.Spider.ViewModel
             Messenger.Default.Register<NotificationMessageAction>(this, "closeAdd", m =>
             {
                 _close = m;
+                Load();
             });
 
             Messenger.Default.Register<NotificationMessageAction>(this, "addTask", m =>
             {
                 _callabck = m;
             });
-            foreach (var item in SpiderHelper.UrlRegex)
-            {
-                UrlList.Add(item);
-            }
-            foreach (var item in SpiderHelper.Headers)
-            {
-                HeaderList.Add(item);
-            }
-
-            Count = SpiderHelper.Count;
-            TimeOut = SpiderHelper.TimeOut;
-            BaseDirectory = SpiderHelper.BaseDirectory;
-            UseBrowser = SpiderHelper.UseBrowser;
-
         }
 
         /// <summary>
@@ -569,6 +556,23 @@ namespace ZoDream.Spider.ViewModel
             SpiderHelper.UseBrowser = UseBrowser;
             _close.Execute();
             _callabck.Execute();
+        }
+
+        public void Load()
+        {
+            foreach (var item in SpiderHelper.UrlRegex)
+            {
+                UrlList.Add(item);
+            }
+            foreach (var item in SpiderHelper.Headers)
+            {
+                HeaderList.Add(item);
+            }
+
+            Count = SpiderHelper.Count;
+            TimeOut = SpiderHelper.TimeOut;
+            BaseDirectory = SpiderHelper.BaseDirectory;
+            UseBrowser = SpiderHelper.UseBrowser;
         }
     }
 }
