@@ -21,6 +21,11 @@ namespace ZoDream.Spider.Helper
 
         private int position = -1;
 
+        public HtmlObject()
+        {
+
+        }
+
         public HtmlObject(string content)
         {
             this.content = new HtmlValue(content);
@@ -253,6 +258,16 @@ namespace ZoDream.Spider.Helper
         public static explicit operator string(HtmlObject v)
         {
             return v.ToString();
+        }
+
+        public HtmlObject Clone()
+        {
+            return new HtmlObject()
+            {
+                isArray = isArray,
+                content = content?.Clone(),
+                data = data?.Select(res => res.Clone()).ToList()
+            };
         }
     }
 }

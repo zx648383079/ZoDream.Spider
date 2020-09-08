@@ -9,6 +9,14 @@
         Title="规则"
         DataContext="{Binding Rule, Source={StaticResource Locator}}" Icon="/ZoDream.Spider;component/Image/spider.ico" WindowStartupLocation="CenterScreen">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Skins/AddSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>

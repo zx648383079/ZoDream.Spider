@@ -120,6 +120,18 @@ namespace ZoDream.Spider.Helper
                     default:
                         break;
                 }
+                if (item.Children == null)
+                {
+                    continue;
+                }
+                // 执行子循环任务
+                var task = new HtmlTask(Html.Clone(), item.Children)
+                {
+                    FullFile = FullFile,
+                    Url = Url,
+                    Spider = Spider
+                };
+                task.Run();
             }
             try
             {

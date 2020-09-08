@@ -327,7 +327,7 @@ namespace ZoDream.Spider.ViewModel
         {
             new RuleView().Show();
             Messenger.Default.Send(new NotificationMessageAction<UrlItem>(null, item => {
-                UrlList.Add(new UrlItem(item.Url, item.Rults));
+                UrlList.Add(new UrlItem(item.Url, item.Rules));
             }), "rule");
         }
 

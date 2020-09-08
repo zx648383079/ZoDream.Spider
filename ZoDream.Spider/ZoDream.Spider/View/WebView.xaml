@@ -8,6 +8,14 @@
         mc:Ignorable="d ignore"
         Title="浏览器" Icon="/ZoDream.Spider;component/Image/spider.ico" WindowStartupLocation="CenterScreen">
 
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Skins/AddSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

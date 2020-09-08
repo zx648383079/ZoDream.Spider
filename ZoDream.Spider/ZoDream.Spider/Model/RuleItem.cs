@@ -14,7 +14,9 @@ namespace ZoDream.Spider.Model
         public string Value1 { get; set; }
 
         public string Value2 { get; set; }
-        
+
+        public IList<RuleItem> Children { get; set; }
+
         public RuleItem()
         {
 

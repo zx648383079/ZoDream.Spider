@@ -13,7 +13,7 @@ namespace ZoDream.Spider.Model
     {
         public string Url { get; set; }
 
-        public List<RuleItem> Rults { get; set; }
+        public List<RuleItem> Rules { get; set; }
 
         public bool IsMatch(string url)
         {
@@ -36,11 +36,11 @@ namespace ZoDream.Spider.Model
                 url = ".*";
             }
             Url = url;
-            Rults = rules;
+            Rules = rules;
         }
 
         public override string ToString() {
-            return $"有 {Rults.Count} 条规则";
+            return $"有 {Rules.Count} 条规则";
         }
     }
 }

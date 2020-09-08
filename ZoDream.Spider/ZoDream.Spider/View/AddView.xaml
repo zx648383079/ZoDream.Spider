@@ -45,7 +45,8 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="线程数："/>
-            <TextBox Text="{Binding Count}" Grid.Column="1" Grid.Row="0" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}"/>
+            <TextBox Text="{Binding Count}"
+                     Grid.Column="1" Grid.Row="0" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}"/>
             <TextBlock Grid.Column="2" Text="等待时间："/>
             <TextBox Text="{Binding TimeOut}" Grid.Column="3" Grid.Row="0" IsEnabled="{Binding UseBrowser, Converter={StaticResource NegateConverter}}"/>
             <CheckBox Content="使用浏览器下载" IsChecked="{Binding UseBrowser}" Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>

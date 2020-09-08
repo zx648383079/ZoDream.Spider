@@ -81,5 +81,15 @@ namespace ZoDream.Spider.Helper
                 Data.Clear();
             }
         }
+
+        public HtmlValue Clone()
+        {
+            var data = new HtmlValue(Content);
+            foreach (var item in Data)
+            {
+                data.Data.Add(item.Key, item.Value);
+            }
+            return data;
+        }
     }
 }

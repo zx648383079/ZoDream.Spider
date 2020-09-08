@@ -33,7 +33,7 @@ namespace ZoDream.Spider.ViewModel
                 var item = m.Sender as UrlItem;
                 if (item == null) return;
                 Url = item.Url;
-                foreach (var i in item.Rults)
+                foreach (var i in item.Rules)
                 {
                     RuleList.Add(i);
                 }
