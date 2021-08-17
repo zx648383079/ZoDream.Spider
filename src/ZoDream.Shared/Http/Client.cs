@@ -32,6 +32,7 @@ namespace ZoDream.Shared.Http
 
         public bool AllowAutoRedirect { get; set; } = true;
 
+        public ProxyItem Proxy { get; set; }
 
         public IList<HeaderItem> Headers { get; set; } = new List<HeaderItem>() {
             new HeaderItem("Accept-Encoding", "gzip, deflate"),
@@ -131,24 +132,41 @@ namespace ZoDream.Shared.Http
 
         public HttpClient PrepareClient()
         {
-            var handler = new HttpClientHandler();
-            handler.AllowAutoRedirect = AllowAutoRedirect;
-            handler.UseCookies = true;
-            handler.CookieContainer = new CookieContainer();
+            var handler = new HttpClientHandler()
+            {
+                AllowAutoRedirect = AllowAutoRedirect,
+                UseCookies = true,
+                CookieContainer = new CookieContainer()
+            };
             if (Cookies != null && Cookies.Count > 0)
             {   
                 handler.CookieContainer.Add(Cookies);
             }
-            var client = new HttpClient(handler);
-            client.Timeout = TimeSpan.FromMilliseconds(TimeOut);
+            if (Proxy != null)
+            {
+                handler.Proxy = new WebProxy()
+                {
+                    Address = new Uri($"{Proxy.Schema}://{Proxy.Host}:{Proxy.Port}"),
+                    UseDefaultCredentials = string.IsNullOrWhiteSpace(Proxy.UserName),
+                    Credentials = string.IsNullOrWhiteSpace(Proxy.UserName) ? null : new NetworkCredential(
+                    userName: Proxy.UserName,
+                    password: Proxy.Password)
+                };
+            }
+            var client = new HttpClient(handler)
+            {
+                Timeout = TimeSpan.FromMilliseconds(TimeOut)
+            };
             return client;
         }
 
         public HttpRequestMessage PrepareRequest()
         {
-            var request = new HttpRequestMessage();
-            request.RequestUri = new Uri(Url);
-            request.Method = FormatMethod();
+            var request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri(Url),
+                Method = FormatMethod()
+            };
             foreach (var item in Headers)
             {
                 request.Headers.TryAddWithoutValidation(item.Name, item.Value);

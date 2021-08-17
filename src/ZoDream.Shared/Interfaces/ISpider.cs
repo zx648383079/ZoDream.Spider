@@ -17,6 +17,8 @@ namespace ZoDream.Shared.Interfaces
 
         public IRuleProvider RuleProvider { get; set; }
 
+        public IProxyProvider ProxyProvider {  get; set; }
+
 
         public void Start();
 

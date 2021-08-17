@@ -6,7 +6,13 @@
         xmlns:local="clr-namespace:ZoDream.Spider"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Skins/MainSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -16,12 +22,12 @@
         <Grid>
             <Menu>
                 <MenuItem Header="菜单">
-                    <MenuItem Header="新建任务"/>
-                    <MenuItem Header="打开任务"/>
-                    <MenuItem Header="保存"/>
-                    <MenuItem Header="另存为" />
+                    <MenuItem x:Name="NewProjectBtn" Header="新建任务" Click="NewProjectBtn_Click"/>
+                    <MenuItem x:Name="OpenProjectBtn" Header="打开任务" Click="OpenProjectBtn_Click"/>
+                    <MenuItem x:Name="SaveProjectBtn" Header="保存" Click="SaveProjectBtn_Click" Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}"/>
+                    <MenuItem x:Name="SaveProjectAsBtn" Header="另存为" Click="SaveProjectAsBtn_Click" Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}"/>
                 </MenuItem>
-                <MenuItem Header="控制" >
+                <MenuItem Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}" Header="控制" >
                     <MenuItem Header="开始"/>
                     <MenuItem Header="暂停"/>
                     <MenuItem Header="停止"/>
@@ -35,13 +41,14 @@
         </Grid>
         <ListBox Grid.Row="1">
             <ListBox.ContextMenu>
-                <ContextMenu>
+                <ContextMenu Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}">
                     <MenuItem Header="任务">
                         <MenuItem Header="编辑" x:Name="EditTaskBtn" Click="EditTaskBtn_Click"/>
                         <MenuItem Header="打开" />
                         <MenuItem Header="保存" />
                     </MenuItem>
                     <MenuItem Header="添加网址" x:Name="AddUrlBtn" Click="AddUrlBtn_Click"/>
+                    <MenuItem Header="添加代理" x:Name="ProxyBtn" Click="ProxyBtn_Click"/>
                     <MenuItem Header="删除">
                         <MenuItem Header="选中" />
                         <MenuItem Header="已完成" />

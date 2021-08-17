@@ -14,20 +14,40 @@ namespace ZoDream.Shared.Spiders
 {
     public class DefaultSpider : ISpider
     {
-        public SpiderOption Option { get; set; }
+        /// <summary>
+        /// 多线程控制
+        /// </summary>
+        private CancellationTokenSource? _tokenSource;
+
+        /// <summary>
+        /// 线程锁
+        /// </summary>
+        private readonly object _object = new object();
+
+
+        public SpiderOption Option { get; set; } = new SpiderOption();
         public IUrlCollection UrlCollection { get; set; }
         public IRuleProvider RuleProvider { get; set; }
 
-
+        public IProxyProvider ProxyProvider { get; set; }
 
         public void Load(string file)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(file))
+            {
+                return;
+            }
+            using (var sr = new StreamReader(file))
+            {
+                Deserializer(sr);
+            }
         }
 
         public Task LoadAsync(string file)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() => { 
+                Load(file);
+            });
         }
 
         public void Pause()
@@ -54,7 +74,10 @@ namespace ZoDream.Shared.Spiders
 
         public Task SaveAsync(string file)
         {
-            throw new NotImplementedException();
+            return Task.Factory.StartNew(() =>
+            {
+                Save(file);
+            });
         }
 
         
@@ -77,7 +100,7 @@ namespace ZoDream.Shared.Spiders
             }
             var tag = "";
             var xml = new StringBuilder();
-            string line;
+            string? line;
             var urls = new List<string>();
             string[] args;
             var regex = new Regex(@"^\[(\w+)\]$");
