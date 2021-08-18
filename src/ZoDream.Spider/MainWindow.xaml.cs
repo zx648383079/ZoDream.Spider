@@ -61,7 +61,12 @@ namespace ZoDream.Spider
 
         private void NewProjectBtn_Click(object sender, RoutedEventArgs e)
         {
-            ViewModel.IsNotEmpty = true;
+            var page = new EditView();
+            if (page.ShowDialog() != true)
+            {
+                return;
+            }
+            ViewModel.Load();
         }
 
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)
@@ -76,7 +81,7 @@ namespace ZoDream.Spider
             {
                 return;
             }
-            ViewModel.Load();
+            ViewModel.Load(open.FileName);
         }
 
         private void SaveProjectBtn_Click(object sender, RoutedEventArgs e)

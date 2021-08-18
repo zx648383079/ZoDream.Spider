@@ -11,5 +11,7 @@ namespace ZoDream.Shared.Interfaces
         public string Pattern { get; set; }
 
         public IList<IRule> Items { get; set; }
+
+        public bool IsMatch(string uri);
     }
 }

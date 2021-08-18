@@ -16,18 +16,55 @@ namespace ZoDream.Shared.Models
         /// <summary>
         /// 工作目录
         /// </summary>
-        public string WorkFolder { get; set; }
+        public string WorkFolder { get; set; } = string.Empty;
 
-        public IList<HeaderItem> HeaderItems { get; set; }
+        public IList<HeaderItem> HeaderItems { get; set; } = new List<HeaderItem>();
 
         public void Deserializer(StreamReader reader)
         {
-            throw new NotImplementedException();
+            string? line;
+            while (null != (line = reader.ReadLine()))
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    return;
+                }
+                var args = line.Split(':');
+                var name = args[0].Trim();
+                switch (name.ToLower())
+                {
+                    case "count":
+                        MaxCount = int.Parse(args[1].Trim());
+                        break;
+                    case "timeout":
+                        TimeOut = int.Parse(args[1].Trim());
+                        break;
+                    case "browser":
+                        UseBrowser = args[1].Trim().ToUpper() == "Y";
+                        break;
+                    case "folder":
+                        WorkFolder = args[1].Trim();
+                        break;
+                    default:
+                        if (!string.IsNullOrWhiteSpace(args[1]))
+                        {
+                            HeaderItems.Add(new HeaderItem(name, args[1].Trim()));
+                        }
+                        break;
+                }
+            }
         }
 
         public void Serializer(StreamWriter writer)
         {
-            throw new NotImplementedException();
+            writer.WriteLine($"count: {MaxCount}");
+            writer.WriteLine($"timeout: {TimeOut}");
+            writer.WriteLine("browser: " + (UseBrowser ? 'Y' : 'N'));
+            writer.WriteLine($"folder: {WorkFolder}");
+            foreach (var item in HeaderItems)
+            {
+                writer.WriteLine($"{item.Name}: {item.Value}");
+            }
         }
     }
 }

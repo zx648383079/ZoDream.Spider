@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Providers;
 
 namespace ZoDream.Shared.Spiders
 {
@@ -26,10 +27,10 @@ namespace ZoDream.Shared.Spiders
 
 
         public SpiderOption Option { get; set; } = new SpiderOption();
-        public IUrlCollection UrlCollection { get; set; }
-        public IRuleProvider RuleProvider { get; set; }
+        public IUrlProvider UrlProvider { get; set; } = new UrlProvider();
+        public IRuleProvider RuleProvider { get; set; } = new RuleProvider();
 
-        public IProxyProvider ProxyProvider { get; set; }
+        public IProxyProvider ProxyProvider { get; set; } = new ProxyProvider();
 
         public void Load(string file)
         {
@@ -98,11 +99,7 @@ namespace ZoDream.Shared.Spiders
             {
                 return;
             }
-            var tag = "";
-            var xml = new StringBuilder();
             string? line;
-            var urls = new List<string>();
-            string[] args;
             var regex = new Regex(@"^\[(\w+)\]$");
             while (null != (line = reader.ReadLine()))
             {
@@ -110,17 +107,27 @@ namespace ZoDream.Shared.Spiders
                 {
                     continue;
                 }
-                if (regex.IsMatch(line))
+                if (!regex.IsMatch(line))
                 {
-                    tag = regex.Match(line).Groups[1].Value.ToUpper();
+                    
                     continue;
                 }
+                var tag = regex.Match(line).Groups[1].Value.ToUpper();
                 switch (tag)
                 {
-                    case "URL":
+                    case "OPTION":
+                        Option.Deserializer(reader);
                         break;
-                    case "REGEX":
-                        xml.AppendLine(line);
+                    case "PROXY":
+                        ProxyProvider.Deserializer(reader);
+                        break;
+                    case "RULE":
+                        RuleProvider.Deserializer(reader);
+                        break;
+                    case "URL":
+                        UrlProvider.Deserializer(reader);
+                        break;
+                    default:
                         break;
                 }
             }
@@ -128,18 +135,18 @@ namespace ZoDream.Shared.Spiders
 
         public void Serializer(StreamWriter writer)
         {
-            writer.WriteLine("[URL]");
-            UrlCollection.Serializer(writer);
-            //foreach (var item in UrlCollection)
-            //{
-            //    sw.WriteLine($"{item.Status}={item.Type}={item.Source}");
-            //}
-            writer.WriteLine();
             writer.WriteLine("[OPTION]");
             Option.Serializer(writer);
             writer.WriteLine();
-            writer.WriteLine("[REGEX]");
+            writer.WriteLine("[PROXY]");
+            ProxyProvider.Serializer(writer);
+            writer.WriteLine();
+            writer.WriteLine("[RULE]");
             RuleProvider.Serializer(writer);
+            writer.WriteLine();
+            writer.WriteLine("[URL]");
+            UrlProvider.Serializer(writer);
+            writer.WriteLine();
         }
     }
 }

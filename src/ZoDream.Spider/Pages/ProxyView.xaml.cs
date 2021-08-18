@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ZoDream.Shared.Models;
 
 namespace ZoDream.Spider.Pages
 {
@@ -22,6 +23,43 @@ namespace ZoDream.Spider.Pages
         public ProxyView()
         {
             InitializeComponent();
+        }
+
+        public IList<ProxyItem> ProxyItems
+        {
+            get
+            {
+                var items = new List<ProxyItem>();
+                var data = ContentTb.Text.Split(new char[] { '\r', '\n' });
+                foreach (var item in data)
+                {
+                    if (!string.IsNullOrWhiteSpace(item))
+                    {
+                        items.Add(new ProxyItem(item.Trim()));
+                    }
+                }
+                return items;
+            }
+            set
+            {
+                var sb = new StringBuilder();
+                foreach (var item in value)
+                {
+                    sb.AppendLine(item.ToString());
+                }
+                ContentTb.Text = sb.ToString();
+            }
+        }
+
+        private void ConfirmBtn_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+        }
+
+        private void TestBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var items = ProxyItems;
+
         }
     }
 }

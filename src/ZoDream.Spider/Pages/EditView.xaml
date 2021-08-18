@@ -29,23 +29,28 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="线程数："/>
-            <TextBox Grid.Column="1" Grid.Row="0" MaxLines="1"/>
+            <TextBox x:Name="CountTb" Grid.Column="1" Grid.Row="0" MaxLines="1"/>
             <TextBlock Grid.Column="2" Text="等待时间："/>
-            <TextBox Grid.Column="3" Grid.Row="0"  MaxLines="1"/>
-            <CheckBox Content="使用浏览器下载" Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>
-            <Button Content="确定" Grid.Column="5"/>
+            <TextBox x:Name="WaitTb" Grid.Column="3" Grid.Row="0"  MaxLines="1"/>
+            <CheckBox x:Name="BrowserCb" Content="使用浏览器下载" Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>
+            <Button x:Name="ConfirmBtn" Content="确定" Grid.Column="5"/>
         </Grid>
 
         <TextBlock Text="保存路径：" Grid.Row="1" Grid.Column="0" />
-        <TextBox Grid.Row="1" Grid.Column="1"  MaxLines="1"/>
-        <Button Content="..." Grid.Row="1" Grid.Column="2"/>
+        <TextBox x:Name="FolderTb" Grid.Row="1" Grid.Column="1"  MaxLines="1"/>
+        <Button x:Name="OpenBtn" Click="OpenBtn_Click" Content="..." Grid.Row="1" Grid.Column="2"/>
 
 
-        <ListView AllowDrop="True" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">
+        <ListView x:Name="RuleBox" 
+                  ItemsSource="{Binding RuleItems}"
+                  AllowDrop="True" 
+                  Grid.Row="2" 
+                  Grid.ColumnSpan="3" 
+                  Grid.Column="0">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="网址规则" Width="300"/>
-                    <GridViewColumn Header="规则" Width="300"/>
+                    <GridViewColumn Header="网址规则" Width="300" DisplayMemberBinding="{Binding Path=Name}"/>
+                    <GridViewColumn Header="规则" Width="300" DisplayMemberBinding="{Binding Path=Rules.Count}"/>
                 </GridView>
             </ListView.View>
             <ListView.ContextMenu>
@@ -64,12 +69,13 @@
             </ListView.ContextMenu>
         </ListView>
 
-        <ListView Grid.Row="3" 
-                  Grid.ColumnSpan="3" Grid.Column="0">
+        <ListView x:Name="HeaderBox" ItemsSource="{Binding HeaderItems}" Grid.Row="3" 
+                  Grid.ColumnSpan="3" 
+                  Grid.Column="0">
            <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="请求头" Width="200"/>
-                    <GridViewColumn Header="值" Width="400"/>
+                    <GridViewColumn Header="请求头" Width="200" DisplayMemberBinding="{Binding Path=Name}"/>
+                    <GridViewColumn Header="值" Width="400" DisplayMemberBinding="{Binding Path=Value}"/>
                 </GridView>
             </ListView.View>
             <ListView.ContextMenu>
@@ -85,9 +91,10 @@
                 </ContextMenu>
             </ListView.ContextMenu>
         </ListView>
-        <ComboBox Grid.Row="4" Grid.Column="0">
+        <ComboBox x:Name="HeaderTb" IsEditable="True" ItemsSource="{Binding HeaderKeys}" Grid.Row="4" Grid.Column="0">
         </ComboBox>
-        <TextBox Grid.Row="4" Grid.Column="1" MaxLines="1"/>
-        <Button Content="保存" Grid.Row="4" Grid.Column="2"/>
+        <TextBox x:Name="HeaderValueTb" Grid.Row="4" Grid.Column="1" MaxLines="1"/>
+        <Button x:Name="HeaderSaveBtn" Content="保存" 
+                Grid.Row="4" Grid.Column="2" Click="HeaderSaveBtn_Click"/>
     </Grid>
 </Window>

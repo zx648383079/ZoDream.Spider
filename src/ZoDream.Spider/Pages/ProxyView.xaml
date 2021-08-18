@@ -13,10 +13,10 @@
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right">
-            <Button Content="检测"/>
-            <Button Content="确定"/>
+            <Button x:Name="TestBtn" Content="检测" Click="TestBtn_Click"/>
+            <Button x:Name="ConfirmBtn" Content="确定" Click="ConfirmBtn_Click"/>
         </StackPanel>
-        <TextBox Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True"/>
+        <TextBox x:Name="ContentTb" Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True"/>
         <TextBlock Grid.Row="2"/>
     </Grid>
 </Window>

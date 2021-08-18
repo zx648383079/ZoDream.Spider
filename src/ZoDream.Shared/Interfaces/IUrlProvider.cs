@@ -10,7 +10,7 @@ namespace ZoDream.Shared.Interfaces
     /// <summary>
     /// 这是转载所有网址的容器，用于验证网址是否重复
     /// </summary>
-    public interface IUrlCollection: IEnumerable<UriItem>, ILoader
+    public interface IUrlProvider: IEnumerable<UriItem>, ILoader
     {
 
         public void Add(string url);

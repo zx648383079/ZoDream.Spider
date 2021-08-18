@@ -13,7 +13,7 @@ namespace ZoDream.Shared.Interfaces
     public interface ISpider: ILoader
     {
         public SpiderOption Option { get; set; }
-        public IUrlCollection UrlCollection { get; set; }
+        public IUrlProvider UrlProvider { get; set; }
 
         public IRuleProvider RuleProvider { get; set; }
 

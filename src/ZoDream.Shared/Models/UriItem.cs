@@ -9,7 +9,7 @@ namespace ZoDream.Shared.Models
 {
     public class UriItem: BindableBase
     {
-        private string title;
+        private string title = string.Empty;
 
         public string Title
         {
@@ -17,7 +17,7 @@ namespace ZoDream.Shared.Models
             set => Set(ref title, value);
         }
 
-        public string Source { get; set; }
+        public string Source { get; set; } = string.Empty;
 
         private UriStatus status = UriStatus.NONE;
 
@@ -27,7 +27,7 @@ namespace ZoDream.Shared.Models
             set => Set(ref status, value);
         }
 
-        private string message;
+        private string message = string.Empty;
 
         public string Message
         {

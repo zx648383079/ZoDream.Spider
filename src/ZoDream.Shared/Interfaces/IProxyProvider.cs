@@ -10,6 +10,6 @@ namespace ZoDream.Shared.Interfaces
     public interface IProxyProvider: ILoader
     {
 
-        public ProxyItem Get();
+        public ProxyItem? Get();
     }
 }

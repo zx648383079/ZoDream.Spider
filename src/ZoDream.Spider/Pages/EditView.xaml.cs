@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ZoDream.Shared.Models;
 using ZoDream.Spider.ViewModels;
 
 namespace ZoDream.Spider.Pages
@@ -35,6 +36,7 @@ namespace ZoDream.Spider.Pages
             {
                 return;
             }
+            ViewModel.RuleItems.Add(page.RuleGroup);
         }
 
         private void BrowserBtn_Click(object sender, RoutedEventArgs e)
@@ -45,6 +47,34 @@ namespace ZoDream.Spider.Pages
                 return;
             }
             var items = page.HeaderItems;
+            foreach (var item in items)
+            {
+                ViewModel.AddHeader(item);
+            }
+        }
+
+        private void HeaderSaveBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(HeaderTb.Text) || string.IsNullOrWhiteSpace(HeaderValueTb.Text))
+            {
+                return;
+            }
+            var item = new HeaderItem(HeaderTb.Text, HeaderValueTb.Text);
+            ViewModel.AddHeader(item);
+        }
+
+        private void OpenBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var folder = new System.Windows.Forms.FolderBrowserDialog
+            {
+                SelectedPath = AppDomain.CurrentDomain.BaseDirectory,
+                ShowNewFolderButton = false
+            };
+            if (folder.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+            {
+                return;
+            }
+            FolderTb.Text = folder.SelectedPath;
         }
     }
 }
