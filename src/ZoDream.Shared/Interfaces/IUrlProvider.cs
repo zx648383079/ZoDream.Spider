@@ -13,10 +13,21 @@ namespace ZoDream.Shared.Interfaces
     public interface IUrlProvider: IEnumerable<UriItem>, ILoader
     {
 
+        public int Count {  get; }
+
         public void Add(string url);
 
         public void Remove(string url);
 
         public bool Contains(string url);
+
+        public IList<UriItem> GetItems(int count);
+        public bool HasMore { get; }
+
+        public void UpdateItem(int index, UriItem item);
+
+        public void UpdateItem(int index, UriStatus status);
+
+        public void UpdateItem(UriItem item, UriStatus status);
     }
 }

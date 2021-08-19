@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Utils;
 using ZoDream.Shared.ViewModel;
 
 namespace ZoDream.Spider.ViewModels
@@ -55,30 +56,17 @@ namespace ZoDream.Spider.ViewModels
 
         public int PluginIndexOf(string name)
         {
-            for (int i = 0; i < PluginItems.Count; i++)
-            {
-                if (PluginItems[i].Name == name)
-                {
-                    return i;
-                }
-            }
-            return -1;
+            return ListExtension.IndexOf(PluginItems, name);
         }
 
         internal void MoveUp(int index)
         {
-            if (index <= 1) return;
-            var item = RuleItems[index];
-            RuleItems[index] = RuleItems[index - 1];
-            RuleItems[index - 1] = item;
+            ListExtension.MoveUp(RuleItems, index);
         }
 
         internal void MoveDown(int index)
         {
-            if (index < 0 || index > RuleItems.Count - 2) return;
-            var item = RuleItems[index];
-            RuleItems[index] = RuleItems[index + 1];
-            RuleItems[index + 1] = item;
+            ListExtension.MoveDown(RuleItems, index);
         }
     }
 }

@@ -43,11 +43,19 @@ namespace ZoDream.Spider
 
         private void EditTaskBtn_Click(object sender, RoutedEventArgs e)
         {
+            if (ViewModel.Instance == null)
+            {
+                return;
+            }
             var page = new EditView();
+            page.Option = ViewModel.Instance.Option;
+            page.Rules = ViewModel.Instance.RuleProvider.All();
             if (page.ShowDialog() != true)
             {
                 return;
             }
+            ViewModel.Instance!.Option = page.Option;
+            ViewModel.Instance.RuleProvider.Add(page.Rules);
         }
 
         private void ProxyBtn_Click(object sender, RoutedEventArgs e)
@@ -67,6 +75,8 @@ namespace ZoDream.Spider
                 return;
             }
             ViewModel.Load();
+            ViewModel.Instance!.Option = page.Option;
+            ViewModel.Instance.RuleProvider.Add(page.Rules);
         }
 
         private void OpenProjectBtn_Click(object sender, RoutedEventArgs e)

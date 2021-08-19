@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection.PortableExecutable;
@@ -51,16 +52,6 @@ namespace ZoDream.Shared.Spiders
             });
         }
 
-        public void Pause()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resume()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Save(string file)
         {
             if (string.IsNullOrEmpty(file))
@@ -81,7 +72,15 @@ namespace ZoDream.Shared.Spiders
             });
         }
 
-        
+        public void Pause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Resume()
+        {
+            throw new NotImplementedException();
+        }
 
         public void Start()
         {
@@ -92,6 +91,7 @@ namespace ZoDream.Shared.Spiders
         {
             throw new NotImplementedException();
         }
+
 
         public void Deserializer(StreamReader reader)
         {
@@ -147,6 +147,66 @@ namespace ZoDream.Shared.Spiders
             writer.WriteLine("[URL]");
             UrlProvider.Serializer(writer);
             writer.WriteLine();
+        }
+
+        protected void RunTask()
+        {
+            #region 创造主线程，去分配多个下载线程
+            _tokenSource = new CancellationTokenSource();
+            var token = _tokenSource.Token;
+            Task.Factory.StartNew(() =>
+            {
+                
+                while (!token.IsCancellationRequested)
+                {
+                    #region 创建执行下载的线程数组
+                    var items = UrlProvider.GetItems(Option.MaxCount);
+                    var tasksLength = items.Count;
+                    var tasks = new Task[tasksLength];
+                    for (var i = 0; i < tasksLength; i++)
+                    {
+                        var item = items[i];
+                        tasks[i] = new Task(() =>
+                        {
+                            UrlProvider.UpdateItem(item, UriStatus.DOING);
+                            try
+                            {
+                                // TODO 执行具体规则
+                                RunTask(item);
+                                UrlProvider.UpdateItem(item, UriStatus.DONE);
+                            }
+                            catch (Exception ex)
+                            {
+                                Debug.WriteLine($"{item.Source}, {ex.Message},{ex.TargetSite}");
+                                UrlProvider.UpdateItem(item, UriStatus.ERROR);
+                            }
+                        });
+                    }
+                    #endregion
+
+                    #region 监视线程数组完成
+                    var continuation = Task.Factory.ContinueWhenAll(tasks, (task) =>
+                    { }, token);
+                    foreach (var task in tasks)
+                    {
+                        task.Start();
+                    }
+                    while (!continuation.IsCompleted)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    #endregion
+                    if (UrlProvider.HasMore) continue;
+                    _tokenSource.Cancel();
+                    break;
+                }
+            }, token);
+            #endregion
+        }
+
+        protected void RunTask(UriItem item)
+        {
+
         }
     }
 }

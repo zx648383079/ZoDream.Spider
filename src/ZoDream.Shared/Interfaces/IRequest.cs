@@ -11,5 +11,6 @@ namespace ZoDream.Shared.Interfaces
     /// </summary>
     public interface IRequest
     {
+        public Task<string> GetAsync(string url);
     }
 }

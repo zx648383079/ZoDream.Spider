@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Utils;
 using ZoDream.Spider.ViewModels;
 
 namespace ZoDream.Spider.Pages
@@ -105,14 +106,7 @@ namespace ZoDream.Spider.Pages
                 case "选中":
                     var items = new RuleItem[RuleBox.SelectedItems.Count];
                     RuleBox.SelectedItems.CopyTo(items, 0);
-                    foreach (var i in items)
-                    {
-                        if (i == null)
-                        {
-                            continue;
-                        }
-                        ViewModel.RuleItems.Remove(i as RuleItem);
-                    }
+                    ListExtension.Remove(ViewModel.RuleItems, items);
                     break;
                 case "全部":
                     ViewModel.RuleItems.Clear();

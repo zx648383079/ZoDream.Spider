@@ -6,10 +6,12 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using ZoDream.Shared.Http;
+using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Spider.Pages
@@ -17,7 +19,7 @@ namespace ZoDream.Spider.Pages
     /// <summary>
     /// BrowserView.xaml 的交互逻辑
     /// </summary>
-    public partial class BrowserView : Window
+    public partial class BrowserView : Window, IRequest
     {
         public BrowserView(bool showConfirm = false)
         {
@@ -127,7 +129,6 @@ namespace ZoDream.Spider.Pages
             BeforeBtn.Visibility = Browser.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
             ForwardBtn.Visibility = Browser.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
             IsLoading = false;
-            _ = DealHtmlAsync();
         }
 
         private async Task DealHtmlAsync()
@@ -165,6 +166,23 @@ namespace ZoDream.Spider.Pages
         private void StopBtn_Click(object sender, RoutedEventArgs e)
         {
             Browser.Stop();
+        }
+
+        public Task<string> GetAsync(string url)
+        {
+            NavigateUrl(url);
+            return Task.Factory.StartNew(() =>
+            {
+                while(true)
+                {
+                    if (!IsLoading)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(100);
+                }
+                return GetHtmlAsync().GetAwaiter().GetResult();
+            });
         }
     }
 

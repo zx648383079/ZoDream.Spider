@@ -33,7 +33,7 @@
             <TextBlock Grid.Column="2" Text="等待时间："/>
             <TextBox x:Name="WaitTb" Grid.Column="3" Grid.Row="0"  MaxLines="1"/>
             <CheckBox x:Name="BrowserCb" Content="使用浏览器下载" Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>
-            <Button x:Name="ConfirmBtn" Content="确定" Grid.Column="5"/>
+            <Button x:Name="ConfirmBtn" Content="确定" Grid.Column="5" Click="ConfirmBtn_Click"/>
         </Grid>
 
         <TextBlock Text="保存路径：" Grid.Row="1" Grid.Column="0" />
@@ -57,13 +57,13 @@
                 <ContextMenu>
                     <MenuItem Header="规则">
                         <MenuItem Header="增加" x:Name="AddRuleBtn" Click="AddRuleBtn_Click"/>
-                        <MenuItem Header="修改"/>
+                        <MenuItem Header="修改" x:Name="EditRuleBtn" Click="EditRuleBtn_Click"/>
                         <MenuItem Header="打开"/>
                         <MenuItem Header="保存"/>
                     </MenuItem>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中"/>
-                        <MenuItem Header="全部"/>
+                        <MenuItem Header="选中" Click="RuleMenuItem_Click"/>
+                        <MenuItem Header="全部" Click="RuleMenuItem_Click"/>
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
@@ -81,12 +81,13 @@
             <ListView.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="请求头">
-                        <MenuItem Header="修改"/>
+                        <MenuItem Header="新增" Click="HeaderMenuItem_Click"/>
+                        <MenuItem Header="修改" Click="HeaderMenuItem_Click"/>
                         <MenuItem Header="获取" x:Name="BrowserBtn" Click="BrowserBtn_Click"/>
                     </MenuItem>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中"/>
-                        <MenuItem Header="全部"/>
+                        <MenuItem Header="选中" Click="HeaderMenuItem_Click"/>
+                        <MenuItem Header="全部" Click="HeaderMenuItem_Click"/>
                     </MenuItem>
                 </ContextMenu>
             </ListView.ContextMenu>
