@@ -56,6 +56,10 @@ namespace ZoDream.Shared.Models
 
         public void Parse(string url)
         {
+            if (url.IndexOf("://") < 0)
+            {
+                url = $"http://{url}";
+            }
             Parse(new Uri(url));
         }
 

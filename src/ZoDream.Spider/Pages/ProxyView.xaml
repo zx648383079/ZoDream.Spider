@@ -7,14 +7,14 @@
         Title="添加代理" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="40"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right">
-            <Button x:Name="TestBtn" Content="检测" Click="TestBtn_Click"/>
-            <Button x:Name="ConfirmBtn" Content="确定" Click="ConfirmBtn_Click"/>
+            <Button x:Name="TestBtn" Width="80" Content="检测" Click="TestBtn_Click"/>
+            <Button x:Name="ConfirmBtn" Width="80" Content="确定" Click="ConfirmBtn_Click"/>
         </StackPanel>
         <TextBox x:Name="ContentTb" Grid.Row="1" TextWrapping="Wrap" AcceptsReturn="True"/>
         <TextBlock Grid.Row="2"/>

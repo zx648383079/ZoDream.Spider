@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ZoDream.Shared.Http;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Spider.Pages
@@ -59,7 +61,11 @@ namespace ZoDream.Spider.Pages
         private void TestBtn_Click(object sender, RoutedEventArgs e)
         {
             var items = ProxyItems;
-
+            foreach (var item in items)
+            {
+                Debug.WriteLine(item.Host);
+                Debug.WriteLine(HttpProxy.Test(item));
+            }
         }
     }
 }

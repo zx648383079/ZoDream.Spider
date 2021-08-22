@@ -11,7 +11,7 @@ namespace ZoDream.Tests
         {
             var client = new Client();
             var html = client.Get("https://www.ly990.com/10_10398/10756807.html");
-            Assert.IsTrue(html.IndexOf("江家寿宴") > 0);
+            Assert.IsTrue(html != null && html.IndexOf("江家寿宴") > 0);
         }
     }
 }

@@ -29,9 +29,9 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Text="线程数："/>
-            <TextBox x:Name="CountTb" Grid.Column="1" Grid.Row="0" MaxLines="1"/>
-            <TextBlock Grid.Column="2" Text="等待时间："/>
-            <TextBox x:Name="WaitTb" Grid.Column="3" Grid.Row="0"  MaxLines="1"/>
+            <TextBox x:Name="CountTb" Text="1" Grid.Column="1" Grid.Row="0" MaxLines="1"/>
+            <TextBlock Grid.Column="2" Text="等待时间/s："/>
+            <TextBox x:Name="WaitTb" Text="60" Grid.Column="3" Grid.Row="0"  MaxLines="1"/>
             <CheckBox x:Name="BrowserCb" Content="使用浏览器下载" Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>
             <Button x:Name="ConfirmBtn" Content="确定" Grid.Column="5" Click="ConfirmBtn_Click"/>
         </Grid>

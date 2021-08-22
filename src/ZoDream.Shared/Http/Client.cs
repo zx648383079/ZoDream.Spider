@@ -59,25 +59,25 @@ namespace ZoDream.Shared.Http
             Url = url;
         }
 
-        public string Get(string url)
+        public string? Get(string url)
         {
             Url = url;
             return Get();
         }
 
-        public string Get()
+        public string? Get()
         {
             Method = "GET";
             return ReadAsString(PrepareRequest());
         }
 
-        public string Post(string url, IDictionary<string, string> param)
+        public string? Post(string url, IDictionary<string, string> param)
         {
             Url = url;
             return Post(param);
         }
 
-        public string Post(IDictionary<string, string> param)
+        public string? Post(IDictionary<string, string> param)
         {
             var request = PrepareRequest();
             ReadyPost(request, param);
@@ -90,7 +90,7 @@ namespace ZoDream.Shared.Http
             return Post(param, "application/x-www-form-urlencoded");
         }
 
-        public string Post(string param, string contentType)
+        public string? Post(string param, string contentType)
         {
             var request = PrepareRequest();
             ReadyPost(request, param, contentType);
@@ -136,7 +136,8 @@ namespace ZoDream.Shared.Http
             {
                 AllowAutoRedirect = AllowAutoRedirect,
                 UseCookies = true,
-                CookieContainer = new CookieContainer()
+                CookieContainer = new CookieContainer(),
+                ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
             if (Cookies != null && Cookies.Count > 0)
             {   
@@ -144,6 +145,7 @@ namespace ZoDream.Shared.Http
             }
             if (Proxy != null)
             {
+                // handler.SslProtocols = System.Security.Authentication.SslProtocols.Tls;
                 handler.Proxy = new WebProxy()
                 {
                     Address = new Uri($"{Proxy.Schema}://{Proxy.Host}:{Proxy.Port}"),
@@ -206,24 +208,38 @@ namespace ZoDream.Shared.Http
         /// </summary>
         /// <param name="request">WebRequest对象</param>
         /// <returns>响应对象</returns>
-        public string ReadAsString(HttpRequestMessage request)
+        public string? ReadAsString(HttpRequestMessage request)
         {
-            string html;
-            using(var client = PrepareClient())
-            using (var response = client.Send(request))
+            try
             {
-                html = ReadAsString(response);
+                string html;
+                using (var client = PrepareClient())
+                using (var response = client.Send(request))
+                {
+                    html = ReadAsString(response);
+                }
+                return html;
             }
-            return html;
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public HttpResponseMessage? Read()
         {
-            using (var request =  PrepareRequest())
-            using (var client = PrepareClient())
-            using (var response = client.Send(request))
+            try
             {
-                return response;
+                using (var request = PrepareRequest())
+                using (var client = PrepareClient())
+                using (var response = client.Send(request))
+                {
+                    return response;
+                }
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 
@@ -295,28 +311,35 @@ namespace ZoDream.Shared.Http
         /// <param name="maxSize"></param>
         public void ReadAsFile(string file, long current, long maxSize = 512000)
         {
-            using (var request = PrepareRequest())
+            try
             {
-                request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(current, current + maxSize - 1);
-                using (var client = PrepareClient())
-                using (var response = client.Send(request))
+                using (var request = PrepareRequest())
                 {
-                    var responseStream = ReadAsStream(response);
-                    //创建本地文件写入流
-                    var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                    var bArr = new byte[1024];
-                    if (responseStream != null)
+                    request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(current, current + maxSize - 1);
+                    using (var client = PrepareClient())
+                    using (var response = client.Send(request))
                     {
-                        var size = responseStream.Read(bArr, 0, bArr.Length);
-                        while (size > 0)
+                        var responseStream = ReadAsStream(response);
+                        //创建本地文件写入流
+                        var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                        var bArr = new byte[1024];
+                        if (responseStream != null)
                         {
-                            stream.Write(bArr, 0, size);
-                            size = responseStream.Read(bArr, 0, bArr.Length);
+                            var size = responseStream.Read(bArr, 0, bArr.Length);
+                            while (size > 0)
+                            {
+                                stream.Write(bArr, 0, size);
+                                size = responseStream.Read(bArr, 0, bArr.Length);
+                            }
                         }
+                        stream.Close();
+                        responseStream?.Close();
                     }
-                    stream.Close();
-                    responseStream?.Close();
                 }
+            }
+            catch (Exception)
+            {
+                return;
             }
         }
 
@@ -326,20 +349,27 @@ namespace ZoDream.Shared.Http
         /// <returns></returns>
         public long ReadContentLength()
         {
-            using (var request = PrepareRequest())
-            using (var client = PrepareClient())
-            using (var response = client.Send(request))
+            try
             {
-                if (response.StatusCode != HttpStatusCode.OK)
+                using (var request = PrepareRequest())
+                using (var client = PrepareClient())
+                using (var response = client.Send(request))
                 {
-                    return 0;
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return 0;
+                    }
+                    var length = response.Content.Headers.ContentLength;
+                    if (length == null)
+                    {
+                        return 0;
+                    }
+                    return (long)length;
                 }
-                var length = response.Content.Headers.ContentLength;
-                if (length == null)
-                {
-                    return 0;
-                }
-                return (long)length;
+            }
+            catch (Exception)
+            {
+                return 0;
             }
         }
 
