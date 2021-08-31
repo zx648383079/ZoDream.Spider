@@ -11,7 +11,7 @@ namespace ZoDream.Shared.Interfaces
     {
         public IList<RuleGroupItem> Get(string uri);
 
-        public IRule Render(string name);
+        public IRuleValue Render(string name);
         public void Add(RuleGroupItem rule);
         public void Add(IList<RuleGroupItem> rules);
         public IList<RuleGroupItem> All();

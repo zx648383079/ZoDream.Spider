@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
 {
@@ -12,5 +13,6 @@ namespace ZoDream.Shared.Interfaces
     public interface IRequest
     {
         public Task<string> GetAsync(string url);
+        public Task<string> GetAsync(string url, IList<HeaderItem> headers);
     }
 }

@@ -19,6 +19,7 @@ namespace ZoDream.Shared.Interfaces
 
         public IProxyProvider ProxyProvider {  get; set; }
 
+        public IRequestProvider RequestProvider {  get; set; }
 
         public void Start();
 
@@ -27,6 +28,8 @@ namespace ZoDream.Shared.Interfaces
         public void Pause();
 
         public void Resume();
+
+        public ISpiderContainer GetContainer(UriItem item);
 
         /// <summary>
         /// 加载爬虫任务

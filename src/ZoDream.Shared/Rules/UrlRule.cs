@@ -9,8 +9,7 @@ namespace ZoDream.Shared.Rules
 {
     public class UrlRule : IRule
     {
-        public ISpider Container { get; set; }
-        public IRuleValue Render(IRuleValue value)
+        public void Render(ISpiderContainer container)
         {
             throw new NotImplementedException();
         }

@@ -2,17 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Models;
+using ZoDream.Shared.Rules.Values;
 
 namespace ZoDream.Shared.Rules
 {
     public class RegexReplaceRule : IRule
     {
-        public ISpider Container { get; set; }
-        public IRuleValue Render(IRuleValue value)
+        private readonly string search;
+        private readonly string replace;
+        public RegexReplaceRule(RuleItem option)
         {
-            throw new NotImplementedException();
+            search = option.Param1;
+            replace = option.Param2;
+        }
+        public void Render(ISpiderContainer container)
+        {
+            var regex = new Regex(search, RegexOptions.IgnoreCase);
+            container.Data = container.Data.Select(i => new RuleString(regex.Replace(i.ToString(), replace)));
+            container.Next();
         }
     }
 }

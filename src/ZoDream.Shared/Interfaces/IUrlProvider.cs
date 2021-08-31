@@ -16,6 +16,7 @@ namespace ZoDream.Shared.Interfaces
         public int Count {  get; }
 
         public void Add(string url);
+        public void Add(IEnumerable<string> urls);
 
         public void Remove(string url);
 

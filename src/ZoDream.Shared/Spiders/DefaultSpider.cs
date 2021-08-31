@@ -24,7 +24,7 @@ namespace ZoDream.Shared.Spiders
         /// <summary>
         /// 线程锁
         /// </summary>
-        private readonly object _object = new object();
+        private readonly object _lock = new object();
 
 
         public SpiderOption Option { get; set; } = new SpiderOption();
@@ -32,6 +32,8 @@ namespace ZoDream.Shared.Spiders
         public IRuleProvider RuleProvider { get; set; } = new RuleProvider();
 
         public IProxyProvider ProxyProvider { get; set; } = new ProxyProvider();
+
+        public IRequestProvider RequestProvider {  get; set; } = new RequestProvider();
 
         public void Load(string file)
         {
@@ -207,6 +209,11 @@ namespace ZoDream.Shared.Spiders
         protected void RunTask(UriItem item)
         {
 
+        }
+
+        public ISpiderContainer GetContainer(UriItem item)
+        {
+            throw new NotImplementedException();
         }
     }
 }

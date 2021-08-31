@@ -7,8 +7,12 @@ using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Shared.Rules
 {
-    public class SubstrRule : IRule
+    public class RestRule : IRule, IRuleSaver
     {
+        public string GetFileName(string url)
+        {
+            throw new NotImplementedException();
+        }
 
         public void Render(ISpiderContainer container)
         {

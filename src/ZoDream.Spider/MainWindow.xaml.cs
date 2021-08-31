@@ -37,8 +37,11 @@ namespace ZoDream.Spider
             {
                 return;
             }
-            var items = page.UrlItems;
-            
+            if (ViewModel.Instance == null)
+            {
+                return;
+            }
+            ViewModel.Instance.UrlProvider.Add(page.UrlItems);
         }
 
         private void EditTaskBtn_Click(object sender, RoutedEventArgs e)

@@ -18,7 +18,7 @@ namespace ZoDream.Shared.Http
 {
     public class Client
     {
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
 
         public string Accept { get; set; } = HttpAccept.Html;
 
@@ -32,7 +32,7 @@ namespace ZoDream.Shared.Http
 
         public bool AllowAutoRedirect { get; set; } = true;
 
-        public ProxyItem Proxy { get; set; }
+        public ProxyItem? Proxy { get; set; }
 
         public IList<HeaderItem> Headers { get; set; } = new List<HeaderItem>() {
             new HeaderItem("Accept-Encoding", "gzip, deflate"),
@@ -47,7 +47,7 @@ namespace ZoDream.Shared.Http
 
         public int ReadWriteTimeOut = 2 * 1000;
 
-        public CookieCollection Cookies { get; set; }
+        public CookieCollection? Cookies { get; set; }
 
         public Client()
         {

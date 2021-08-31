@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace ZoDream.Shared.Interfaces
 {
-    /// <summary>
-    /// 定义规则
-    /// </summary>
-    public interface IRule
+    public interface IRuleSaver
     {
-        public void Render(ISpiderContainer container);
+        public string GetFileName(string url);
     }
 }

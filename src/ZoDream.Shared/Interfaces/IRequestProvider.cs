@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace ZoDream.Shared.Interfaces
 {
-    /// <summary>
-    /// 定义规则
-    /// </summary>
-    public interface IRule
+    public interface IRequestProvider
     {
-        public void Render(ISpiderContainer container);
+        public IRequest Getter();
+
+        public IRequest Downloader();
     }
 }

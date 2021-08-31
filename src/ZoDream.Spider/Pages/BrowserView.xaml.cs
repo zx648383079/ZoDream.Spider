@@ -184,6 +184,11 @@ namespace ZoDream.Spider.Pages
                 return GetHtmlAsync().GetAwaiter().GetResult();
             });
         }
+
+        public Task<string> GetAsync(string url, IList<HeaderItem> headers)
+        {
+            return GetAsync(url);
+        }
     }
 
     public delegate void DocumentReadyEventHandler(object sender, string html);

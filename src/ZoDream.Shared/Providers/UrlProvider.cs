@@ -24,6 +24,14 @@ namespace ZoDream.Shared.Providers
             Items.Add(new UriItem() { Source = url });
         }
 
+        public void Add(IEnumerable<string> items)
+        {
+            foreach (var item in items)
+            {
+                Add(item);
+            }
+        }
+
         public bool Contains(string url)
         {
             foreach (var item in Items)

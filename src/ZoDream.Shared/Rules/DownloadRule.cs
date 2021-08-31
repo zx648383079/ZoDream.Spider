@@ -7,10 +7,14 @@ using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Shared.Rules
 {
-    public class DownloadRule : IRule
+    public class DownloadRule : IRule, IRuleSaver
     {
-        public ISpider Container { get; set; }
-        public IRuleValue Render(IRuleValue value)
+        public string GetFileName(string url)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Render(ISpiderContainer container)
         {
             throw new NotImplementedException();
         }
