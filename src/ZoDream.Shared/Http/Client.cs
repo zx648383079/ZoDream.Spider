@@ -85,7 +85,7 @@ namespace ZoDream.Shared.Http
         }
 
 
-        public string Post(string param)
+        public string? Post(string param)
         {
             return Post(param, "application/x-www-form-urlencoded");
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Events;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
@@ -12,6 +13,7 @@ namespace ZoDream.Shared.Interfaces
     /// </summary>
     public interface ISpider: ILoader
     {
+        public bool IsDebug { get; set; }
         public SpiderOption Option { get; set; }
         public IUrlProvider UrlProvider { get; set; }
 
@@ -20,6 +22,8 @@ namespace ZoDream.Shared.Interfaces
         public IProxyProvider ProxyProvider {  get; set; }
 
         public IRequestProvider RequestProvider {  get; set; }
+
+        public ILogger Logger {  get; set; }
 
         public void Start();
 

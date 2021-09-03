@@ -7,14 +7,14 @@ namespace ZoDream.Shared.Rules
 {
     public class JoinRule : IRule
     {
-        private readonly string joinLink;
+        private string joinLink = string.Empty;
 
-        public JoinRule()
+        public PluginInfo Info()
         {
-            joinLink = string.Empty;
+            return new PluginInfo("合并字符串");
         }
 
-        public JoinRule(RuleItem option)
+        public void Ready(RuleItem option)
         {
             joinLink = option.Param1;
         }

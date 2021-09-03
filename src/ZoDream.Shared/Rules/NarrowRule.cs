@@ -12,11 +12,16 @@ namespace ZoDream.Shared.Rules
 {
     public class NarrowRule : IRule
     {
-        private readonly string begin;
+        private string begin = string.Empty;
 
-        private readonly string end;
+        private string end = string.Empty;
 
-        public NarrowRule(RuleItem option)
+        public PluginInfo Info()
+        {
+            return new PluginInfo("截断");
+        }
+
+        public void Ready(RuleItem option)
         {
             begin = option.Param1;
             end = option.Param2.Trim();

@@ -7,10 +7,15 @@ namespace ZoDream.Shared.Rules
 {
     public class JQueryRule : IRule
     {
-        private readonly string tag;
-        private readonly bool isHtml;
+        private string tag = string.Empty;
+        private bool isHtml = true;
 
-        public JQueryRule(RuleItem option)
+        public PluginInfo Info()
+        {
+            return new PluginInfo("JQuery查询");
+        }
+
+        public void Ready(RuleItem option)
         {
             tag = option.Param1.Trim();
             var v = option.Param2.Trim().ToUpper();

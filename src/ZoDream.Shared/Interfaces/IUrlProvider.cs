@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Events;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
@@ -13,9 +14,13 @@ namespace ZoDream.Shared.Interfaces
     public interface IUrlProvider: IEnumerable<UriItem>, ILoader
     {
 
+        public event UrlChangedEventHandler? UrlChanged;
         public int Count {  get; }
 
         public void Add(string url);
+
+        public void Add(string url, UriType uriType);
+
         public void Add(IEnumerable<string> urls);
 
         public void Remove(string url);

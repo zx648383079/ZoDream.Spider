@@ -12,9 +12,14 @@ namespace ZoDream.Shared.Rules
 {
     public class RegexReplaceRule : IRule
     {
-        private readonly string search;
-        private readonly string replace;
-        public RegexReplaceRule(RuleItem option)
+        private string search = string.Empty;
+        private string replace = string.Empty;
+        public PluginInfo Info()
+        {
+            return new PluginInfo("正则替换");
+        }
+
+        public void Ready(RuleItem option)
         {
             search = option.Param1;
             replace = option.Param2;

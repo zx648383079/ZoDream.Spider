@@ -8,7 +8,7 @@ namespace ZoDream.Shared.Interfaces
 
         public UriItem Url { get; set; }
 
-        public IList<RuleItem> Rules { get; set; }
+        public IList<IRule> Rules { get; set; }
 
         public IRuleValue Data { get; set; }
         /// <summary>
@@ -25,5 +25,7 @@ namespace ZoDream.Shared.Interfaces
         public void UnsetAttribute(string name);
 
         public void Next();
+
+        public string RenderData(string content);
     }
 }

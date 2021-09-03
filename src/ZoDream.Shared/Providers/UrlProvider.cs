@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 
@@ -11,17 +12,33 @@ namespace ZoDream.Shared.Providers
 {
     public class UrlProvider : IUrlProvider
     {
+        public UrlProvider(ISpider spider)
+        {
+            Application = spider;
+        }
+
+        public ISpider Application { get; set; }
+
         public IList<UriItem> Items { get; private set; } = new List<UriItem>();
+
+        public event UrlChangedEventHandler? UrlChanged;
 
         public int Count {  get {  return Items.Count; }  }
 
         public void Add(string url)
         {
+            Add(url, UriType.Html);
+        }
+
+        public void Add(string url, UriType uriType)
+        {
             if (Contains(url))
             {
                 return;
             }
-            Items.Add(new UriItem() { Source = url });
+            var item = new UriItem() { Source = url, Type = uriType };
+            Items.Add(item);
+            UrlChanged?.Invoke(item);
         }
 
         public void Add(IEnumerable<string> items)
@@ -133,6 +150,7 @@ namespace ZoDream.Shared.Providers
         public void UpdateItem(UriItem item, UriStatus status)
         {
             item.Status = status;
+            UrlChanged?.Invoke(item);
         }
     }
 }

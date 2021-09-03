@@ -12,11 +12,16 @@ namespace ZoDream.Shared.Rules
 {
     public class RegexRule : IRule
     {
-        private readonly string pattern;
+        private string pattern;
 
-        private readonly string tag;
+        private string tag;
 
-        public RegexRule(RuleItem option)
+        public PluginInfo Info()
+        {
+            return new PluginInfo("正则截取");
+        }
+
+        public void Ready(RuleItem option)
         {
             pattern = option.Param1;
             tag = option.Param2.Trim();

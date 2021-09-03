@@ -5,12 +5,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
 
 namespace ZoDream.Shared.Rules
 {
     public class TraditionalToSimplifiedRule : IRule
     {
+        public PluginInfo Info()
+        {
+            return new PluginInfo("简繁转换");
+        }
+
+        public void Ready(RuleItem option)
+        {
+        }
         public void Render(ISpiderContainer container)
         {
             container.Data = container.Data.Select(i => new RuleString(Format(i.ToString(), true)));

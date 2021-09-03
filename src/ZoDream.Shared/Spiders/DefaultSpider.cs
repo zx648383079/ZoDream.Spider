@@ -8,9 +8,12 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Providers;
+using ZoDream.Shared.Spiders.Containers;
 
 namespace ZoDream.Shared.Spiders
 {
@@ -26,15 +29,28 @@ namespace ZoDream.Shared.Spiders
         /// </summary>
         private readonly object _lock = new object();
 
+        public DefaultSpider()
+        {
+            UrlProvider = new UrlProvider(this);
+        }
 
+        public bool IsDebug { get; set; } = false;
         public SpiderOption Option { get; set; } = new SpiderOption();
-        public IUrlProvider UrlProvider { get; set; } = new UrlProvider();
+        public IUrlProvider UrlProvider { get; set; }
         public IRuleProvider RuleProvider { get; set; } = new RuleProvider();
 
         public IProxyProvider ProxyProvider { get; set; } = new ProxyProvider();
 
         public IRequestProvider RequestProvider {  get; set; } = new RequestProvider();
 
+        public ILogger Logger { get; set; } = new FileLogger();
+
+        public event UrlChangedEventHandler UrlChanged;
+
+        public void EmitUrl(UriItem item)
+        {
+            UrlChanged?.Invoke(item);
+        }
         public void Load(string file)
         {
             if (string.IsNullOrEmpty(file))
@@ -208,12 +224,18 @@ namespace ZoDream.Shared.Spiders
 
         protected void RunTask(UriItem item)
         {
-
+            var container = GetContainer(item);
+            container.Next();
         }
 
         public ISpiderContainer GetContainer(UriItem item)
         {
-            throw new NotImplementedException();
+            return new SpiderContainer(this)
+            {
+                Url = item
+            };
         }
+
+
     }
 }

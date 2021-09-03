@@ -12,11 +12,16 @@ namespace ZoDream.Shared.Rules
 {
     public class MatchRule : IRule
     {
-        private readonly string pattern;
+        private string pattern = string.Empty;
 
-        private readonly string tag;
+        private string tag = string.Empty;
 
-        public MatchRule(RuleItem option)
+        public PluginInfo Info()
+        {
+            return new PluginInfo("正则匹配");
+        }
+
+        public void Ready(RuleItem option)
         {
             pattern = option.Param1;
             tag = option.Param2;

@@ -6,18 +6,27 @@ using System.Threading.Tasks;
 
 namespace ZoDream.Shared.Models
 {
-    public class PluginItem
+    public class PluginItem: PluginInfo
     {
-        public string Name {  get; set; } = string.Empty;
-
-        public string Description {  get; set; } = string.Empty;
-
         public string FileName {  get; set; } = string.Empty;
 
-        public string Version {  get; set; } = string.Empty;
+        public Type? Callback {  get; set; }
 
-        public string Author {  get; set; } = string.Empty;
+        public PluginItem()
+        {
 
-        public string Callback {  get; set; } = string.Empty;
+        }
+
+        public PluginItem(string name): base(name)
+        {
+        }
+
+        public PluginItem(PluginInfo info)
+        {
+            Name = info.Name;
+            Description = info.Description;
+            Author = info.Author;
+            Version = info.Version;
+        }
     }
 }

@@ -12,6 +12,16 @@ namespace ZoDream.Shared.Rules
 {
     public class HtmlUrlRule : IRule
     {
+
+        public PluginInfo Info()
+        {
+            return new PluginInfo("提取默认链接");
+        }
+
+        public void Ready(RuleItem option)
+        {
+            
+        }
         public void Render(ISpiderContainer container)
         {
             container.Data = container.Data.Select(i => RenderOne(container, i));
