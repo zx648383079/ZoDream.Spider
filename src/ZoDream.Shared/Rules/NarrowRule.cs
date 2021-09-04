@@ -28,7 +28,6 @@ namespace ZoDream.Shared.Rules
         }
         public void Render(ISpiderContainer container)
         {
-            var isEmptyTag = string.IsNullOrWhiteSpace(tag);
             container.Data = container.Data.Select(i => new RuleString(
                 Narrow(i.ToString())
                 ));

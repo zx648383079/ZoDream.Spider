@@ -28,10 +28,10 @@
                     <MenuItem x:Name="SaveProjectAsBtn" Header="另存为" Click="SaveProjectAsBtn_Click" Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}"/>
                 </MenuItem>
                 <MenuItem Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}" Header="控制" >
-                    <MenuItem Header="开始"/>
-                    <MenuItem Header="暂停"/>
-                    <MenuItem Header="停止"/>
-                    <MenuItem Header="还原"/>
+                    <MenuItem x:Name="StartBtn" Header="开始" Click="StartBtn_Click" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
+                    <MenuItem x:Name="PauseBtn" Header="暂停" Click="PauseBtn_Click" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+                    <MenuItem x:Name="StopBtn" Header="停止" Click="StopBtn_Click" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+                    <MenuItem x:Name="ResumeBtn" Header="还原" Click="ResumeBtn_Click"/>
                 </MenuItem>
                 <MenuItem Header="关于">
                     <MenuItem Header="查看帮助"/>
@@ -39,7 +39,7 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        <ListBox Grid.Row="1">
+        <ListBox x:Name="UrlListBox" Grid.Row="1" ItemsSource="{Binding UrlItems}" SelectionChanged="UrlListBox_SelectionChanged">
             <ListBox.ContextMenu>
                 <ContextMenu Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}">
                     <MenuItem Header="任务">
@@ -50,13 +50,27 @@
                     <MenuItem Header="添加网址" x:Name="AddUrlBtn" Click="AddUrlBtn_Click"/>
                     <MenuItem Header="添加代理" x:Name="ProxyBtn" Click="ProxyBtn_Click"/>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中" />
-                        <MenuItem Header="已完成" />
-                        <MenuItem Header="全部" />
+                        <MenuItem Header="选中" Click="MenuItem_Click"/>
+                        <MenuItem Header="已完成" Click="MenuItem_Click"/>
+                        <MenuItem Header="全部" Click="MenuItem_Click"/>
                     </MenuItem>
                 </ContextMenu>
             </ListBox.ContextMenu>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Image Source="{Binding Path=Status,Converter={StaticResource StatusIconConverter}}" MaxWidth="20"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Path=Title}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="{Binding Path=Source}" VerticalAlignment="Center"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock Grid.Row="2"/>
+        <TextBlock Grid.Row="2" Text="{Binding Message}"/>
     </Grid>
 </Window>

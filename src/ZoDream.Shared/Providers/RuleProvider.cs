@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -80,6 +81,11 @@ namespace ZoDream.Shared.Providers
             return string.Empty;
         }
 
+        public IList<PluginItem> AllPlugin()
+        {
+            return PluginItems.Values.Cast<PluginItem>().ToList();
+        }
+
         public void Deserializer(StreamReader reader)
         {
             var sb = new StringBuilder();
@@ -126,7 +132,31 @@ namespace ZoDream.Shared.Providers
             LoadPlugin(ruleMaps, string.Empty);
         }
 
-        private void LoadPlugin(Type[] ruleMaps, string fileName)
+        public void Load(string pluginDirectory)
+        {
+            Load();
+            if (string.IsNullOrWhiteSpace(pluginDirectory))
+            {
+                return;
+            }
+            var info = new DirectoryInfo(pluginDirectory);
+            if (!info.Exists)
+            {
+                return;
+            }
+            var files = info.GetFiles();
+            foreach (var item in files)
+            {
+                if (item.Name.IndexOf("Rule.dll") < 0)
+                {
+                    continue;
+                }
+                LoadDll(item.FullName);
+            }
+            Debug.WriteLine($"成功加载{PluginItems.Count}条规则");
+        }
+
+        public void LoadPlugin(Type[] ruleMaps, string fileName)
         {
             foreach (var item in ruleMaps)
             {
@@ -134,13 +164,13 @@ namespace ZoDream.Shared.Providers
             }
         }
 
-        private void LoadPlugin(Type rule, string fileName)
+        public void LoadPlugin(Type rule, string fileName)
         {
-            if (rule == null || !rule.IsInstanceOfType(typeof(IRule)))
+            if (rule == null || !typeof(IRule).IsAssignableFrom(rule))
             {
                 return;
             }
-            var ctor = rule.GetConstructor(new Type[] { typeof(IRule) });
+            var ctor = rule.GetConstructor(new Type[] {});
             if (ctor == null)
             {
                 return;

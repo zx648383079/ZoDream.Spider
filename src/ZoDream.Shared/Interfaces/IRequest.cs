@@ -12,7 +12,9 @@ namespace ZoDream.Shared.Interfaces
     /// </summary>
     public interface IRequest
     {
+        public bool SupportTask { get; }
         public Task<string> GetAsync(string url);
         public Task<string> GetAsync(string url, IList<HeaderItem> headers);
+        public Task<string> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy);
     }
 }

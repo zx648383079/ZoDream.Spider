@@ -36,6 +36,29 @@ namespace ZoDream.Shared.Models
         }
 
         public UriType Type { get; set; } = UriType.File;
+        public string FormatTip { 
+            get
+            {
+                return $"{FormatStatus}: {Source}";
+            }
+        }
 
+        public string FormatStatus
+        {
+            get
+            {
+                switch (Status)
+                {
+                    case UriStatus.DOING:
+                        return "作业中";
+                    case UriStatus.DONE:
+                        return "完成作业";
+                    case UriStatus.ERROR:
+                        return "作业失败";
+                    default:
+                        return "等待中";
+                }
+            }
+        }
     }
 }

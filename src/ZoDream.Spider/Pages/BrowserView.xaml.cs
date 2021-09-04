@@ -27,6 +27,8 @@ namespace ZoDream.Spider.Pages
             YesBtn.Visibility = showConfirm ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        public bool SupportTask { get; } = false;
+
         public bool IsLoading
         {
             get { return StopBtn.Visibility == Visibility.Visible; }
@@ -186,6 +188,11 @@ namespace ZoDream.Spider.Pages
         }
 
         public Task<string> GetAsync(string url, IList<HeaderItem> headers)
+        {
+            return GetAsync(url);
+        }
+
+        public Task<string> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy)
         {
             return GetAsync(url);
         }

@@ -17,5 +17,8 @@ namespace ZoDream.Shared.Interfaces
         public void Add(IList<RuleGroupItem> rules);
         public IList<RuleGroupItem> All();
         public string GetFileName(string uri);
+        public IList<PluginItem> AllPlugin();
+        public void Load(string pluginDirectory);
+        public void Load();
     }
 }

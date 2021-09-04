@@ -24,6 +24,9 @@ namespace ZoDream.Shared.Interfaces
         public void Add(IEnumerable<string> urls);
 
         public void Remove(string url);
+        public void Remove(IEnumerable<UriItem> urls);
+        public void Remove(UriStatus status);
+        public void Clear();
 
         public bool Contains(string url);
 
@@ -35,5 +38,9 @@ namespace ZoDream.Shared.Interfaces
         public void UpdateItem(int index, UriStatus status);
 
         public void UpdateItem(UriItem item, UriStatus status);
+
+        public void UpdateItem(UriItem url);
+        public void Reset();
+        
     }
 }

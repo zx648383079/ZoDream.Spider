@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,20 +22,6 @@ namespace ZoDream.Shared.Loggers
             throw new NotImplementedException();
         }
 
-        public void Log(string message)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Log(IRule rule)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Log(IRule rule, ISpiderContainer container)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Waining(string message)
         {
@@ -43,7 +30,7 @@ namespace ZoDream.Shared.Loggers
 
         public void Log(string message)
         {
-            if (!IsDebug)
+            if (Level != LogLevel.Debug)
             {
                 return;
             }
@@ -51,7 +38,7 @@ namespace ZoDream.Shared.Loggers
         }
         public void Log(IRule rule)
         {
-            if (!IsDebug)
+            if (Level != LogLevel.Debug)
             {
                 return;
             }
@@ -60,7 +47,7 @@ namespace ZoDream.Shared.Loggers
         }
         public void Log(IRule rule, ISpiderContainer container)
         {
-            if (!IsDebug)
+            if (Level != LogLevel.Debug)
             {
                 return;
             }

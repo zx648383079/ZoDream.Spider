@@ -2,4 +2,22 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:converter="clr-namespace:ZoDream.Spider.Converters">
     <converter:BoolVisibilityConverter x:Key="BoolConverter"/>
+    <converter:FalseVisibilityConverter x:Key="FalseConverter"/>
+    <converter:StatusIconConverter x:Key="StatusIconConverter"/>
+
+    <ToolTip x:Key="UriTip">
+        <StackPanel>
+            <TextBlock Text="网址："/>
+            <TextBlock Text="{Binding Path=Source}"/>
+            <TextBlock Text="标题："/>
+            <TextBlock Text="{Binding Path=Title}"/>
+            <TextBlock Text="状态："/>
+            <TextBlock Text="{Binding Path=FormatStatus}"/>
+            <TextBlock Text="附加消息："/>
+            <TextBlock Text="{Binding Path=Message}"/>
+        </StackPanel>
+    </ToolTip>
+    <Style TargetType="ListBoxItem">
+        <Setter Property="ToolTip" Value="{StaticResource UriTip}"/>
+    </Style>
 </ResourceDictionary>

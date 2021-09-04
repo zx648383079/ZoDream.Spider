@@ -13,6 +13,7 @@ using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Providers;
+using ZoDream.Shared.Rules.Values;
 using ZoDream.Shared.Spiders.Containers;
 
 namespace ZoDream.Shared.Spiders
@@ -32,25 +33,23 @@ namespace ZoDream.Shared.Spiders
         public DefaultSpider()
         {
             UrlProvider = new UrlProvider(this);
+            RequestProvider = new RequestProvider(this);
         }
 
         public bool IsDebug { get; set; } = false;
+
+        public bool Paused { get; private set; } = true;
         public SpiderOption Option { get; set; } = new SpiderOption();
         public IUrlProvider UrlProvider { get; set; }
         public IRuleProvider RuleProvider { get; set; } = new RuleProvider();
 
         public IProxyProvider ProxyProvider { get; set; } = new ProxyProvider();
 
-        public IRequestProvider RequestProvider {  get; set; } = new RequestProvider();
+        public IRequestProvider RequestProvider {  get; set; }
 
         public ILogger Logger { get; set; } = new FileLogger();
 
-        public event UrlChangedEventHandler UrlChanged;
-
-        public void EmitUrl(UriItem item)
-        {
-            UrlChanged?.Invoke(item);
-        }
+        public event PausedEventHandler PausedChanged;
         public void Load(string file)
         {
             if (string.IsNullOrEmpty(file))
@@ -92,22 +91,68 @@ namespace ZoDream.Shared.Spiders
 
         public void Pause()
         {
-            throw new NotImplementedException();
+            if (Paused)
+            {
+                return;
+            }
+            if (_tokenSource != null)
+            {
+                _tokenSource.Cancel();
+            }
+            Paused = true;
+            PausedChanged?.Invoke(Paused);
         }
 
         public void Resume()
         {
-            throw new NotImplementedException();
+            Stop();
+            Start();
         }
 
         public void Start()
         {
-            throw new NotImplementedException();
+            if (!Paused)
+            {
+                return;
+            }
+            Paused = false;
+            PausedChanged?.Invoke(Paused);
+            if (RequestProvider.SupportTask)
+            {
+                RunTask();
+            } else
+            {
+                RunSingleTask();
+            }
+        }
+
+        private async void RunSingleTask()
+        {
+            while (UrlProvider.HasMore)
+            {
+                
+                var items = UrlProvider.GetItems(1);
+                if (items == null)
+                {
+                    break;
+                }
+                if (Paused)
+                {
+                    break;
+                }
+                foreach (var item in items)
+                {
+                    await RunTaskAsync(item);
+                }
+            }
+            Paused = true;
+            PausedChanged?.Invoke(Paused);
         }
 
         public void Stop()
         {
-            throw new NotImplementedException();
+            Pause();
+            UrlProvider.Reset();
         }
 
 
@@ -184,14 +229,12 @@ namespace ZoDream.Shared.Spiders
                     for (var i = 0; i < tasksLength; i++)
                     {
                         var item = items[i];
-                        tasks[i] = new Task(() =>
+                        tasks[i] = new Task(async () =>
                         {
-                            UrlProvider.UpdateItem(item, UriStatus.DOING);
                             try
                             {
                                 // TODO 执行具体规则
-                                RunTask(item);
-                                UrlProvider.UpdateItem(item, UriStatus.DONE);
+                                await RunTaskAsync(item);
                             }
                             catch (Exception ex)
                             {
@@ -216,26 +259,85 @@ namespace ZoDream.Shared.Spiders
                     #endregion
                     if (UrlProvider.HasMore) continue;
                     _tokenSource.Cancel();
+                    Paused = true;
+                    PausedChanged?.Invoke(Paused);
                     break;
                 }
             }, token);
             #endregion
         }
 
-        protected void RunTask(UriItem item)
+        protected async Task RunTaskAsync(UriItem url)
         {
-            var container = GetContainer(item);
-            container.Next();
-        }
-
-        public ISpiderContainer GetContainer(UriItem item)
-        {
-            return new SpiderContainer(this)
+            var items = await GetContainerAsync(url);
+            UrlProvider.UpdateItem(url, UriStatus.DOING);
+            foreach (var item in items)
             {
-                Url = item
-            };
+                item.Next();
+            }
+            UrlProvider.UpdateItem(url, UriStatus.DONE);
         }
 
+        public async Task<IList<ISpiderContainer>> GetContainerAsync(UriItem url)
+        {
+            var items = new List<ISpiderContainer>();
+            var rules = RuleProvider.Get(url.Source);
+            var shouldPrepare = false;
+            foreach (var item in rules)
+            {
+                var container = new SpiderContainer(this)
+                {
+                    Url = url,
+                };
+                foreach (var rule in item.Rules)
+                {
+                    if (rule == null)
+                    {
+                        continue;
+                    }
+                    var r = RuleProvider.Render(rule);
+                    if (r == null)
+                    {
+                        continue;
+                    }
+                    container.Rules.Add(r);
+                    if (r is not IRuleSaver || (r as IRuleSaver).ShouldPrepare)
+                    {
+                        shouldPrepare = true;
+                    }
+                }
+                items.Add(container);
+            }
+            if (!shouldPrepare)
+            {
+                return items;
+            }
+            var content = await RequestProvider.Getter().GetAsync(url.Source);
+            if (content == null)
+            {
+                items.Clear();
+                return items;
+            }
+            url.Title = MatchTitle(content);
+            foreach (var item in items)
+            {
+                item.Data = new RuleString(content);
+            }
+            return items;
+        }
 
+        private string MatchTitle(string content)
+        {
+            if (string.IsNullOrEmpty(content))
+            {
+                return string.Empty;
+            }
+            var match = Regex.Match(content, @"\<title\>([\s\S]+?)\</title\>");
+            if (match == null)
+            {
+                return string.Empty;
+            }
+            return match.Groups[1].Value.Trim();
+        }
     }
 }

@@ -17,7 +17,7 @@ namespace ZoDream.Tests
         [TestMethod]
         public void TestRequest()
         {
-            var item = new ProxyItem("61.163.32.88:3128");
+            var item = new ProxyItem("118.190.244.234:3128");
             Assert.IsTrue(HttpProxy.Test(item));
         }
     }

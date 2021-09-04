@@ -18,6 +18,7 @@ namespace ZoDream.Shared.Rules
             return new PluginInfo("本地保存");
         }
 
+        public bool ShouldPrepare { get; } = true;
         public void Ready(RuleItem option)
         {
             fileName = option.Param1.Trim();

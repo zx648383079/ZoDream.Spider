@@ -12,14 +12,19 @@ namespace ZoDream.Shared.Http
 
         public static bool Test(ProxyItem proxy)
         {
-            if (proxy == null)
+            return Test(proxy, "https://www.baidu.com/");
+        }
+
+        public static bool Test(ProxyItem proxy, string testUrl)
+        {
+            if (proxy == null || string.IsNullOrWhiteSpace(testUrl))
             {
                 return false;
             }
             var client = new Client();
             client.Proxy = proxy;
             client.TimeOut = 20 * 1000;
-            var html = client.Get("https://www.baidu.com");
+            var html = client.Get(testUrl);
             return html != null;
         }
     }

@@ -14,6 +14,8 @@ namespace ZoDream.Shared.Interfaces
     public interface ISpider: ILoader
     {
         public bool IsDebug { get; set; }
+
+        public bool Paused { get; }
         public SpiderOption Option { get; set; }
         public IUrlProvider UrlProvider { get; set; }
 
@@ -25,15 +27,18 @@ namespace ZoDream.Shared.Interfaces
 
         public ILogger Logger {  get; set; }
 
+        public event PausedEventHandler PausedChanged;
+
         public void Start();
 
         public void Stop();
 
         public void Pause();
 
+        /// <summary>
+        /// 重新开始
+        /// </summary>
         public void Resume();
-
-        public ISpiderContainer GetContainer(UriItem item);
 
         /// <summary>
         /// 加载爬虫任务

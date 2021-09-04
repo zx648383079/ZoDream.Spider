@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Providers;
 using ZoDream.Shared.Spiders.Containers;
 
 namespace ZoDream.Tests
@@ -14,7 +15,15 @@ namespace ZoDream.Tests
         [TestMethod]
         public void TestOne()
         {
-            var container = new SpiderContainer();
+            var container = new SpiderContainer(null);
+        }
+
+        [TestMethod]
+        public void TestPlugin()
+        {
+            var provider = new RuleProvider();
+            provider.LoadDll("");
+            Assert.IsTrue(provider.AllPlugin().Count() == 1);
         }
     }
 }

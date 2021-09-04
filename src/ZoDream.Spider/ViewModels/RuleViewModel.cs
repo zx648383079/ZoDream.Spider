@@ -15,29 +15,14 @@ namespace ZoDream.Spider.ViewModels
 
         public RuleViewModel()
         {
-            PluginItems = new List<PluginItem>()
+            if (App.ViewModel.Instance == null)
             {
-                new PluginItem() { Name = "下载文件"},
-                new PluginItem() {Name = "正则截取"},
-                new PluginItem() {Name = "网址提取"},
-                new PluginItem() {Name = "普通截取"},
-                new PluginItem() {Name = "普通替换"},
-                new PluginItem() {Name = "正则替换"},
-                new PluginItem() {Name = "正则匹配"},
-                new PluginItem() {Name = "合并网页"},
-                new PluginItem() {Name = "替换HTML"},
-                new PluginItem() {Name = "简繁转换"},
-                new PluginItem() {Name = "XPath选择"},
-                new PluginItem() {Name = "JQuery选择"},
-                new PluginItem() {Name = "Csv保存"},
-                new PluginItem() {Name = "Excel保存"},
-                new PluginItem() {Name = "保存"},
-                new PluginItem() {Name = "JSON保存"},
-                new PluginItem() {Name = "追加"},
-            };
+                return;
+            }
+            PluginItems = App.ViewModel.Instance.RuleProvider.AllPlugin();
         }
 
-        private IList<PluginItem> pluginItems;
+        private IList<PluginItem> pluginItems = new List<PluginItem>();
 
         public IList<PluginItem> PluginItems
         {

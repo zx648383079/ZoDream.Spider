@@ -18,6 +18,8 @@ namespace ZoDream.Shared.Rules
             return new PluginInfo("直接下载");
         }
 
+        public bool ShouldPrepare { get; } = false;
+
         public void Ready(RuleItem option)
         {
             fileName = option.Param1.Trim();
@@ -29,8 +31,7 @@ namespace ZoDream.Shared.Rules
 
         public void Render(ISpiderContainer container)
         {
-            var client = new Client();
-            client.ReadAsFile(container.Url.Source, GetFileName(container.Url.Source));
+            container.Application.RequestProvider.Downloader().GetAsync(GetFileName(container.Url.Source), container.Url.Source);
         }
     }
 }

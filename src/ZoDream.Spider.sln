@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{D1D2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MatchRule", "Plugins\MatchRule\MatchRule.csproj", "{8D1FD712-A243-424B-B9E8-7C416606BDDC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportSearchRule", "ImportSearchRule\ImportSearchRule.csproj", "{0DC79BAE-24A9-46EB-B55E-6A0276BBBCA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportSearchRule", "Plugins\ImportSearchRule\ImportSearchRule.csproj", "{0DC79BAE-24A9-46EB-B55E-6A0276BBBCA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

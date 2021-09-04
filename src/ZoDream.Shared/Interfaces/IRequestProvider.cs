@@ -8,8 +8,10 @@ namespace ZoDream.Shared.Interfaces
 {
     public interface IRequestProvider
     {
+        public bool SupportTask { get; }
+
         public IRequest Getter();
 
-        public IRequest Downloader();
+        public IDownloadRequest Downloader();
     }
 }

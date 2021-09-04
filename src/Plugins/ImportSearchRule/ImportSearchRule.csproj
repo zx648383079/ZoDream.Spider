@@ -4,6 +4,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+	<BaseOutputPath>..\..\bin</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ZoDream.Shared\ZoDream.Shared.csproj" />
+    <ProjectReference Include="..\..\ZoDream.Shared\ZoDream.Shared.csproj" />
   </ItemGroup>
 
 </Project>

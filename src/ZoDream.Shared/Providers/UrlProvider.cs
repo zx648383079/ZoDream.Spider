@@ -38,7 +38,7 @@ namespace ZoDream.Shared.Providers
             }
             var item = new UriItem() { Source = url, Type = uriType };
             Items.Add(item);
-            UrlChanged?.Invoke(item);
+            UrlChanged?.Invoke(item, true);
         }
 
         public void Add(IEnumerable<string> items)
@@ -76,6 +76,32 @@ namespace ZoDream.Shared.Providers
                     Items.RemoveAt(i);
                 }
             }
+            UrlChanged?.Invoke(null, true);
+        }
+
+        public void Remove(IEnumerable<UriItem> urls)
+        {
+            foreach (var item in urls)
+            {
+                Items.Remove(item);
+            }
+            UrlChanged?.Invoke(null, true);
+        }
+        public void Remove(UriStatus status)
+        {
+            for (int i = Items.Count - 1; i >= 0; i--)
+            {
+                if (Items[i].Status == status)
+                {
+                    Items.RemoveAt(i);
+                }
+            }
+            UrlChanged?.Invoke(null, true);
+        }
+        public void Clear()
+        {
+            Items.Clear();
+            UrlChanged?.Invoke(null, true);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -139,18 +165,31 @@ namespace ZoDream.Shared.Providers
 
         public void UpdateItem(int index, UriItem item)
         {
-            Items[index] = item;
+            UpdateItem(Items[index] = item);
         }
 
         public void UpdateItem(int index, UriStatus status)
         {
-            Items[index].Status = status;
+            UpdateItem(Items[index], status);
         }
 
         public void UpdateItem(UriItem item, UriStatus status)
         {
             item.Status = status;
-            UrlChanged?.Invoke(item);
+            UpdateItem(item);
+        }
+
+        public void UpdateItem(UriItem item)
+        {
+            UrlChanged?.Invoke(item, false);
+        }
+
+        public void Reset()
+        {
+            foreach (var item in Items)
+            {
+                UpdateItem(item, UriStatus.NONE);
+            }
         }
     }
 }

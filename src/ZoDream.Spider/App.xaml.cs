@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using ZoDream.Spider.ViewModels;
 
 namespace ZoDream.Spider
 {
@@ -13,5 +14,7 @@ namespace ZoDream.Spider
     /// </summary>
     public partial class App : Application
     {
+
+        public static MainViewModel ViewModel { get; } = new MainViewModel();
     }
 }

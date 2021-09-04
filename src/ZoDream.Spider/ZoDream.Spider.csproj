@@ -6,9 +6,34 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spider.ico</ApplicationIcon>
-    <BaseOutputPath>..\bin\</BaseOutputPath>
+	<BaseOutputPath>..\bin\</BaseOutputPath>
     <UseWindowsForms>True</UseWindowsForms>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\failure.png" />
+    <None Remove="Assets\none.png" />
+    <None Remove="Assets\success.png" />
+    <None Remove="Assets\wait.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\failure.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\none.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\success.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\wait.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ZoDream.Shared\ZoDream.Shared.csproj" />
@@ -17,7 +42,6 @@
   <ItemGroup>
     <Folder Include="Controls\" />
     <Folder Include="Models\" />
-    <Folder Include="Assets\" />
   </ItemGroup>
 
   <ItemGroup>
