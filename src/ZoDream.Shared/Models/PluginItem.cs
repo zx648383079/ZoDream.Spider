@@ -12,6 +12,17 @@ namespace ZoDream.Shared.Models
 
         public Type? Callback {  get; set; }
 
+        /// <summary>
+        /// 是否需要预处理
+        /// </summary>
+        public bool ShouldPrepare { get; set; } = true;
+        /// <summary>
+        /// 判断是否会执行下一个规则
+        /// </summary>
+        public bool CanNext { get; set; } = true;
+
+        public bool IsSaver { get; set; } = false;
+
         public PluginItem()
         {
 

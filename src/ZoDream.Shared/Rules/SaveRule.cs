@@ -19,6 +19,7 @@ namespace ZoDream.Shared.Rules
         }
 
         public bool ShouldPrepare { get; } = true;
+        public bool CanNext { get; } = true;
         public void Ready(RuleItem option)
         {
             fileName = option.Param1.Trim();
@@ -26,16 +27,33 @@ namespace ZoDream.Shared.Rules
         }
         public string GetFileName(string url)
         {
+            var path = Disk.RenderFile(url);
             if (string.IsNullOrEmpty(fileName))
             {
-                return Md5.Encode(url);
+                return path;
             }
-            return url;
+            var uri = new Uri(url);
+            return Str.ReplaceCallback(fileName, @"\${([a-zA-Z0-9_])}", match => {
+                switch (match.Groups[0].Value)
+                {
+                    case "host":
+                        return uri.Host;
+                    case "path":
+                        return path;
+                    case "md5":
+                        return Md5.Encode(url);
+                    default:
+                        return match.Groups[0].Value;
+                }
+            });
         }
+
 
         public void Render(ISpiderContainer container)
         {
-            using (var fs = new FileStream(GetFileName(container.Url.Source), FileMode.Create))
+            var file = container.Application.GetAbsoluteFile(GetFileName(container.Url.Source));
+            Disk.CreateDirectory(file);
+            using (var fs = new FileStream(file, FileMode.Create))
             using (var writer = new StreamWriter(fs, Encoding.UTF8))
             {
                 writer.BaseStream.Position = writer.BaseStream.Length;

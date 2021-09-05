@@ -9,6 +9,8 @@ using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Spiders;
 using ZoDream.Shared.ViewModel;
+using ZoDream.Spider.Pages;
+using ZoDream.Spider.Providers;
 
 namespace ZoDream.Spider.ViewModels
 {
@@ -62,6 +64,20 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref urlItems, value);
         }
 
+        private BrowserView? broswerRequest;
+
+        public BrowserView BroswerRequest
+        {
+            get {
+                if (broswerRequest == null)
+                {
+                    broswerRequest = new BrowserView();
+                }
+                broswerRequest.Show();
+                return broswerRequest;
+            }
+        }
+
 
         public void Load()
         {
@@ -72,6 +88,7 @@ namespace ZoDream.Spider.ViewModels
         {
             FileName = file;
             Instance = new DefaultSpider();
+            Instance.RequestProvider = new RequestProvider(Instance);
             Instance.RuleProvider.Load(AppDomain.CurrentDomain.BaseDirectory);
             Instance.UrlProvider.UrlChanged += UrlProvider_UrlChanged;
             Instance.PausedChanged += v =>

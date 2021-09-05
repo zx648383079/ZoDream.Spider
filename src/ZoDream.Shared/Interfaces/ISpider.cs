@@ -54,5 +54,9 @@ namespace ZoDream.Shared.Interfaces
         /// <param name="file"></param>
         public void Save(string file);
         public Task SaveAsync(string file);
+
+        public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules);
+
+        public string GetAbsoluteFile(string fileName);
     }
 }

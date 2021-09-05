@@ -10,11 +10,13 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Local;
 using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Providers;
 using ZoDream.Shared.Rules.Values;
 using ZoDream.Shared.Spiders.Containers;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Spiders
 {
@@ -34,6 +36,7 @@ namespace ZoDream.Shared.Spiders
         {
             UrlProvider = new UrlProvider(this);
             RequestProvider = new RequestProvider(this);
+            RuleProvider = new RuleProvider(this);
         }
 
         public bool IsDebug { get; set; } = false;
@@ -41,7 +44,7 @@ namespace ZoDream.Shared.Spiders
         public bool Paused { get; private set; } = true;
         public SpiderOption Option { get; set; } = new SpiderOption();
         public IUrlProvider UrlProvider { get; set; }
-        public IRuleProvider RuleProvider { get; set; } = new RuleProvider();
+        public IRuleProvider RuleProvider { get; set; }
 
         public IProxyProvider ProxyProvider { get; set; } = new ProxyProvider();
 
@@ -56,7 +59,7 @@ namespace ZoDream.Shared.Spiders
             {
                 return;
             }
-            using (var sr = new StreamReader(file))
+            using (var sr = Open.Reader(file))
             {
                 Deserializer(sr);
             }
@@ -144,6 +147,10 @@ namespace ZoDream.Shared.Spiders
                 {
                     await RunTaskAsync(item);
                 }
+            }
+            if (!Paused)
+            {
+                InvokeEvent("done");
             }
             Paused = true;
             PausedChanged?.Invoke(Paused);
@@ -259,12 +266,23 @@ namespace ZoDream.Shared.Spiders
                     #endregion
                     if (UrlProvider.HasMore) continue;
                     _tokenSource.Cancel();
+                    InvokeEvent("done");
                     Paused = true;
                     PausedChanged?.Invoke(Paused);
                     break;
                 }
             }, token);
             #endregion
+        }
+
+        public void InvokeEvent(string name)
+        {
+            var items = RuleProvider.GetEvent(name);
+            foreach (var item in items)
+            {
+                var con = GetContainer(new UriItem(), RuleProvider.Render(item.Rules));
+                con.Next();
+            }
         }
 
         protected async Task RunTaskAsync(UriItem url)
@@ -278,6 +296,15 @@ namespace ZoDream.Shared.Spiders
             UrlProvider.UpdateItem(url, UriStatus.DONE);
         }
 
+        public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
+        {
+            return new SpiderContainer(this)
+            {
+                Url = url,
+                Rules = rules
+            };
+        }
+
         public async Task<IList<ISpiderContainer>> GetContainerAsync(UriItem url)
         {
             var items = new List<ISpiderContainer>();
@@ -285,40 +312,19 @@ namespace ZoDream.Shared.Spiders
             var shouldPrepare = false;
             foreach (var item in rules)
             {
-                var container = new SpiderContainer(this)
-                {
-                    Url = url,
-                };
-                foreach (var rule in item.Rules)
-                {
-                    if (rule == null)
-                    {
-                        continue;
-                    }
-                    var r = RuleProvider.Render(rule);
-                    if (r == null)
-                    {
-                        continue;
-                    }
-                    container.Rules.Add(r);
-                    if (r is not IRuleSaver || (r as IRuleSaver).ShouldPrepare)
-                    {
-                        shouldPrepare = true;
-                    }
-                }
-                items.Add(container);
+                items.Add(GetContainer(url, RuleProvider.Render(item.Rules, ref shouldPrepare)));
             }
             if (!shouldPrepare)
             {
                 return items;
             }
-            var content = await RequestProvider.Getter().GetAsync(url.Source);
+            var content = await RequestProvider.Getter().GetAsync(url.Source, Option.HeaderItems, ProxyProvider.Get());
             if (content == null)
             {
                 items.Clear();
                 return items;
             }
-            url.Title = MatchTitle(content);
+            url.Title = Html.MatchTitle(content);
             foreach (var item in items)
             {
                 item.Data = new RuleString(content);
@@ -326,18 +332,13 @@ namespace ZoDream.Shared.Spiders
             return items;
         }
 
-        private string MatchTitle(string content)
+        public string GetAbsoluteFile(string fileName)
         {
-            if (string.IsNullOrEmpty(content))
+            if (fileName.IndexOf(":\\", StringComparison.Ordinal) > 0)
             {
-                return string.Empty;
+                return fileName;
             }
-            var match = Regex.Match(content, @"\<title\>([\s\S]+?)\</title\>");
-            if (match == null)
-            {
-                return string.Empty;
-            }
-            return match.Groups[1].Value.Trim();
+            return Option.WorkFolder + '\\' + fileName.TrimStart('\\');
         }
     }
 }

@@ -40,6 +40,7 @@ namespace ZoDream.Shared.Interfaces
         public void UpdateItem(UriItem item, UriStatus status);
 
         public void UpdateItem(UriItem url);
+        public UriItem? Get(string url);
         public void Reset();
         
     }

@@ -5,10 +5,12 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
 	<BaseOutputPath>..\..\bin</BaseOutputPath>
+	<RootNamespace>ZoDream.Spider.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="jieba.NET" Version="0.42.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>

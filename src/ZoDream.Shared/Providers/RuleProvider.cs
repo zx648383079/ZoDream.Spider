@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules;
+using ZoDream.Shared.Spiders;
 
 namespace ZoDream.Shared.Providers
 {
@@ -17,10 +18,21 @@ namespace ZoDream.Shared.Providers
         public IList<RuleGroupItem> Items { get; private set; } = new List<RuleGroupItem>();
 
         internal IDictionary<string, PluginItem> PluginItems = new Dictionary<string, PluginItem>();
+        private DefaultSpider Application;
+
+        public RuleProvider(DefaultSpider spider)
+        {
+            Application = spider;
+        }
 
         public IList<RuleGroupItem> Get(string uri)
         {
             return Items.Where(item => item.IsMatch(uri)).ToList();
+        }
+
+        public IList<RuleGroupItem> GetEvent(string name)
+        {
+            return Items.Where(item => item.EventName == name).ToList();
         }
 
         public void Add(RuleGroupItem rule)
@@ -64,6 +76,38 @@ namespace ZoDream.Shared.Providers
             return instance;
         }
 
+        public IList<IRule> Render(IEnumerable<RuleItem> rules)
+        {
+            var shouldPrepare = false;
+            return Render(rules, ref shouldPrepare);
+        }
+        public IList<IRule> Render(IEnumerable<RuleItem> rules, ref bool shouldPrepare)
+        {
+            var items = new List<IRule>();
+            foreach (var rule in rules)
+            {
+                if (rule == null)
+                {
+                    continue;
+                }
+                var r = Render(rule);
+                if (r == null)
+                {
+                    continue;
+                }
+                items.Add(r);
+                if (r is not IRuleSaver || (r as IRuleSaver).ShouldPrepare)
+                {
+                    shouldPrepare = true;
+                }
+                if (r is IRuleSaver && !(r as IRuleSaver).CanNext)
+                {
+                    break;
+                }
+            }
+            return items;
+        }
+
         public string GetFileName(string uri)
         {
             var items = Get(uri);
@@ -71,10 +115,19 @@ namespace ZoDream.Shared.Providers
             {
                 foreach (var it in item.Rules)
                 {
+                    if (it == null)
+                    {
+                        continue;
+                    }
+                    var plugin = PluginItems[it.Name];
+                    if (plugin == null || !plugin.IsSaver)
+                    {
+                        continue;
+                    }
                     var rule = Render(it);
                     if (rule is IRuleSaver)
                     {
-                        return (rule as IRuleSaver).GetFileName(uri);
+                        return Application.GetAbsoluteFile((rule as IRuleSaver).GetFileName(uri));
                     }
                 }
             }
@@ -181,10 +234,14 @@ namespace ZoDream.Shared.Providers
                 return;
             }
             var info = instance.Info();
+            var isSaver = instance is not IRuleSaver;
             PluginItems.Add(info.Name, new PluginItem(info)
             {
                 Callback = rule,
-                FileName = fileName
+                FileName = fileName,
+                ShouldPrepare = isSaver || (instance as IRuleSaver).ShouldPrepare,
+                CanNext = isSaver || (instance as IRuleSaver).CanNext,
+                IsSaver = isSaver
             });
         }
 

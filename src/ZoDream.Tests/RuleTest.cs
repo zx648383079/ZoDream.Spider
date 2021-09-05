@@ -21,9 +21,6 @@ namespace ZoDream.Tests
         [TestMethod]
         public void TestPlugin()
         {
-            var provider = new RuleProvider();
-            provider.LoadDll("");
-            Assert.IsTrue(provider.AllPlugin().Count() == 1);
         }
     }
 }

@@ -58,8 +58,6 @@
                     <MenuItem Header="规则">
                         <MenuItem Header="增加" x:Name="AddRuleBtn" Click="AddRuleBtn_Click"/>
                         <MenuItem Header="修改" x:Name="EditRuleBtn" Click="EditRuleBtn_Click"/>
-                        <MenuItem Header="打开"/>
-                        <MenuItem Header="保存"/>
                     </MenuItem>
                     <MenuItem Header="删除">
                         <MenuItem Header="选中" Click="RuleMenuItem_Click"/>

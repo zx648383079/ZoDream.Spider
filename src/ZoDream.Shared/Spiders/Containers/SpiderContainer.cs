@@ -1,8 +1,10 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Local;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Spiders.Containers
 {
@@ -19,7 +21,9 @@ namespace ZoDream.Shared.Spiders.Containers
         public IRuleValue Data { get; set; }
         public UriItem Url { get; set; }
 
-        private int ruleIndex = -1;
+        public int RuleIndex { get; private set; } = -1;
+
+        public IEnumerable<string> AttributeKeys => MapItems.Keys;
 
         public string AddUri(string uri, UriType uriType)
         {
@@ -38,12 +42,12 @@ namespace ZoDream.Shared.Spiders.Containers
 
         public void Next()
         {
-            ruleIndex++;
-            if (ruleIndex >= Rules.Count)
+            RuleIndex++;
+            if (RuleIndex >= Rules.Count)
             {
                 return;
             }
-            var rule = Rules[ruleIndex];
+            var rule = Rules[RuleIndex];
             rule.Render(this);
         }
 
@@ -64,25 +68,12 @@ namespace ZoDream.Shared.Spiders.Containers
 
         public string RenderData(string content)
         {
-            content = RenderTemplate(content);
-            var matches = Regex.Matches(content, @"\${([a-zA-Z0-9_])}");
-            if (matches.Count == 0)
-            {
-                return content;
-            }
-            var sb = new StringBuilder();
-            var lastIndex = 0;
-            foreach (Match item in matches)
-            {
-                sb.Append(content.Substring(lastIndex, item.Index - lastIndex));
-                sb.Append(GetValue(item.Groups[0].Value));
-                lastIndex = item.Index + 1;
-            }
-            sb.Append(content.AsSpan(lastIndex));
-            return sb.ToString();
+            return Str.ReplaceCallback(RenderTemplate(content), @"\${([a-zA-Z0-9_])}", match => {
+                return GetAttribute(match.Groups[0].Value);
+            });
         }
 
-        private string GetValue(string key)
+        public string GetAttribute(string key)
         {
             switch (key)
             {
@@ -106,7 +97,7 @@ namespace ZoDream.Shared.Spiders.Containers
         {
             if (File.Exists(content))
             {
-                return File.ReadAllText(content);
+                return Open.Read(content);
             }
             return content;
         }

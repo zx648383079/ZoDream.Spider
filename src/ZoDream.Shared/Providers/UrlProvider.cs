@@ -62,6 +62,18 @@ namespace ZoDream.Shared.Providers
         }
 
 
+        public UriItem? Get(string url)
+        {
+            foreach (var item in Items)
+            {
+                if (item.Source == url)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
+
         public IEnumerator<UriItem> GetEnumerator()
         {
             throw new NotImplementedException();
