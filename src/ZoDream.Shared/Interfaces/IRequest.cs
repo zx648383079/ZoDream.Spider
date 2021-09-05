@@ -16,5 +16,13 @@ namespace ZoDream.Shared.Interfaces
         public Task<string> GetAsync(string url);
         public Task<string> GetAsync(string url, IList<HeaderItem> headers);
         public Task<string> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy);
+
+        /// <summary>
+        /// 执行脚本
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="script"></param>
+        /// <returns></returns>
+        public Task<string> ExecuteScriptAsync(string url, string script);
     }
 }

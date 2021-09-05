@@ -13,6 +13,7 @@ using System.Windows.Input;
 using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
+using ZoDream.Spider.JsObjects;
 
 namespace ZoDream.Spider.Pages
 {
@@ -27,6 +28,7 @@ namespace ZoDream.Spider.Pages
             YesBtn.Visibility = showConfirm ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        private SpiderBridge bridge = new SpiderBridge();
         public bool SupportTask { get; } = false;
 
         public bool IsLoading
@@ -152,6 +154,8 @@ namespace ZoDream.Spider.Pages
         private void Browser_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             Browser.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
+            Browser.CoreWebView2.AddHostObjectToScript("zreSpider", bridge);
+            Browser.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("var zreSpider = window.chrome.webview.hostObjects.zreSpider;");
         }
 
         private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
@@ -184,6 +188,23 @@ namespace ZoDream.Spider.Pages
                     Thread.Sleep(100);
                 }
                 return GetHtmlAsync().GetAwaiter().GetResult();
+            });
+        }
+
+        public Task<string> ExecuteScriptAsync(string url, string script)
+        {
+            NavigateUrl(url);
+            return Task.Factory.StartNew(() =>
+            {
+                while (true)
+                {
+                    if (!IsLoading)
+                    {
+                        break;
+                    }
+                    Thread.Sleep(100);
+                }
+                return Browser.ExecuteScriptAsync(script).GetAwaiter().GetResult();
             });
         }
 

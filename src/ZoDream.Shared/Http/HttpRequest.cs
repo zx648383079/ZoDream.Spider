@@ -56,5 +56,10 @@ namespace ZoDream.Shared.Http
                 client.ReadAsFile(url, file);
             });
         }
+
+        public Task<string> ExecuteScriptAsync(string url, string script)
+        {
+            return Task.Factory.StartNew(() => string.Empty);
+        }
     }
 }

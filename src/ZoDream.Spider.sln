@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{D1D2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ImportSearchRule", "Plugins\ImportSearchRule\ImportSearchRule.csproj", "{0DC79BAE-24A9-46EB-B55E-6A0276BBBCA6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TextSpotRule", "Plugins\TextSpotRule\TextSpotRule.csproj", "{6A3AF024-49B2-43C2-A20D-902B90FB48A1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,12 +109,33 @@ Global
 		{0DC79BAE-24A9-46EB-B55E-6A0276BBBCA6}.Release|x64.Build.0 = Release|Any CPU
 		{0DC79BAE-24A9-46EB-B55E-6A0276BBBCA6}.Release|x86.ActiveCfg = Release|Any CPU
 		{0DC79BAE-24A9-46EB-B55E-6A0276BBBCA6}.Release|x86.Build.0 = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|ARM.Build.0 = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|x64.Build.0 = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Debug|x86.Build.0 = Debug|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|ARM.Build.0 = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|ARM64.Build.0 = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|x64.ActiveCfg = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|x64.Build.0 = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|x86.ActiveCfg = Release|Any CPU
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{0DC79BAE-24A9-46EB-B55E-6A0276BBBCA6} = {D1D23961-CA07-43D4-8915-981CF4C601EA}
+		{6A3AF024-49B2-43C2-A20D-902B90FB48A1} = {D1D23961-CA07-43D4-8915-981CF4C601EA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D255A55-95AA-479E-B201-A5148344E6D0}

@@ -84,6 +84,7 @@ namespace ZoDream.Shared.Providers
         public IList<IRule> Render(IEnumerable<RuleItem> rules, ref bool shouldPrepare)
         {
             var items = new List<IRule>();
+            var booted = false;
             foreach (var rule in rules)
             {
                 if (rule == null)
@@ -96,9 +97,11 @@ namespace ZoDream.Shared.Providers
                     continue;
                 }
                 items.Add(r);
-                if (r is not IRuleSaver || (r as IRuleSaver).ShouldPrepare)
+                if (!booted && (r is not IRuleSaver || (r as IRuleSaver).ShouldPrepare))
                 {
+                    // 只取第一个判断是否需要预载
                     shouldPrepare = true;
+                    booted = true;
                 }
                 if (r is IRuleSaver && !(r as IRuleSaver).CanNext)
                 {
@@ -127,7 +130,12 @@ namespace ZoDream.Shared.Providers
                     var rule = Render(it);
                     if (rule is IRuleSaver)
                     {
-                        return Application.GetAbsoluteFile((rule as IRuleSaver).GetFileName(uri));
+                        continue;
+                    }
+                    var file = Application.GetAbsoluteFile((rule as IRuleSaver).GetFileName(uri));
+                    if (!string.IsNullOrEmpty(file))
+                    {
+                        return file;
                     }
                 }
             }
