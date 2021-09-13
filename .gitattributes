@@ -17,4 +17,4 @@
 *.RTF	 diff=astextplain
 
 # 对js文件不做统计
-*.js  linguist-detectable=true
+*.js  linguist-detectable=false
