@@ -295,11 +295,22 @@ namespace ZoDream.Shared.Spiders
         protected async Task RunTaskAsync(UriItem url)
         {
             var items = await GetContainerAsync(url);
+            if (items.Count < 1)
+            {
+                Logger?.Info($"{url.Source} has 0 rule groups, jump");
+                UrlProvider.UpdateItem(url, UriStatus.ERROR);
+                return;
+            }
             Logger?.Info($"{url.Source} has {items.Count} rule groups");
             UrlProvider.UpdateItem(url, UriStatus.DOING);
             foreach (var item in items)
             {
                 await item.NextAsync();
+                if (Paused)
+                {
+                    UrlProvider.UpdateItem(url, UriStatus.NONE);
+                    return;
+                }
             }
             UrlProvider.UpdateItem(url, UriStatus.DONE);
         }
@@ -313,6 +324,10 @@ namespace ZoDream.Shared.Spiders
         {
             var items = new List<ISpiderContainer>();
             var rules = RuleProvider.Get(url.Source);
+            if (rules == null || rules.Count < 1)
+            {
+                return items;
+            }
             var shouldPrepare = false;
             foreach (var item in rules)
             {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZoDream.Spider.Pages"
         mc:Ignorable="d"
-        Title="EditUrlView" Height="450" Width="800">
+        Title="添加网址" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -19,10 +19,11 @@
             </Grid.ColumnDefinitions>
             <TextBlock Text="起始网址：" 
                    VerticalAlignment="Center"/>
+            <TextBlock x:Name="AmountTb" Grid.Column="1" VerticalAlignment="Center"/>
             <Button x:Name="ConfirmBtn" Click="ConfirmBtn_Click" Content="确定" Grid.Column="2"/>
         </Grid>
         <TextBox x:Name="ContentTb" Grid.Row="1"
-                 AcceptsReturn="True"/>
+                 AcceptsReturn="True" TextChanged="ContentTb_TextChanged"/>
         
     </Grid>
 </Window>

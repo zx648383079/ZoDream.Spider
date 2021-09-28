@@ -32,5 +32,18 @@ namespace ZoDream.Shared.Utils
             sb.Append(content.AsSpan(lastIndex));
             return sb.ToString();
         }
+
+        public static int ToInt(string v)
+        {
+            if (string.IsNullOrWhiteSpace(v))
+            {
+                return 0;
+            }
+            if (int.TryParse(v, out var res))
+            {
+                return res;
+            }
+            return 0;
+        }
     }
 }

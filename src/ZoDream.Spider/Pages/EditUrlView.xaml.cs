@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Pages
 {
@@ -27,13 +28,32 @@ namespace ZoDream.Spider.Pages
         public IList<string> UrlItems
         {
             get {
-                return ContentTb.Text.Split(new char[] { '\r', '\n' }).Where(i => !string.IsNullOrWhiteSpace(i)).Distinct().ToList();
+                var items = new List<string>();
+                foreach (var item in ContentTb.Text.Split(new char[] { '\r', '\n' }))
+                {
+                    if (string.IsNullOrWhiteSpace(item))
+                    {
+                        continue;
+                    }
+                    var real = item.Trim();
+                    if (items.Contains(real))
+                    {
+                        continue;
+                    }
+                    items.AddRange(Html.GenerateUrl(real));
+                }
+                return items;
             }
         }
 
         private void ConfirmBtn_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
+        }
+
+        private void ContentTb_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            AmountTb.Text = $"预计 {UrlItems.Count} 条";
         }
     }
 }

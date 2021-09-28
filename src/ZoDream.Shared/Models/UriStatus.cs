@@ -12,5 +12,6 @@ namespace ZoDream.Shared.Models
         DOING,
         DONE,
         ERROR,
+        JUMP,
     }
 }

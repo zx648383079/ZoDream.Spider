@@ -55,6 +55,8 @@ namespace ZoDream.Shared.Models
                         return "完成作业";
                     case UriStatus.ERROR:
                         return "作业失败";
+                    case UriStatus.JUMP:
+                        return "跳过";
                     default:
                         return "等待中";
                 }
