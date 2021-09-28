@@ -282,13 +282,13 @@ namespace ZoDream.Shared.Spiders
             #endregion
         }
 
-        public void InvokeEvent(string name)
+        public async void InvokeEvent(string name)
         {
             var items = RuleProvider.GetEvent(name);
             foreach (var item in items)
             {
                 var con = GetContainer(new UriItem(), RuleProvider.Render(item.Rules));
-                con.Next();
+                await con.NextAsync();
             }
         }
 
@@ -299,7 +299,7 @@ namespace ZoDream.Shared.Spiders
             UrlProvider.UpdateItem(url, UriStatus.DOING);
             foreach (var item in items)
             {
-                item.Next();
+                await item.NextAsync();
             }
             UrlProvider.UpdateItem(url, UriStatus.DONE);
         }

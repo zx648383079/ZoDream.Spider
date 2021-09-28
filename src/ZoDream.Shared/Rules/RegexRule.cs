@@ -26,14 +26,14 @@ namespace ZoDream.Shared.Rules
             pattern = option.Param1;
             tag = option.Param2.Trim();
         }
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var regex = new Regex(pattern, RegexOptions.IgnoreCase);
             var isEmptyTag = string.IsNullOrWhiteSpace(tag);
             container.Data = container.Data.Select(i => new RuleString(
                 isEmptyTag ? regex.Match(i.ToString()).Value : regex.Match(i.ToString()).Groups[tag].Value
                 ));
-            container.Next();
+            await container.NextAsync();
         }
     }
 }

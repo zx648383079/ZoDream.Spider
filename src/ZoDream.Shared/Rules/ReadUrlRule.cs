@@ -22,12 +22,12 @@ namespace ZoDream.Shared.Rules
             name = option.Param1.Trim();
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var uri = string.IsNullOrWhiteSpace(name) ? container.Data.ToString() : container.GetAttribute(name);
             if (string.IsNullOrWhiteSpace(uri) || uri.Length > 500)
             {
-                container.Next();
+                await container.NextAsync();
                 return;
             }
             var fromUri = new Uri(container.Url.Source);
@@ -37,10 +37,10 @@ namespace ZoDream.Shared.Rules
             var item = container.Application.UrlProvider.Get(fullUri);
             if (item == null)
             {
-                container.Next();
+                await container.NextAsync();
                 return;
             }
-            LoadNext(container, item);
+            await LoadNext(container, item);
         }
 
         private async Task LoadNext(ISpiderContainer container, UriItem url)
@@ -53,7 +53,7 @@ namespace ZoDream.Shared.Rules
             if (content == null)
             {
                 spider.UrlProvider.UpdateItem(url, UriStatus.DONE);
-                container.Next();
+                await container.NextAsync();
                 return;
             }
             var rules = spider.RuleProvider.Get(url.Source);
@@ -65,10 +65,10 @@ namespace ZoDream.Shared.Rules
                 {
                     con.SetAttribute(key, con.GetAttribute(key));
                 }
-                con.Next();
+                await con.NextAsync();
             }
             spider.UrlProvider.UpdateItem(url, UriStatus.DONE);
-            container.Next();
+            await container.NextAsync();
         }
     }
 }

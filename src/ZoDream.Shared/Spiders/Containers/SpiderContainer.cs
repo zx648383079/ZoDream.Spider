@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Local;
 using ZoDream.Shared.Models;
@@ -35,17 +36,21 @@ namespace ZoDream.Shared.Spiders.Containers
             var fromUri = new Uri(Url.Source);
             var toUri = new Uri(fromUri, uri);
             var fullUri = toUri.ToString();
+            var relativeUri = fromUri.MakeRelativeUri(toUri);
+            if (Application.RuleProvider.Canable(fullUri))
+            {
+                return Uri.UnescapeDataString(relativeUri.ToString());
+            }
             Application.UrlProvider.Add(fullUri, uriType);
             var saveFileName = Application.RuleProvider.GetFileName(uri);
             if (!string.IsNullOrEmpty(saveFileName))
             {
                 return Path.GetRelativePath(Application.Option.FullWorkFolder, saveFileName);
             }
-            var relativeUri = fromUri.MakeRelativeUri(toUri);
             return Uri.UnescapeDataString(relativeUri.ToString());
         }
 
-        public void Next()
+        public async Task NextAsync()
         {
             RuleIndex++;
             if (RuleIndex >= Rules.Count || Application.Paused)
@@ -53,7 +58,8 @@ namespace ZoDream.Shared.Spiders.Containers
                 return;
             }
             var rule = Rules[RuleIndex];
-            rule.Render(this);
+            await rule.RenderAsync(this);
+            return;
         }
 
         public void SetAttribute(string name, string value)

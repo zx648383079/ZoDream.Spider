@@ -24,11 +24,11 @@ namespace ZoDream.Shared.Rules
             search = option.Param1;
             replace = option.Param2;
         }
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var regex = new Regex(search, RegexOptions.IgnoreCase);
             container.Data = container.Data.Select(i => new RuleString(regex.Replace(i.ToString(), replace)));
-            container.Next();
+            await container.NextAsync();
         }
     }
 }

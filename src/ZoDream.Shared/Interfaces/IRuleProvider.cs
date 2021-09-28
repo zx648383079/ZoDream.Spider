@@ -9,6 +9,12 @@ namespace ZoDream.Shared.Interfaces
 {
     public interface IRuleProvider: ILoader
     {
+        /// <summary>
+        /// 是否有符合网址的规则
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public bool Canable(string uri);
         public IList<RuleGroupItem> Get(string uri);
         public IList<RuleGroupItem> GetEvent(string name);
 

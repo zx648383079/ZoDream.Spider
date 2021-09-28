@@ -9,6 +9,7 @@ namespace ZoDream.Shared.Rules
     public class JQuerySetRule : IRule
     {
         private string tag = string.Empty;
+        private string tagFunc = string.Empty;
         private string name = string.Empty;
 
         public PluginInfo Info()
@@ -19,7 +20,8 @@ namespace ZoDream.Shared.Rules
         public void Ready(RuleItem option)
         {
             tag = option.Param1.Trim();
-            name = option.Param2.Trim();
+            name = tagFunc = option.Param2.Trim();
+            JQueryRule.SplitTag(ref tag, ref tagFunc);
         }
 
         public async Task RenderAsync(ISpiderContainer container)
@@ -33,20 +35,14 @@ namespace ZoDream.Shared.Rules
                 {
                     continue;
                 }
-                var val = string.IsNullOrWhiteSpace(node.TextContent) ?
-                    node.GetAttribute(name) : node.TextContent;
+                var val = JQueryRule.FormatNode(node, tagFunc);
                 if (string.IsNullOrWhiteSpace(val))
                 {
                     continue;
                 }
                 container.SetAttribute(name, val);
             }
-            container.Next();
-        }
-
-        public void Render(ISpiderContainer container)
-        {
-            _ = RenderAsync(container);
+            await container.NextAsync();
         }
     }
 }

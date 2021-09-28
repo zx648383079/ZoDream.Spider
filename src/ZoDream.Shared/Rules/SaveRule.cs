@@ -50,7 +50,7 @@ namespace ZoDream.Shared.Rules
         }
 
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var file = container.Application.GetAbsoluteFile(GetFileName(container.Url.Source));
             Disk.CreateDirectory(file);

@@ -26,7 +26,7 @@ namespace ZoDream.Shared.Rules
             pattern = option.Param1;
             tag = option.Param2;
         }
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var regex = new Regex(pattern, RegexOptions.IgnoreCase);
             var items = new List<IRuleValue>();
@@ -50,7 +50,7 @@ namespace ZoDream.Shared.Rules
                 }
             }
             container.Data = new RuleArray(items);
-            container.Next();
+            await container.NextAsync();
         }
 
 

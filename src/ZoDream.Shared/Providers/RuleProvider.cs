@@ -26,6 +26,17 @@ namespace ZoDream.Shared.Providers
             Application = spider;
         }
 
+        public bool Canable(string uri)
+        {
+            foreach (var item in Items)
+            {
+                if (item.IsMatch(uri))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public IList<RuleGroupItem> Get(string uri)
         {
             return Items.Where(item => item.IsMatch(uri)).ToList();

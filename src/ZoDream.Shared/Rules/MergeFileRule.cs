@@ -36,7 +36,7 @@ namespace ZoDream.Shared.Rules
             fileName = option.Param2;
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var file = container.Application.GetAbsoluteFile(GetFileName(string.Empty));
             Disk.CreateDirectory(file);

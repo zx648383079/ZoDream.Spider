@@ -13,7 +13,7 @@ namespace ZoDream.Shared.Rules
     public class XPathRule : IRule
     {
         private string tag = string.Empty;
-        private bool isHtml = true;
+        private string tagFunc = "";
 
         public PluginInfo Info()
         {
@@ -24,10 +24,11 @@ namespace ZoDream.Shared.Rules
         {
             tag = option.Param1.Trim();
             var v = option.Param2.Trim().ToUpper();
-            isHtml = v != "0" && v != "F" && v != "N" && v != "FALSE";
+            tagFunc = v != "0" && v != "F" && v != "N" && v != "FALSE" ? "html" : "text";
+            JQueryRule.SplitTag(ref tag, ref tagFunc);
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var items = new List<IRuleValue>();
             var doc = new HtmlDocument();
@@ -41,11 +42,28 @@ namespace ZoDream.Shared.Rules
                 }
                 foreach (var node in nodes)
                 {
-                    items.Add(new RuleString(isHtml ? node.InnerHtml : node.InnerText));
+                    items.Add(new RuleString(FormatNode(node, tagFunc)));
                 }
             }
             container.Data = new RuleArray(items);
-            container.Next();
+            await container.NextAsync();
+        }
+
+        public static string FormatNode(HtmlNode node, string func)
+        {
+            if (string.IsNullOrWhiteSpace(func))
+            {
+                func = "html";
+            }
+            switch (func)
+            {
+                case "text":
+                    return node.InnerText;
+                case "html":
+                    return node.InnerHtml;
+                default:
+                    return node.GetAttributeValue(func, string.Empty);
+            }
         }
     }
 }

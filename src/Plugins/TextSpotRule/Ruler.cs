@@ -31,12 +31,7 @@ namespace ZoDream.Spider.TextSpotRule
             tag = option.Param1.Trim();
         }
 
-        public void Render(ISpiderContainer container)
-        {
-            _ = RenderAsync(container);
-        }
-
-        private async Task RenderAsync(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var script = Open.Read(AppDomain.CurrentDomain.BaseDirectory + "\\html2canvas.js");
             var base64 = await container.Application.RequestProvider.Getter()

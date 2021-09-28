@@ -22,10 +22,10 @@ namespace ZoDream.Shared.Rules
         {
             
         }
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             container.Data = container.Data.Select(i => RenderOne(container, i));
-            container.Next();
+            await container.NextAsync();
         }
 
         private IRuleValue RenderOne(ISpiderContainer container, IRuleValue value)

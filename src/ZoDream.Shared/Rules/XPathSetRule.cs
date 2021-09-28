@@ -13,6 +13,7 @@ namespace ZoDream.Shared.Rules
     public class XPathSetRule : IRule
     {
         private string tag = string.Empty;
+        private string tagFunc = string.Empty;
         private string name = string.Empty;
 
         public PluginInfo Info()
@@ -23,10 +24,11 @@ namespace ZoDream.Shared.Rules
         public void Ready(RuleItem option)
         {
             tag = option.Param1.Trim();
-            name = option.Param2.Trim();
+            name = tagFunc = option.Param2.Trim();
+            JQueryRule.SplitTag(ref tag, ref tagFunc);
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var doc = new HtmlDocument();
             foreach (var item in container.Data)
@@ -43,8 +45,7 @@ namespace ZoDream.Shared.Rules
                     {
                         continue;
                     }
-                    var val = string.IsNullOrWhiteSpace(node.InnerText) ?
-                    node.GetAttributeValue(name, string.Empty) : node.InnerText;
+                    var val = XPathRule.FormatNode(node, tagFunc);
                     if (string.IsNullOrWhiteSpace(val))
                     {
                         continue;
@@ -52,7 +53,7 @@ namespace ZoDream.Shared.Rules
                     container.SetAttribute(name, val);
                 }
             }
-            container.Next();
+            await container.NextAsync();
         }
     }
 }

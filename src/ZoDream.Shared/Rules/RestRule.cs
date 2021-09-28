@@ -28,7 +28,7 @@ namespace ZoDream.Shared.Rules
             throw new NotImplementedException();
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var client = new Client(postUri);
             var data = container.RenderData(template);

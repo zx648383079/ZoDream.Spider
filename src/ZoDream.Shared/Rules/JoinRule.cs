@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
@@ -19,7 +20,7 @@ namespace ZoDream.Shared.Rules
             joinLink = option.Param1;
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var data = container.Data;
             if (data is RuleArray)
@@ -37,7 +38,7 @@ namespace ZoDream.Shared.Rules
                 }
                 container.Data = new RuleString(sb.ToString());
             }
-            container.Next();
+            await container.NextAsync();
         }
     }
 }

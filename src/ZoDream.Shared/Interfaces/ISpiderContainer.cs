@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
@@ -30,7 +31,7 @@ namespace ZoDream.Shared.Interfaces
 
         public string GetAttribute(string name);
 
-        public void Next();
+        public Task NextAsync();
 
         public string RenderData(string content);
     }

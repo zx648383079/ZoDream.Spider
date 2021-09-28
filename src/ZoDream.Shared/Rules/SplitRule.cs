@@ -21,11 +21,11 @@ namespace ZoDream.Shared.Rules
             
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             if (container.Data is not RuleArray)
             {
-                container.Next();
+                await container.NextAsync();
                 return;
             }
             var data = container.Data as RuleArray;
@@ -36,7 +36,7 @@ namespace ZoDream.Shared.Rules
             if (data.Items.Count == 1)
             {
                 container.Data = data.Items[0];
-                container.Next();
+                await container.NextAsync();
                 return;
             }
             var rules = new List<IRule>();
@@ -52,7 +52,7 @@ namespace ZoDream.Shared.Rules
             {
                 var con = container.Application.GetContainer(container.Url, rules);
                 con.Data = item;
-                con.Next();
+                await con.NextAsync();
             }
         }
     }

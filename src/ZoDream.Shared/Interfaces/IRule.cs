@@ -17,6 +17,6 @@ namespace ZoDream.Shared.Interfaces
 
         public void Ready(RuleItem option);
 
-        public void Render(ISpiderContainer container);
+        public Task RenderAsync(ISpiderContainer container);
     }
 }

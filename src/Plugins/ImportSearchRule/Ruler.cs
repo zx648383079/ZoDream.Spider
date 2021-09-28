@@ -1,6 +1,7 @@
 using JiebaNet.Segmenter;
 using Newtonsoft.Json;
 using System;
+using System.Threading.Tasks;
 using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
@@ -21,7 +22,7 @@ namespace ZoDream.Spider.ImportSearchRule
             apiUri = option.Param1.Trim();
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var segmenter = new JiebaNet.Analyser.TfidfExtractor();
             var tags = segmenter.ExtractTags(container.Data.ToString());
@@ -37,7 +38,7 @@ namespace ZoDream.Spider.ImportSearchRule
             data.Link = container.GetAttribute("url");
             data.Keywords = tags;
             client.Post(JsonConvert.SerializeObject(data), "application/json");
-            container.Next();
+            await container.NextAsync();
         }
     }
 }

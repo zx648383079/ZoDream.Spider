@@ -26,12 +26,12 @@ namespace ZoDream.Shared.Rules
             begin = option.Param1;
             end = option.Param2.Trim();
         }
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             container.Data = container.Data.Select(i => new RuleString(
                 Narrow(i.ToString())
                 ));
-            container.Next();
+            await container.NextAsync();
         }
 
         public string Narrow(string val)

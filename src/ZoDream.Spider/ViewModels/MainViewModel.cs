@@ -76,7 +76,13 @@ namespace ZoDream.Spider.ViewModels
                 {
                     broswerRequest = new BrowserView();
                 }
-                broswerRequest.Show();
+                if (!broswerRequest.IsVisible)
+                {
+                    App.Current.Dispatcher.Invoke(() =>
+                    {
+                        broswerRequest.Show();
+                    });
+                }
                 return broswerRequest;
             }
         }

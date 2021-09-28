@@ -20,10 +20,10 @@ namespace ZoDream.Shared.Rules
         public void Ready(RuleItem option)
         {
         }
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             container.Data = container.Data.Select(i => new RuleString(Format(i.ToString(), true)));
-            container.Next();
+            await container.NextAsync();
         }
 
         public string Format(string content, bool isTc)

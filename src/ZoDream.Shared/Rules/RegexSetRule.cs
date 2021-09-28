@@ -24,13 +24,13 @@ namespace ZoDream.Shared.Rules
             name = option.Param2.Trim();
         }
 
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             var regex = new Regex(pattern);
             var match = regex.Match(container.Data.ToString());
             if (match == null)
             {
-                container.Next();
+                await container.NextAsync();
                 return;
             }
             if (!string.IsNullOrEmpty(name))
@@ -42,7 +42,7 @@ namespace ZoDream.Shared.Rules
             {
                 container.SetAttribute(tag, match.Groups[tag].Value);
             }
-            container.Next();
+            await container.NextAsync();
         }
     }
 }

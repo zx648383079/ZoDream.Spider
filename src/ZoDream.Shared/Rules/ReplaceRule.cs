@@ -23,10 +23,10 @@ namespace ZoDream.Shared.Rules
             search = option.Param1;
             replace = option.Param2;
         }
-        public void Render(ISpiderContainer container)
+        public async Task RenderAsync(ISpiderContainer container)
         {
             container.Data = container.Data.Select(i => new RuleString(i.ToString().Replace(search, replace)));
-            container.Next();
+            await container.NextAsync();
         }
     }
 }
