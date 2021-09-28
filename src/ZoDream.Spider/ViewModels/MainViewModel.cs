@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Spiders;
 using ZoDream.Shared.ViewModel;
@@ -17,6 +18,8 @@ namespace ZoDream.Spider.ViewModels
     public class MainViewModel: BindableBase
     {
         public string FileName { get; set; } = string.Empty;
+
+        public ILogger? Logger { get; set; }
 
         private ISpider? instance;
 
@@ -87,7 +90,7 @@ namespace ZoDream.Spider.ViewModels
         public void Load(string file)
         {
             FileName = file;
-            Instance = new DefaultSpider();
+            Instance = new DefaultSpider(Logger);
             Instance.RequestProvider = new RequestProvider(Instance);
             Instance.RuleProvider.Load(AppDomain.CurrentDomain.BaseDirectory);
             Instance.UrlProvider.UrlChanged += UrlProvider_UrlChanged;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,11 +33,16 @@ namespace ZoDream.Shared.Providers
 
         public void Add(string url, UriType uriType)
         {
+            Add(url, uriType, UriStatus.NONE);
+        }
+
+        public void Add(string url, UriType uriType, UriStatus status)
+        {
             if (Contains(url))
             {
                 return;
             }
-            var item = new UriItem() { Source = url, Type = uriType };
+            var item = new UriItem() { Source = url, Type = uriType, Status = status };
             Items.Add(item);
             UrlChanged?.Invoke(item, true);
         }
@@ -125,7 +131,7 @@ namespace ZoDream.Shared.Providers
         {
             foreach (var item in Items)
             {
-                writer.WriteLine(item.Source);
+                writer.WriteLine($"{item.Status};{item.Type};{item.Source}");
             }
         }
 
@@ -139,7 +145,18 @@ namespace ZoDream.Shared.Providers
                 {
                     return;
                 }
-                Add(line);
+                var args = line.Split(';');
+                if (args.Length == 1)
+                {
+                    Add(line);
+                    continue;
+                }
+                if (args.Length == 2)
+                {
+                    Add(args[1], UriType.Html, (UriStatus)Enum.Parse(typeof(UriStatus), args[0]));
+                    continue;
+                }
+                Add(args[2], (UriType)Enum.Parse(typeof(UriType), args[1]), (UriStatus)Enum.Parse(typeof(UriStatus), args[0]));
             }
         }
 

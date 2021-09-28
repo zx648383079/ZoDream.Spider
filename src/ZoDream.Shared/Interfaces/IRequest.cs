@@ -13,9 +13,9 @@ namespace ZoDream.Shared.Interfaces
     public interface IRequest
     {
         public bool SupportTask { get; }
-        public Task<string> GetAsync(string url);
-        public Task<string> GetAsync(string url, IList<HeaderItem> headers);
-        public Task<string> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy);
+        public Task<string?> GetAsync(string url);
+        public Task<string?> GetAsync(string url, IList<HeaderItem> headers);
+        public Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy);
 
         /// <summary>
         /// 执行脚本
@@ -23,6 +23,6 @@ namespace ZoDream.Shared.Interfaces
         /// <param name="url"></param>
         /// <param name="script"></param>
         /// <returns></returns>
-        public Task<string> ExecuteScriptAsync(string url, string script);
+        public Task<string?> ExecuteScriptAsync(string url, string script);
     }
 }

@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ZoDream.Shared.Local;
+using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
 using ZoDream.Spider.Pages;
 using ZoDream.Spider.ViewModels;
@@ -79,6 +80,7 @@ namespace ZoDream.Spider
                 return;
             }
             ViewModel.Load();
+            Title = "Undefined Project - ZoDream Spider";
             ViewModel.Instance!.Option = page.Option;
             ViewModel.Instance.RuleProvider.Add(page.Rules);
         }
@@ -96,6 +98,7 @@ namespace ZoDream.Spider
                 return;
             }
             ViewModel.Load(open.FileName);
+            Title = System.IO.Path.GetFileNameWithoutExtension(open.FileName) + " - ZoDream Spider";
         }
 
         private void SaveProjectBtn_Click(object sender, RoutedEventArgs e)
@@ -121,6 +124,7 @@ namespace ZoDream.Spider
                 return;
             }
             ViewModel.Save(open.FileName);
+            Title = System.IO.Path.GetFileNameWithoutExtension(open.FileName) + " - ZoDream Spider";
         }
 
         private void UrlListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -131,6 +135,7 @@ namespace ZoDream.Spider
         private void StartBtn_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.Instance?.Start();
+            progressBar.Value = 0;
         }
 
         private void PauseBtn_Click(object sender, RoutedEventArgs e)
@@ -166,6 +171,32 @@ namespace ZoDream.Spider
                 default:
                     break;
             }
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var height = this.ActualHeight;
+            InfoTb.Height = Math.Max(200, height / 4);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var logger = new EventLogger();
+            logger.OnLog += (s, e) =>
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    InfoTb.Text += s + "\n";
+                });
+            };
+            logger.OnProgress += (s, e) =>
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    progressBar.Value = s * 100 / e;
+                });
+            };
+            ViewModel.Logger = logger;
         }
     }
 }

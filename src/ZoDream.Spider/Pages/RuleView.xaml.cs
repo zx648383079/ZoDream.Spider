@@ -70,11 +70,20 @@ namespace ZoDream.Spider.Pages
             {
                 return;
             }
-            ViewModel.RuleItems.Add(new RuleItem() { 
+            var item = new RuleItem()
+            {
                 Name = ViewModel.PluginItems[PluginCb.SelectedIndex].Name,
                 Param1 = Param1Tb.Text,
                 Param2 = Param2Tb.Text,
-            });
+            };
+            if (ViewModel.SelectedIndex >= 0 && ViewModel.RuleItems.Count > ViewModel.SelectedIndex)
+            {
+                ViewModel.RuleItems[ViewModel.SelectedIndex] = item;
+
+            } else
+            {
+                ViewModel.RuleItems.Add(item);
+            }
             tapClear();
         }
 
@@ -82,6 +91,7 @@ namespace ZoDream.Spider.Pages
         {
             PluginCb.SelectedIndex = -1;
             Param2Tb.Text = Param1Tb.Text = "";
+            ViewModel.SelectedIndex = -1;
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -93,6 +103,7 @@ namespace ZoDream.Spider.Pages
                     break;
                 case "修改":
                     var item = ViewModel.RuleItems[RuleBox.SelectedIndex];
+                    ViewModel.SelectedIndex = RuleBox.SelectedIndex;
                     PluginCb.SelectedIndex = ViewModel.PluginIndexOf(item.Name);
                     Param2Tb.Text = item.Param2;
                     Param1Tb.Text = item.Param1;

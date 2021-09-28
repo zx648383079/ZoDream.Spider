@@ -40,6 +40,8 @@ namespace ZoDream.Spider.Pages
             }
         }
 
+        private bool IsRunning = false;
+
         public IList<HeaderItem> HeaderItems { get; private set; }
 
 
@@ -58,6 +60,7 @@ namespace ZoDream.Spider.Pages
             url = UriRender.Render(url, SearchCb.SelectedIndex);
             UrlTb.Text = url;
             Browser.Source = new Uri(url);
+            IsLoading = true;
         }
 
         private void UrlTb_KeyDown(object sender, KeyEventArgs e)
@@ -116,7 +119,11 @@ namespace ZoDream.Spider.Pages
 
         public async Task<string> GetHtmlAsync()
         {
-            var html = await Browser.ExecuteScriptAsync("document.documentElement.outerHTML");
+            var html = await ExecuteScriptAsync("document.documentElement.outerHTML");
+            if (string.IsNullOrEmpty(html))
+            {
+                return html;
+            }
             html = Regex.Unescape(html);
             html = html.Remove(0, 1);
             return html.Remove(html.Length - 1, 1);
@@ -135,17 +142,6 @@ namespace ZoDream.Spider.Pages
             IsLoading = false;
         }
 
-        private async Task DealHtmlAsync()
-        {
-            var html = await GetHtmlAsync();
-            if (string.IsNullOrWhiteSpace(html))
-            {
-                return;
-            }
-            // HtmlCallback?.Invoke(html);
-            // _ = Browser.ExecuteScriptAsync("!function(){function c(a){var b,c,d;for(b=0;b<a.length;b++)c=a[b],d=c.getAttribute(\"target\"),\"_blank\"==d&&c.setAttribute(\"target\",\"_self\")}var a=document.getElementsByTagName(\"a\"),b=document.getElementsByTagName(\"form\");c(a),c(b)}();");
-        }
-
         private void Browser_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
         {
             UrlTb.Text = Browser.Source.ToString();
@@ -153,9 +149,22 @@ namespace ZoDream.Spider.Pages
 
         private void Browser_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
-            Browser.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            Browser.CoreWebView2.AddHostObjectToScript("zreSpider", bridge);
-            Browser.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("var zreSpider = window.chrome.webview.hostObjects.zreSpider;");
+            var coreWebView = Browser.CoreWebView2;
+            coreWebView.NewWindowRequested += CoreWebView2_NewWindowRequested;
+            coreWebView.AddHostObjectToScript("zreSpider", bridge);
+            coreWebView.AddScriptToExecuteOnDocumentCreatedAsync("var zreSpider = window.chrome.webview.hostObjects.zreSpider;");
+            coreWebView.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+            // coreWebView.DOMContentLoaded += CoreWebView_DOMContentLoaded;
+        }
+
+        private void CoreWebView_DOMContentLoaded(object? sender, CoreWebView2DOMContentLoadedEventArgs e)
+        {
+            IsLoading = false;
+        }
+
+        private void CoreWebView2_DocumentTitleChanged(object? sender, object e)
+        {
+            Title = Browser.CoreWebView2.DocumentTitle;
         }
 
         private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
@@ -174,46 +183,93 @@ namespace ZoDream.Spider.Pages
             Browser.Stop();
         }
 
-        public Task<string> GetAsync(string url)
+        public Task<string?> GetAsync(string url)
         {
-            NavigateUrl(url);
-            return Task.Factory.StartNew(() =>
+            return ExecuteAsync(() =>
             {
-                while(true)
+                NavigateUrl(url);
+            }, GetHtmlAsync);
+        }
+
+        public async Task<string> ExecuteScriptAsync(string script)
+        {
+            var isCallback = script.IndexOf("zreSpider") >= 0;
+            string funcRes = string.Empty;
+            var isRet = false;
+            ContentReadyEventHandler func = (string res) =>
+            {
+                funcRes = res;
+                isRet = true;
+            };
+            await Browser.EnsureCoreWebView2Async();
+            if (isCallback)
+            {
+                bridge.ContentReady += func;
+            }
+            var res = await Browser.ExecuteScriptAsync(script);
+            if (!isCallback)
+            {
+                return res == "null" ? string.Empty : res;
+            }
+            await Task.Factory.StartNew(() =>
+            {
+                while (!isRet)
                 {
-                    if (!IsLoading)
-                    {
-                        break;
-                    }
                     Thread.Sleep(100);
                 }
-                return GetHtmlAsync().GetAwaiter().GetResult();
+            });
+            bridge.ContentReady -= func;
+            return funcRes;
+        }
+
+        public Task<Tout?> ExecuteAsync<Tout>(Action action, Func<Task<Tout>> func)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                while (IsRunning)
+                {
+                    Thread.Sleep(100);
+                }
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    action.Invoke();
+                    IsRunning = true;
+                });
+                while (IsLoading)
+                {
+                    Thread.Sleep(100);
+                }
+                Tout? res = default(Tout);// default(Tout);
+                App.Current.Dispatcher.Invoke(async () =>
+                {
+                    res = await func.Invoke();
+                    IsRunning = false;
+                });
+                while (IsRunning)
+                {
+                    Thread.Sleep(100);
+                }
+                return res;
             });
         }
 
-        public Task<string> ExecuteScriptAsync(string url, string script)
+        public Task<string?> ExecuteScriptAsync(string url, string script)
         {
-            NavigateUrl(url);
-            return Task.Factory.StartNew(() =>
+            return ExecuteAsync(() =>
             {
-                while (true)
-                {
-                    if (!IsLoading)
-                    {
-                        break;
-                    }
-                    Thread.Sleep(100);
-                }
-                return Browser.ExecuteScriptAsync(script).GetAwaiter().GetResult();
+                NavigateUrl(url);
+            }, async () =>
+            {
+                return await ExecuteScriptAsync(script);
             });
         }
 
-        public Task<string> GetAsync(string url, IList<HeaderItem> headers)
+        public Task<string?> GetAsync(string url, IList<HeaderItem> headers)
         {
             return GetAsync(url);
         }
 
-        public Task<string> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy)
+        public Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy)
         {
             return GetAsync(url);
         }

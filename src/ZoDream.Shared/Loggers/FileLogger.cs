@@ -60,5 +60,15 @@ namespace ZoDream.Shared.Loggers
                 Log($"[{i}]: {item}");
             }
         }
+
+        public void Log(LogLevel level, string message)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Progress(long current, long total)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

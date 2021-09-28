@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZoDream.Spider"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="ZoDream Spider" Height="450" Width="800"
+        SizeChanged="Window_SizeChanged"
+        Loaded="Window_Loaded"
+        WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -17,6 +20,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid>
@@ -32,6 +36,9 @@
                     <MenuItem x:Name="PauseBtn" Header="暂停" Click="PauseBtn_Click" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
                     <MenuItem x:Name="StopBtn" Header="停止" Click="StopBtn_Click" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
                     <MenuItem x:Name="ResumeBtn" Header="还原" Click="ResumeBtn_Click"/>
+                </MenuItem>
+                <MenuItem Header="面板">
+                    <MenuItem x:Name="InfoToggle" Header="输出" IsCheckable="True"/>
                 </MenuItem>
                 <MenuItem Header="关于">
                     <MenuItem Header="查看帮助"/>
@@ -65,12 +72,23 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Image Source="{Binding Path=Status,Converter={StaticResource StatusIconConverter}}" MaxWidth="20"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Path=Title}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Path=Title}" FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="2" Text="{Binding Path=Source}" VerticalAlignment="Center"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBlock Grid.Row="2" Text="{Binding Message}"/>
+        <TextBox x:Name="InfoTb" Background="#f4f4f4" IsReadOnly="True" 
+                 Grid.Row="2" 
+                 Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="{Binding Message}"/>
+            <ProgressBar x:Name="progressBar" Grid.Column="1" Height="10" 
+                         Visibility="{Binding Path=Paused, Converter={StaticResource FalseConverter}}"/>
+        </Grid>
     </Grid>
 </Window>

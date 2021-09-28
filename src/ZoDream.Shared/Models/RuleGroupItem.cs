@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace ZoDream.Shared.Models
 
         public IList<RuleItem> Rules { get; set; } = new List<RuleItem>();
 
+        [JsonIgnore]
         public string EventName
         {
             get {
@@ -24,6 +26,7 @@ namespace ZoDream.Shared.Models
             }
         }
 
+        [JsonIgnore]
         public bool IsEvent
         {
             get

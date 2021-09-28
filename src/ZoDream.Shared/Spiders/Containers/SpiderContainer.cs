@@ -1,4 +1,7 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Local;
@@ -10,15 +13,17 @@ namespace ZoDream.Shared.Spiders.Containers
 {
     public class SpiderContainer : ISpiderContainer
     {
-        public SpiderContainer(ISpider spider)
+        public SpiderContainer(ISpider spider, UriItem url, IList<IRule> rules)
         {
             Application = spider;
+            Url = url;
+            Rules = rules;
         }
         public ISpider Application { get; set; }
 
         public IDictionary<string, string> MapItems = new Dictionary<string, string>();
         public IList<IRule> Rules { get; set; } = new List<IRule>();
-        public IRuleValue Data { get; set; }
+        public IRuleValue? Data { get; set; }
         public UriItem Url { get; set; }
 
         public int RuleIndex { get; private set; } = -1;
@@ -34,7 +39,7 @@ namespace ZoDream.Shared.Spiders.Containers
             var saveFileName = Application.RuleProvider.GetFileName(uri);
             if (!string.IsNullOrEmpty(saveFileName))
             {
-                return Path.GetRelativePath(Application.Option.WorkFolder, saveFileName);
+                return Path.GetRelativePath(Application.Option.FullWorkFolder, saveFileName);
             }
             var relativeUri = fromUri.MakeRelativeUri(toUri);
             return Uri.UnescapeDataString(relativeUri.ToString());
@@ -43,7 +48,7 @@ namespace ZoDream.Shared.Spiders.Containers
         public void Next()
         {
             RuleIndex++;
-            if (RuleIndex >= Rules.Count)
+            if (RuleIndex >= Rules.Count || Application.Paused)
             {
                 return;
             }
@@ -68,6 +73,10 @@ namespace ZoDream.Shared.Spiders.Containers
 
         public string RenderData(string content)
         {
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return Data == null ? string.Empty : Data.ToString();
+            }
             return Str.ReplaceCallback(RenderTemplate(content), @"\${([a-zA-Z0-9_])}", match => {
                 return GetAttribute(match.Groups[0].Value);
             });

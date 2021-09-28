@@ -113,7 +113,7 @@ namespace ZoDream.Shared.Utils
 
         public static void MoveUp<T>(IList<T> items, int selected)
         {
-            if (selected <= 1) return;
+            if (selected < 1) return;
             var item = items[selected];
             items[selected] = items[selected - 1];
             items[selected - 1] = item;

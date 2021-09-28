@@ -1,4 +1,5 @@
-﻿using ZoDream.Shared.Models;
+﻿using System.Collections.Generic;
+using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
 {
@@ -11,7 +12,7 @@ namespace ZoDream.Shared.Interfaces
         public IList<IRule> Rules { get; set; }
         public int RuleIndex { get; }
 
-        public IRuleValue Data { get; set; }
+        public IRuleValue? Data { get; set; }
 
         public IEnumerable<string> AttributeKeys { get; }
         /// <summary>

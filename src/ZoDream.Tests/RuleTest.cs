@@ -15,7 +15,7 @@ namespace ZoDream.Tests
         [TestMethod]
         public void TestOne()
         {
-            var container = new SpiderContainer(null);
+            // var container = new SpiderContainer(null);
         }
 
         [TestMethod]

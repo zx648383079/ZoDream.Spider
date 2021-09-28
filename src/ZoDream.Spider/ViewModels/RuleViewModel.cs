@@ -22,6 +22,14 @@ namespace ZoDream.Spider.ViewModels
             PluginItems = App.ViewModel.Instance.RuleProvider.AllPlugin();
         }
 
+        private int selectedIndex = -1;
+
+        public int SelectedIndex
+        {
+            get => selectedIndex;
+            set => Set(ref selectedIndex, value);
+        }
+
         private IList<PluginItem> pluginItems = new List<PluginItem>();
 
         public IList<PluginItem> PluginItems

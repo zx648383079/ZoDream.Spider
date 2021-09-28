@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -51,13 +52,18 @@ namespace ZoDream.Shared.Providers
 
         public IRule? Render(string name)
         {
+            if (!PluginItems.ContainsKey(name))
+            {
+                Application.Logger?.Waining($"RULE <{name}> IS NOT PLUGIN");
+                return null;
+            }
             var item = PluginItems[name];
             if (item == null || item.Callback == null)
             {
                 return null;
             }
             var rule = item.Callback;
-            var ctor = rule.GetConstructor(new Type[] { typeof(IRule) });
+            var ctor = rule.GetConstructor(new Type[] { });
             if (ctor == null)
             {
                 return null;
@@ -128,7 +134,7 @@ namespace ZoDream.Shared.Providers
                         continue;
                     }
                     var rule = Render(it);
-                    if (rule is IRuleSaver)
+                    if (rule is not IRuleSaver)
                     {
                         continue;
                     }

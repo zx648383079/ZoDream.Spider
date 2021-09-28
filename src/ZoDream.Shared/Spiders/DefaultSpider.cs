@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ZoDream.Shared.Events;
@@ -32,11 +33,17 @@ namespace ZoDream.Shared.Spiders
         /// </summary>
         private readonly object _lock = new object();
 
-        public DefaultSpider()
+        public DefaultSpider(): this(null)
+        {
+
+        }
+
+        public DefaultSpider(ILogger? logger)
         {
             UrlProvider = new UrlProvider(this);
             RequestProvider = new RequestProvider(this);
             RuleProvider = new RuleProvider(this);
+            Logger = logger;
         }
 
         public bool IsDebug { get; set; } = false;
@@ -50,9 +57,9 @@ namespace ZoDream.Shared.Spiders
 
         public IRequestProvider RequestProvider {  get; set; }
 
-        public ILogger Logger { get; set; } = new FileLogger();
+        public ILogger? Logger { get; private set; }
 
-        public event PausedEventHandler PausedChanged;
+        public event PausedEventHandler? PausedChanged;
         public void Load(string file)
         {
             if (string.IsNullOrEmpty(file))
@@ -288,6 +295,7 @@ namespace ZoDream.Shared.Spiders
         protected async Task RunTaskAsync(UriItem url)
         {
             var items = await GetContainerAsync(url);
+            Logger?.Info($"{url.Source} has {items.Count} rule groups");
             UrlProvider.UpdateItem(url, UriStatus.DOING);
             foreach (var item in items)
             {
@@ -298,11 +306,7 @@ namespace ZoDream.Shared.Spiders
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
         {
-            return new SpiderContainer(this)
-            {
-                Url = url,
-                Rules = rules
-            };
+            return new SpiderContainer(this, url, rules);
         }
 
         public async Task<IList<ISpiderContainer>> GetContainerAsync(UriItem url)
@@ -321,6 +325,7 @@ namespace ZoDream.Shared.Spiders
             var content = await RequestProvider.Getter().GetAsync(url.Source, Option.HeaderItems, ProxyProvider.Get());
             if (content == null)
             {
+                Logger?.Waining($"{url.Source} HTML EMPTY");
                 items.Clear();
                 return items;
             }
@@ -334,11 +339,7 @@ namespace ZoDream.Shared.Spiders
 
         public string GetAbsoluteFile(string fileName)
         {
-            if (fileName.IndexOf(":\\", StringComparison.Ordinal) > 0)
-            {
-                return fileName;
-            }
-            return Option.WorkFolder + '\\' + fileName.TrimStart('\\');
+            return Option.JoinPath(fileName);
         }
     }
 }
