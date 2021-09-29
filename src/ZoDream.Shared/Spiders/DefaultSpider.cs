@@ -43,6 +43,7 @@ namespace ZoDream.Shared.Spiders
             UrlProvider = new UrlProvider(this);
             RequestProvider = new RequestProvider(this);
             RuleProvider = new RuleProvider(this);
+            Storage = new StorageProvider(this);
             Logger = logger;
         }
 
@@ -50,6 +51,9 @@ namespace ZoDream.Shared.Spiders
 
         public bool Paused { get; private set; } = true;
         public SpiderOption Option { get; set; } = new SpiderOption();
+
+        public IStorageProvider<string, string, FileStream> Storage { get; set; }
+
         public IUrlProvider UrlProvider { get; set; }
         public IRuleProvider RuleProvider { get; set; }
 
@@ -352,9 +356,37 @@ namespace ZoDream.Shared.Spiders
             return items;
         }
 
-        public string GetAbsoluteFile(string fileName)
+        public async Task InvokeAsync(string url, string html)
         {
-            return Option.JoinPath(fileName);
+            var uri = UrlProvider.Get(url);
+            if (uri == null)
+            {
+                Logger?.Error("没有获取到网址");
+                return;
+            }
+            var rules = RuleProvider.Get(url);
+            if (rules == null || rules.Count < 1)
+            {
+                Logger?.Error("没有获取到规则");
+                return;
+            }
+            UrlProvider.UpdateItem(uri, UriStatus.DOING);
+            var success = true;
+            foreach (var item in rules)
+            {
+                var con = GetContainer(uri, RuleProvider.Render(item.Rules));
+                con.Data = new RuleString(html);
+                try
+                {
+                    await con.NextAsync();
+                }
+                catch (Exception ex)
+                {
+                    success = false;
+                    Logger?.Error(ex.Message);
+                }
+            }
+            UrlProvider.UpdateItem(uri, success ? UriStatus.DONE : UriStatus.ERROR);
         }
     }
 }

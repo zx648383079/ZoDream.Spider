@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ZoDream.Shared.Local
 {
@@ -26,7 +23,7 @@ namespace ZoDream.Shared.Local
         /// </summary>   
         /// <param name="stream">文本文件流。</param>   
         /// <returns></returns>   
-        public static Encoding GetEncoding(FileStream stream)
+        public static Encoding GetEncoding(Stream stream)
         {
             return GetEncoding(stream, Encoding.Default);
         }
@@ -50,7 +47,7 @@ namespace ZoDream.Shared.Local
         /// <param name="stream">文本文件流。</param>   
         /// <param name="defaultEncoding">默认编码方式。当该方法无法从文件的头部取得有效的前导符时，将返回该编码方式。</param>   
         /// <returns></returns>   
-        public static Encoding GetEncoding(FileStream stream, Encoding defaultEncoding)
+        public static Encoding GetEncoding(Stream stream, Encoding defaultEncoding)
         {
             var targetEncoding = defaultEncoding;
             if (stream == null || stream.Length < 2) return targetEncoding;

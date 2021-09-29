@@ -128,6 +128,11 @@ namespace ZoDream.Shared.Providers
             return items;
         }
 
+        /// <summary>
+        /// 返回的不一定是绝对路径
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public string GetFileName(string uri)
         {
             var items = Get(uri);
@@ -149,7 +154,7 @@ namespace ZoDream.Shared.Providers
                     {
                         continue;
                     }
-                    var file = Application.GetAbsoluteFile((rule as IRuleSaver).GetFileName(uri));
+                    var file = (rule as IRuleSaver).GetFileName(uri);
                     if (!string.IsNullOrEmpty(file))
                     {
                         return file;

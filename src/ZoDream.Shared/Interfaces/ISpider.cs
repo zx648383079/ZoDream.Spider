@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,9 @@ namespace ZoDream.Shared.Interfaces
 
         public bool Paused { get; }
         public SpiderOption Option { get; set; }
+
+        public IStorageProvider<string, string, FileStream> Storage { get; set; }
+
         public IUrlProvider UrlProvider { get; set; }
 
         public IRuleProvider RuleProvider { get; set; }
@@ -56,7 +60,6 @@ namespace ZoDream.Shared.Interfaces
         public Task SaveAsync(string file);
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules);
-
-        public string GetAbsoluteFile(string fileName);
+        public Task InvokeAsync(string url, string html);
     }
 }

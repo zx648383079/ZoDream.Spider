@@ -20,36 +20,6 @@ namespace ZoDream.Shared.Models
 
         public IList<HeaderItem> HeaderItems { get; set; } = new List<HeaderItem>();
 
-        public string FullWorkFolder
-        {
-            get {
-                if (string.IsNullOrWhiteSpace(WorkFolder) || WorkFolder == "\\")
-                {
-                    return AppDomain.CurrentDomain.BaseDirectory + '\\';
-                }
-                var fileName = WorkFolder;
-                if (WorkFolder.IndexOf(":\\", StringComparison.Ordinal) < 0)
-                {
-                    fileName = AppDomain.CurrentDomain.BaseDirectory + '\\' + WorkFolder.TrimStart('\\');
-                }
-                if (fileName.EndsWith('\\'))
-                {
-                    return fileName;
-                }
-                return fileName + '\\';
-            }
-        }
-
-        public string JoinPath(string fileName)
-        {
-            if (fileName.IndexOf(":\\", StringComparison.Ordinal) > 0)
-            {
-                return fileName;
-            }
-            return FullWorkFolder + fileName;
-        }
-
-
 
         public void Deserializer(StreamReader reader)
         {

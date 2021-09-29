@@ -48,9 +48,8 @@ namespace ZoDream.Spider.TextSpotRule
                 base64 = base64.Substring(22);
             }
             var data = Convert.FromBase64String(base64);
-            var path = container.Application.GetAbsoluteFile(Disk.RenderFile(container.Url.Source));
-            Disk.CreateDirectory(path);
-            File.WriteAllBytes(path + ".png", data);
+            var file = Disk.RenderFile(container.Url.Source) + ".png";
+            await container.Application.Storage.CreateAsync(file, data);
         }
     }
 }

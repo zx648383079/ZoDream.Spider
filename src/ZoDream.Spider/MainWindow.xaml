@@ -56,7 +56,8 @@
                     </MenuItem>
                     <MenuItem Header="添加网址" x:Name="AddUrlBtn" Click="AddUrlBtn_Click"/>
                     <MenuItem Header="添加代理" x:Name="ProxyBtn" Click="ProxyBtn_Click"/>
-                    <MenuItem Header="删除">
+                    <MenuItem Header="浏览器调试" x:Name="DebugBtn" Click="DebugBtn_Click" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
+                    <MenuItem Header="删除" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
                         <MenuItem Header="选中" Click="MenuItem_Click"/>
                         <MenuItem Header="已完成" Click="MenuItem_Click"/>
                         <MenuItem Header="全部" Click="MenuItem_Click"/>

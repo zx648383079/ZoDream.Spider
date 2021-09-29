@@ -38,22 +38,22 @@ namespace ZoDream.Shared.Rules
 
         public async Task RenderAsync(ISpiderContainer container)
         {
-            var file = container.Application.GetAbsoluteFile(GetFileName(string.Empty));
-            Disk.CreateDirectory(file);
+            var storage = container.Application.Storage;
             var ruleGroup = new RuleGroupItem() { Name = ruleGroupName };
-            var writer = Open.Writer(file, true);
+            var writer = Open.Writer(await storage.CreateStreamAsync(GetFileName(string.Empty)), true);
             foreach (var item in container.Application.UrlProvider)
             {
                 if (!ruleGroup.IsMatch(item.Source))
                 {
                     continue;
                 }
-                var tempfile = container.Application.RuleProvider.GetFileName(item.Source);
-                if (!string.IsNullOrEmpty(tempfile))
+                var tempfile = await storage.OpenStreamAsync(item);
+                if (tempfile != null)
                 {
                     writer.WriteLine(Open.Read(tempfile));
                     writer.WriteLine();
                 }
+                tempfile?.Close();
             }
             writer.Close();
         }

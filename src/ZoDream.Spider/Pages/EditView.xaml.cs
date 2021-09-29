@@ -118,7 +118,7 @@ namespace ZoDream.Spider.Pages
 
         private void BrowserBtn_Click(object sender, RoutedEventArgs e)
         {
-            var page = new BrowserView(true);
+            var page = new BrowserView(BrowserFlags.CONFIRM);
             if (page.ShowDialog() != true)
             {
                 return;

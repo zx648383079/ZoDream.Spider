@@ -52,9 +52,8 @@ namespace ZoDream.Shared.Rules
 
         public async Task RenderAsync(ISpiderContainer container)
         {
-            var file = container.Application.GetAbsoluteFile(GetFileName(container.Url.Source));
-            Disk.CreateDirectory(file);
-            using (var fs = new FileStream(file, FileMode.Create))
+            var storage = container.Application.Storage;
+            using (var fs = await storage.CreateStreamAsync(GetFileName(container.Url.Source)))
             using (var writer = new StreamWriter(fs, Encoding.UTF8))
             {
                 writer.BaseStream.Position = writer.BaseStream.Length;

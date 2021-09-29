@@ -27,6 +27,14 @@ namespace ZoDream.Shared.Local
             return content;
         }
 
+        public static string Read(Stream fs)
+        {
+            var reader = new StreamReader(fs, TxtEncoder.GetEncoding(fs));
+            var content = reader.ReadToEnd();
+            reader.Close();
+            return content;
+        }
+
         public static StreamReader Reader(string file)
         {
             var fs = new FileStream(file, FileMode.Open);
@@ -74,6 +82,11 @@ namespace ZoDream.Shared.Local
         public static StreamWriter Writer(string file, bool append)
         {
             var fs = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            return Writer(fs, append);
+        }
+
+        public static StreamWriter Writer(Stream fs, bool append)
+        {
             var encoding = TxtEncoder.GetEncoding(fs);
             if (append)
             {

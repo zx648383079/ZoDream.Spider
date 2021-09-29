@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -97,6 +98,7 @@ namespace ZoDream.Spider.ViewModels
         {
             FileName = file;
             Instance = new DefaultSpider(Logger);
+            Instance.Storage.EntranceFile = file;
             Instance.RequestProvider = new RequestProvider(Instance);
             Instance.RuleProvider.Load(AppDomain.CurrentDomain.BaseDirectory);
             Instance.UrlProvider.UrlChanged += UrlProvider_UrlChanged;
@@ -149,6 +151,7 @@ namespace ZoDream.Spider.ViewModels
                 return;
             }
             Instance.Save(FileName);
+            Instance.Storage.EntranceFile = FileName;
         }
 
         public void Save(string fileName)

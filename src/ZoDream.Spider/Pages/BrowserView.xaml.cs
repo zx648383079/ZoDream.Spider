@@ -22,14 +22,46 @@ namespace ZoDream.Spider.Pages
     /// </summary>
     public partial class BrowserView : Window, IRequest
     {
-        public BrowserView(bool showConfirm = false)
+        public BrowserView(): this(BrowserFlags.NONE)
+        {
+
+        }
+
+        public BrowserView(BrowserFlags flag)
         {
             InitializeComponent();
-            YesBtn.Visibility = showConfirm ? Visibility.Visible : Visibility.Collapsed;
+            BrowserFlag = flag;
         }
 
         private SpiderBridge bridge = new SpiderBridge();
         public bool SupportTask { get; } = false;
+
+        private BrowserFlags browserFlag;
+
+        public BrowserFlags BrowserFlag
+        {
+            get { return browserFlag; }
+            set {
+                browserFlag = value;
+                switch (value)
+                {
+                    case BrowserFlags.NONE:
+                        YesBtn.Visibility = Visibility.Collapsed;
+                        break;
+                    case BrowserFlags.CONFIRM:
+                        YesBtn.Content = "确定";
+                        YesBtn.Visibility = Visibility.Visible;
+                        break;
+                    case BrowserFlags.DEBUG:
+                        YesBtn.Content = "执行调试";
+                        YesBtn.Visibility = Visibility.Visible;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
 
         public bool IsLoading
         {
@@ -40,9 +72,17 @@ namespace ZoDream.Spider.Pages
             }
         }
 
+        public string Source
+        {
+            get { return Browser.Source.ToString(); }
+            set { NavigateUrl(value); }
+        }
+
         private bool IsRunning = false;
 
         public IList<HeaderItem> HeaderItems { get; private set; }
+
+        public event ConfirmEventHandler? OnConfirm;
 
 
         private void WebView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -102,7 +142,11 @@ namespace ZoDream.Spider.Pages
 
         private void YesBtn_Click(object sender, RoutedEventArgs e)
         {
-            _ = LoadHeaderAsync();
+            OnConfirm?.Invoke(this);
+            if (BrowserFlag == BrowserFlags.CONFIRM)
+            {
+                _ = LoadHeaderAsync();
+            }
         }
 
         private async Task LoadHeaderAsync()
@@ -154,7 +198,14 @@ namespace ZoDream.Spider.Pages
             coreWebView.AddHostObjectToScript("zreSpider", bridge);
             coreWebView.AddScriptToExecuteOnDocumentCreatedAsync("var zreSpider = window.chrome.webview.hostObjects.zreSpider;");
             coreWebView.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
+            coreWebView.DownloadStarting += CoreWebView_DownloadStarting;
             // coreWebView.DOMContentLoaded += CoreWebView_DOMContentLoaded;
+        }
+
+        private void CoreWebView_DownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)
+        {
+            // e.Cancel = true;
+            // e.DownloadOperation.Uri;
         }
 
         private void CoreWebView_DOMContentLoaded(object? sender, CoreWebView2DOMContentLoadedEventArgs e)
@@ -275,5 +326,12 @@ namespace ZoDream.Spider.Pages
         }
     }
 
-    public delegate void DocumentReadyEventHandler(object sender, string html);
+    public delegate void ConfirmEventHandler(object sender);
+
+    public enum BrowserFlags
+    {
+        NONE,
+        CONFIRM,
+        DEBUG,
+    }
 }

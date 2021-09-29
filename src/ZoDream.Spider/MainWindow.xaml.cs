@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Local;
 using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
@@ -197,6 +198,33 @@ namespace ZoDream.Spider
                 });
             };
             ViewModel.Logger = logger;
+        }
+
+        private void DebugBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (UrlListBox.SelectedIndex < 0)
+            {
+                MessageBox.Show("请选择要调试的网址");
+                return;
+            }
+            var item = ViewModel.UrlItems[UrlListBox.SelectedIndex];
+            var brower = ViewModel.BroswerRequest;
+            brower.BrowserFlag = BrowserFlags.DEBUG;
+            brower.NavigateUrl(item.Source);
+            brower.OnConfirm += Brower_OnConfirm;
+        }
+
+        private async void Brower_OnConfirm(object sender)
+        {
+            var spider = ViewModel.Instance;
+            if (spider == null)
+            {
+                return;
+            }
+            var brower = sender as BrowserView;
+            spider.UrlProvider.Add(brower.Source);
+            await spider.InvokeAsync(brower.Source, await brower.GetHtmlAsync());
+            brower.OnConfirm -= Brower_OnConfirm;
         }
     }
 }

@@ -51,8 +51,7 @@ namespace ZoDream.Shared.Rules
 
         public async Task RenderAsync(ISpiderContainer container)
         {
-            var file = container.Application.GetAbsoluteFile(GetFileName(container.Url.Source));
-            Disk.CreateDirectory(file);
+            var file = container.Application.Storage.GetAbsolutePath(GetFileName(container.Url.Source));
             await container.Application.RequestProvider.Downloader().GetAsync(
                 file, 
                 container.Url.Source,

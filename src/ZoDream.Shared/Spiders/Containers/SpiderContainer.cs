@@ -45,7 +45,7 @@ namespace ZoDream.Shared.Spiders.Containers
             var saveFileName = Application.RuleProvider.GetFileName(uri);
             if (!string.IsNullOrEmpty(saveFileName))
             {
-                return Path.GetRelativePath(Application.Option.FullWorkFolder, saveFileName);
+                return Application.Storage.GetRelativePath(saveFileName);
             }
             return Uri.UnescapeDataString(relativeUri.ToString());
         }
