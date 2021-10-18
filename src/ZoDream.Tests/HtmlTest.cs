@@ -6,12 +6,12 @@ namespace ZoDream.Tests
     [TestClass]
     public class HtmlTest
     {
-        [TestMethod]
+        // [TestMethod]
         public void TestMatch()
         {
             var client = new Client();
-            var html = client.Get("https://www.ly990.com/10_10398/10756807.html");
-            Assert.IsTrue(html != null && html.IndexOf("½­¼ÒÊÙÑç") > 0);
+            var html = client.Get("");
+            Assert.IsTrue(html != null && html.IndexOf("") > 0);
         }
     }
 }
