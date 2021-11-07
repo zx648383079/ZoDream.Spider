@@ -26,10 +26,10 @@ namespace ZoDream.Spider.ImportSearchRule
         {
             var segmenter = new JiebaNet.Analyser.TfidfExtractor();
             var tags = segmenter.ExtractTags(container.Data.ToString());
-            var client = new Client(apiUri);
+            var client = new Client();
             if (!string.IsNullOrEmpty(apiToken))
             {
-                client.Headers.Add(new HeaderItem("Authorization", "Bearer " + apiToken));
+                client.Headers.Add("Authorization", "Bearer " + apiToken);
             }
             var data = new PostForm();
             data.Title = container.GetAttribute("title");
@@ -37,7 +37,7 @@ namespace ZoDream.Spider.ImportSearchRule
             data.Content = container.GetAttribute("content");
             data.Link = container.GetAttribute("url");
             data.Keywords = tags;
-            client.Post(JsonConvert.SerializeObject(data), "application/json");
+            await client.PostAsync(apiUri, JsonConvert.SerializeObject(data), "application/json");
             await container.NextAsync();
         }
     }

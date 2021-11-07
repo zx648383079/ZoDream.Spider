@@ -29,7 +29,7 @@ namespace ZoDream.Shared.Utils
                 lastIndex = item.Index + 1;
                 sb.Append(func.Invoke(item));
             }
-            sb.Append(content.AsSpan(lastIndex));
+            sb.Append(content.Substring(lastIndex));
             return sb.ToString();
         }
 

@@ -10,12 +10,12 @@ namespace ZoDream.Shared.Http
     public static class HttpProxy
     {
 
-        public static bool Test(ProxyItem proxy)
+        public static async Task<bool> TestAsync(ProxyItem proxy)
         {
-            return Test(proxy, "https://www.baidu.com/");
+            return await TestAsync(proxy, "https://www.baidu.com/");
         }
 
-        public static bool Test(ProxyItem proxy, string testUrl)
+        public static async Task<bool> TestAsync(ProxyItem proxy, string testUrl)
         {
             if (proxy == null || string.IsNullOrWhiteSpace(testUrl))
             {
@@ -24,7 +24,7 @@ namespace ZoDream.Shared.Http
             var client = new Client();
             client.Proxy = proxy;
             client.TimeOut = 20 * 1000;
-            var html = client.Get(testUrl);
+            var html = await client.GetAsync(testUrl);
             return html != null;
         }
     }

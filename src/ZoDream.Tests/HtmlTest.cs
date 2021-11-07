@@ -7,10 +7,10 @@ namespace ZoDream.Tests
     public class HtmlTest
     {
         // [TestMethod]
-        public void TestMatch()
+        public async void TestMatch()
         {
             var client = new Client();
-            var html = client.Get("");
+            var html = await client.GetAsync("");
             Assert.IsTrue(html != null && html.IndexOf("") > 0);
         }
     }

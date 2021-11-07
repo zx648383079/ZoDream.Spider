@@ -11,22 +11,16 @@ using System.Text.RegularExpressions;
 using System.Net.Http;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Interfaces;
-using System.Reflection.Metadata;
-using static System.Net.WebRequestMethods;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ZoDream.Shared.Http
 {
-    public class Client
+    public class Client: IHttpClient
     {
+
+        public const string ContentTypeKey = "Content-Type";
         public string Url { get; set; } = string.Empty;
-
-        public string Accept { get; set; } = HttpAccept.Html;
-
-        public string UserAgent { get; set; } = HttpUserAgent.Firefox;
-
-        public string Referer { get; set; } = "";
-
-        public bool KeepAlive { get; set; } = true;
 
         public string Method { get; set; } = "GET";
 
@@ -34,20 +28,14 @@ namespace ZoDream.Shared.Http
 
         public ProxyItem? Proxy { get; set; }
 
-        public IList<HeaderItem> Headers { get; set; } = new List<HeaderItem>() {
-            new HeaderItem("Accept-Encoding", "gzip, deflate"),
-            new HeaderItem("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3"),
-            new HeaderItem("Cache-Control", "max-age=0"),
-        };
+        public IDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
+
+        public string Body { get; set; } = string.Empty;
 
         /// <summary>
         /// 毫秒为单位
         /// </summary>
         public int TimeOut { get; set; } = 5 * 1000;
-
-        public int ReadWriteTimeOut = 2 * 1000;
-
-        public CookieCollection? Cookies { get; set; }
 
         public Client()
         {
@@ -59,77 +47,6 @@ namespace ZoDream.Shared.Http
             Url = url;
         }
 
-        public string? Get(string url)
-        {
-            Url = url;
-            return Get();
-        }
-
-        public string? Get()
-        {
-            Method = "GET";
-            return ReadAsString(PrepareRequest());
-        }
-
-        public string? Post(string url, IDictionary<string, string> param)
-        {
-            Url = url;
-            return Post(param);
-        }
-
-        public string? Post(IDictionary<string, string> param)
-        {
-            var request = PrepareRequest();
-            ReadyPost(request, param);
-            return ReadAsString(request);
-        }
-
-
-        public string? Post(string param)
-        {
-            return Post(param, "application/x-www-form-urlencoded");
-        }
-
-        public string? Post(string param, string contentType)
-        {
-            var request = PrepareRequest();
-            ReadyPost(request, param, contentType);
-            return ReadAsString(request);
-        }
-
-
-        private void ReadyPost(HttpRequestMessage request, IDictionary<string, string> param)
-        {
-            Method = "POST";
-            request.Content = new FormUrlEncodedContent(param);
-        }
-
-        private void ReadyPost(HttpRequestMessage request, string args)
-        {
-            ReadyPost(request, Encoding.UTF8.GetBytes(args));
-        }
-
-        private void ReadyPost(HttpRequestMessage request, string args, string contentType)
-        {
-            Method = "POST";
-            if (contentType.IndexOf("json") > 0)
-            {
-                request.Content = new StringContent(args);
-                return;
-            }
-            request.Content = new StringContent(args, Encoding.UTF8, contentType);
-        }
-
-        private void ReadyPost(HttpRequestMessage request, byte[] args)
-        {
-            ReadyPost(request, args, "application/x-www-form-urlencoded");
-        }
-
-        private void ReadyPost(HttpRequestMessage request, byte[] args, string contentType)
-        {
-            ReadyPost(request, Encoding.UTF8.GetString(args), contentType);
-        }
-
         public HttpClient PrepareClient()
         {
             var handler = new HttpClientHandler()
@@ -139,9 +56,17 @@ namespace ZoDream.Shared.Http
                 CookieContainer = new CookieContainer(),
                 ServerCertificateCustomValidationCallback = (message, certificate2, arg3, arg4) => true
             };
-            if (Cookies != null && Cookies.Count > 0)
-            {   
-                handler.CookieContainer.Add(Cookies);
+            //if (Cookies != null && Cookies.Count > 0)
+            //{   
+            //    handler.CookieContainer.Add(Cookies);
+            //}
+            var uri = new Uri(Url);
+            if (Headers.ContainsKey("Cookie"))
+            {
+                foreach (var item in Headers["Cookie"].Split(';'))
+                {
+                    handler.CookieContainer.SetCookies(uri, item);
+                }
             }
             if (Proxy != null)
             {
@@ -171,12 +96,18 @@ namespace ZoDream.Shared.Http
             };
             foreach (var item in Headers)
             {
-                request.Headers.TryAddWithoutValidation(item.Name, item.Value);
+                request.Headers.TryAddWithoutValidation(item.Key, item.Value);
             }
-            request.Headers.TryAddWithoutValidation("Accept", Accept);
-            request.Headers.TryAddWithoutValidation("User-Agent", UserAgent);
-            request.Headers.TryAddWithoutValidation("Referer", Referer);
-            request.Headers.TryAddWithoutValidation("Referer", Referer);
+            if (Method == "POST")
+            {
+                if (Headers.ContainsKey(ContentTypeKey))
+                {
+                    request.Content = new StringContent(Body, Encoding.UTF8, Headers[ContentTypeKey]);
+                } else
+                {
+                    request.Content = new StringContent(Body);
+                }
+            }
             return request;
         }
 
@@ -194,8 +125,6 @@ namespace ZoDream.Shared.Http
                     return HttpMethod.Head;
                 case "OPTIONS":
                     return HttpMethod.Options;
-                case "PATCH":
-                    return HttpMethod.Patch;
                 case "TRACE":
                     return HttpMethod.Trace;
                 default:
@@ -203,203 +132,6 @@ namespace ZoDream.Shared.Http
             }
         }
 
-        /// <summary>
-        /// 返回响应报文
-        /// </summary>
-        /// <param name="request">WebRequest对象</param>
-        /// <returns>响应对象</returns>
-        public string? ReadAsString(HttpRequestMessage request)
-        {
-            try
-            {
-                string html;
-                using (var client = PrepareClient())
-                using (var response = client.Send(request))
-                {
-                    html = ReadAsString(response);
-                }
-                return html;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public HttpResponseMessage? Read()
-        {
-            try
-            {
-                using (var request = PrepareRequest())
-                using (var client = PrepareClient())
-                using (var response = client.Send(request))
-                {
-                    return response;
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public HttpResponseMessage? Read(string url)
-        {
-            Url = url;
-            return Read();
-        }
-
-
-        public MemoryStream? ReadAsMemoryStream(HttpResponseMessage response)
-        {
-
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return null;
-            }
-            #region 判断解压
-            var stream = ReadAsStream(response);
-            #endregion
-            #region 把网络流转成内存流
-            var ms = new MemoryStream();
-            var buffer = new byte[1024];
-            while (true)
-            {
-                if (stream == null) continue;
-                var sz = stream.Read(buffer, 0, 1024);
-                if (sz == 0) break;
-                ms.Write(buffer, 0, sz);
-            }
-            stream.Close();
-            #endregion
-            return ms;
-        }
-
-        public void ReadAsFile(string url, string file)
-        {
-            var response = Read(url);
-            if (response == null || response.StatusCode != HttpStatusCode.OK)
-            {
-                return;
-            }
-            ReadAsFile(response, file);
-        }
-
-        public void ReadAsFile(HttpResponseMessage response, string file)
-        {
-            var responseStream = ReadAsStream(response);
-            //创建本地文件写入流
-            var stream = new FileStream(file, FileMode.Create);
-            var bArr = new byte[1024];
-            if (responseStream != null)
-            {
-                var size = responseStream.Read(bArr, 0, bArr.Length);
-                while (size > 0)
-                {
-                    stream.Write(bArr, 0, size);
-                    size = responseStream.Read(bArr, 0, bArr.Length);
-                }
-            }
-            stream.Close();
-            responseStream?.Close();
-        }
-        /// <summary>
-        /// 获取一段文件，断点续传用，请先使用 ReadContentLength() 获取内容大小，进行判断
-        /// </summary>
-        /// <param name="file"></param>
-        /// <param name="current"></param>
-        /// <param name="maxSize"></param>
-        public void ReadAsFile(string file, long current, long maxSize = 512000)
-        {
-            try
-            {
-                using (var request = PrepareRequest())
-                {
-                    request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(current, current + maxSize - 1);
-                    using (var client = PrepareClient())
-                    using (var response = client.Send(request))
-                    {
-                        var responseStream = ReadAsStream(response);
-                        //创建本地文件写入流
-                        var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                        var bArr = new byte[1024];
-                        if (responseStream != null)
-                        {
-                            var size = responseStream.Read(bArr, 0, bArr.Length);
-                            while (size > 0)
-                            {
-                                stream.Write(bArr, 0, size);
-                                size = responseStream.Read(bArr, 0, bArr.Length);
-                            }
-                        }
-                        stream.Close();
-                        responseStream?.Close();
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                return;
-            }
-        }
-
-        /// <summary>
-        /// 获取文件大小
-        /// </summary>
-        /// <returns></returns>
-        public long ReadContentLength()
-        {
-            try
-            {
-                using (var request = PrepareRequest())
-                using (var client = PrepareClient())
-                using (var response = client.Send(request))
-                {
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        return 0;
-                    }
-                    var length = response.Content.Headers.ContentLength;
-                    if (length == null)
-                    {
-                        return 0;
-                    }
-                    return (long)length;
-                }
-            }
-            catch (Exception)
-            {
-                return 0;
-            }
-        }
-
-        public string ReadAsString(HttpResponseMessage response)
-        {
-            var html = string.Empty;
-            #region 判断解压
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                return html;
-            }
-            var stream = ReadAsStream(response);
-            #region 把网络流转成内存流
-            var ms = new MemoryStream();
-            var buffer = new byte[1024];
-            while (true)
-            {
-                if (stream == null) continue;
-                var sz = stream.Read(buffer, 0, 1024);
-                if (sz == 0) break;
-                ms.Write(buffer, 0, sz);
-            }
-            #endregion
-            var bytes = ms.ToArray();
-            html = GetEncoding(bytes, ReadCharset(response)).GetString(bytes);
-            stream.Close();
-            response.Dispose();
-            #endregion
-            return html;
-        }
 
         private string ReadCharset(HttpResponseMessage response)
         {
@@ -414,20 +146,6 @@ namespace ZoDream.Shared.Http
                 return item.Substring(i + 7);
             }
             return string.Empty;
-        }
-
-        /// <summary>
-        /// 获取响应流
-        /// </summary>
-        /// <param name="response"></param>
-        /// <returns></returns>
-        public Stream ReadAsStream(HttpResponseMessage response)
-        {
-            if (response.Content.Headers.ContentEncoding.Contains("gzip"))
-            {
-                return new GZipStream(response.Content.ReadAsStream(), mode: CompressionMode.Decompress);
-            }
-            return response.Content.ReadAsStream();
         }
 
 
@@ -448,6 +166,239 @@ namespace ZoDream.Shared.Http
                 return Encoding.GetEncoding(regCharset.Match(html).Groups["charset"].Value);
             }
             return charSet != string.Empty ? Encoding.GetEncoding(charSet) : Encoding.Default;
+        }
+
+        public Task<string?> GetAsync(string url)
+        {
+            Url = url;
+            return ReadAsync();
+        }
+
+        public Task<string?> PostAsync(string url, string data)
+        {
+            Url = url;
+            Body = data;
+            Method = "POST";
+            return ReadAsync();
+        }
+
+        public Task<string?> PostAsync(string url, string data, string contentType)
+        {
+            Headers.Add(ContentTypeKey, contentType);
+            return PostAsync(url, data);
+        }
+
+        public async Task<string?> ReadAsync()
+        {
+            using (var response = await ReadResponseAsync())
+            {
+                if (response == null || response.StatusCode != HttpStatusCode.OK)
+                {
+                    return null;
+                }
+                return await ReadAsync(response);
+            }
+        }
+
+        public async Task<string?> ReadAsync(HttpResponseMessage response)
+        {
+            #region 判断解压
+            var stream = await ReadStreamAsync(response);
+            #region 把网络流转成内存流
+            var ms = new MemoryStream();
+            var buffer = new byte[1024];
+            while (true)
+            {
+                if (stream == null) continue;
+                var sz = stream.Read(buffer, 0, 1024);
+                if (sz == 0) break;
+                ms.Write(buffer, 0, sz);
+            }
+            #endregion
+            var bytes = ms.ToArray();
+            var html = GetEncoding(bytes, ReadCharset(response)).GetString(bytes);
+            stream.Close();
+            #endregion
+            return html;
+        }
+
+        public async Task<T?> ReadAsync<T>()
+        {
+            var content = await ReadAsync();
+            if (content == null)
+            {
+                return default(T);
+            }
+            if (typeof(T) == typeof(string))
+            {
+                return (T)(object)content;
+            }
+            try
+            {
+                return JsonConvert.DeserializeObject<T>(content);
+            }
+            catch (Exception)
+            {
+            }
+            return default(T);
+        }
+
+        public Task<string?> ReadFileAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<HttpResponseMessage?> ReadResponseAsync()
+        {
+            using (var request = PrepareRequest())
+            using (var client = PrepareClient())
+            using (var response = await client.SendAsync(request))
+            {
+                return response;
+            }
+        }
+
+        public async Task<Stream?> ReadStreamAsync()
+        {
+            using (var response = await ReadResponseAsync())
+            {
+                return await ReadStreamAsync(response);
+            }
+        }
+
+        public async Task<Stream?> ReadStreamAsync(HttpResponseMessage? response)
+        {
+            if (response == null)
+            {
+                return null;
+            }
+            if (response.Content.Headers.ContentEncoding.Contains("gzip"))
+            {
+                return new GZipStream(await response.Content.ReadAsStreamAsync(), mode: CompressionMode.Decompress);
+            }
+            return await response.Content.ReadAsStreamAsync();
+        }
+
+        public async Task<long> GetLengthAsync()
+        {
+            try
+            {
+                using (var response = await ReadResponseAsync())
+                {
+                    if (response == null || response.StatusCode != HttpStatusCode.OK)
+                    {
+                        return 0;
+                    }
+                    var length = response.Content.Headers.ContentLength;
+                    if (length == null)
+                    {
+                        return 0;
+                    }
+                    return (long)length;
+                }
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
+        }
+
+        public async Task<bool> SaveAsync(string file)
+        {
+            using (var responseStream = await ReadStreamAsync())
+            {
+                if (responseStream == null)
+                {
+                    return false;
+                }
+                using (var stream = new FileStream(file, FileMode.Create))
+                {
+                    var bArr = new byte[1024];
+                    if (responseStream != null)
+                    {
+                        var size = responseStream.Read(bArr, 0, bArr.Length);
+                        while (size > 0)
+                        {
+                            stream.Write(bArr, 0, size);
+                            size = responseStream.Read(bArr, 0, bArr.Length);
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+
+        public async Task<bool> SaveAsync(string file, long current, long maxSize = 512000)
+        {
+            try
+            {
+                using (var request = PrepareRequest())
+                {
+                    request.Headers.Range = new System.Net.Http.Headers.RangeHeaderValue(current, current + maxSize - 1);
+                    using (var client = PrepareClient())
+                    using (var response = await client.SendAsync(request))
+                    {
+                        var responseStream = await ReadStreamAsync(response);
+                        if (responseStream is null)
+                        {
+                            return false;
+                        }
+                        //创建本地文件写入流
+                        var stream = new FileStream(file, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                        var bArr = new byte[1024];
+                        if (responseStream != null)
+                        {
+                            var size = responseStream.Read(bArr, 0, bArr.Length);
+                            while (size > 0)
+                            {
+                                stream.Write(bArr, 0, size);
+                                size = responseStream.Read(bArr, 0, bArr.Length);
+                            }
+                        }
+                        stream.Close();
+                        responseStream?.Close();
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public async Task<MemoryStream?> ReadMemoryStreamAsync(HttpResponseMessage? response)
+        {
+
+            if (response == null || response.StatusCode != HttpStatusCode.OK)
+            {
+                return null;
+            }
+            #region 判断解压
+            var stream = await ReadStreamAsync(response);
+            #endregion
+            #region 把网络流转成内存流
+            var ms = new MemoryStream();
+            var buffer = new byte[1024];
+            while (true)
+            {
+                if (stream == null) continue;
+                var sz = stream.Read(buffer, 0, 1024);
+                if (sz == 0) break;
+                ms.Write(buffer, 0, sz);
+            }
+            stream.Close();
+            #endregion
+            return ms;
+        }
+
+        public async Task<MemoryStream?> ReadMemoryStreamAsync()
+        {
+            using (var response = await ReadResponseAsync())
+            {
+                return await ReadMemoryStreamAsync(response);
+            }
         }
     }
 }

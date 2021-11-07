@@ -58,13 +58,13 @@ namespace ZoDream.Spider.Pages
             DialogResult = true;
         }
 
-        private void TestBtn_Click(object sender, RoutedEventArgs e)
+        private async void TestBtn_Click(object sender, RoutedEventArgs e)
         {
             var items = ProxyItems;
             foreach (var item in items)
             {
                 Debug.WriteLine(item.Host);
-                Debug.WriteLine(HttpProxy.Test(item));
+                Debug.WriteLine(await HttpProxy.TestAsync(item));
             }
         }
     }

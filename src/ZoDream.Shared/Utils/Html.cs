@@ -64,7 +64,7 @@ namespace ZoDream.Shared.Utils
 
         private static List<string> GenerateIntUrl(List<string> items, string con, int startPosition, int endPosition)
         {
-            var args = con.Split("...");
+            var args = con.Split(new string[] { "..." }, StringSplitOptions.None);
             var start = Str.ToInt(args[0]);
             var step = 1;
             var end = Str.ToInt(args[1]);

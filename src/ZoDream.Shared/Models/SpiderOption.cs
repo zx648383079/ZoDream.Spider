@@ -30,7 +30,7 @@ namespace ZoDream.Shared.Models
                 {
                     return;
                 }
-                var args = line.Split(':', 2);
+                var args = line.Split(new char[] { ':' }, 2);
                 var name = args[0].Trim();
                 switch (name.ToLower())
                 {

@@ -16,6 +16,7 @@ using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Local;
 using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
+using ZoDream.Spider.Loggers;
 using ZoDream.Spider.Pages;
 using ZoDream.Spider.ViewModels;
 

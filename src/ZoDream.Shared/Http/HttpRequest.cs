@@ -11,10 +11,7 @@ namespace ZoDream.Shared.Http
 
         public Task<string?> GetAsync(string url)
         {
-            return Task.Factory.StartNew(() =>
-            {
-                return new Client().Get(url);
-            });
+            return new Client().GetAsync(url);
         }
 
         public Task<string?> GetAsync(string url, IList<HeaderItem> headers)
@@ -22,23 +19,20 @@ namespace ZoDream.Shared.Http
             return GetAsync(url, headers, null);
         }
 
-        public Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy)
+        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy)
         {
-            return Task.Factory.StartNew(() =>
+            var client = new Client();
+            foreach (var item in headers)
             {
-                var client = new Client();
-                client.Headers = headers;
-                client.Proxy = proxy;
-                return client.Get(url);
-            });
+                client.Headers.Add(item.Name, item.Value);
+            }
+            client.Proxy = proxy;
+            return await client.GetAsync(url);
         }
 
         public Task GetAsync(string file, string url)
         {
-            return Task.Factory.StartNew(() =>
-            {
-                new Client().ReadAsFile(url, file);
-            });
+            return new Client(url).SaveAsync(file); ;
         }
 
         public Task GetAsync(string file, string url, IList<HeaderItem> headers)
@@ -48,18 +42,18 @@ namespace ZoDream.Shared.Http
 
         public Task GetAsync(string file, string url, IList<HeaderItem> headers, ProxyItem? proxy)
         {
-            return Task.Factory.StartNew(() =>
+            var client = new Client(url);
+            foreach (var item in headers)
             {
-                var client = new Client();
-                client.Headers = headers;
-                client.Proxy = proxy;
-                client.ReadAsFile(url, file);
-            });
+                client.Headers.Add(item.Name, item.Value);
+            }
+            client.Proxy = proxy;
+            return client.SaveAsync(file);
         }
 
-        public Task<string> ExecuteScriptAsync(string url, string script)
+        public Task<string?> ExecuteScriptAsync(string url, string script)
         {
-            return Task.Factory.StartNew(() => string.Empty);
+            return Task.FromResult((string?)string.Empty);
         }
     }
 }

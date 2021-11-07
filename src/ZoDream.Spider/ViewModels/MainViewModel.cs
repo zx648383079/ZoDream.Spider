@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
-using ZoDream.Shared.Spiders;
 using ZoDream.Shared.ViewModel;
 using ZoDream.Spider.Pages;
+using ZoDream.Spider.Programs;
 using ZoDream.Spider.Providers;
 
 namespace ZoDream.Spider.ViewModels

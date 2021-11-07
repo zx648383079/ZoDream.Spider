@@ -15,10 +15,10 @@ namespace ZoDream.Tests
         }
 
         [TestMethod]
-        public void TestRequest()
+        public async void TestRequest()
         {
             var item = new ProxyItem("118.190.244.234:3128");
-            Assert.IsTrue(HttpProxy.Test(item));
+            Assert.IsTrue(await HttpProxy.TestAsync(item));
         }
     }
 }
