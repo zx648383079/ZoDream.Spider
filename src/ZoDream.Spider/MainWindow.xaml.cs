@@ -227,5 +227,31 @@ namespace ZoDream.Spider
             await spider.InvokeAsync(brower.Source, await brower.GetHtmlAsync());
             brower.OnConfirm -= Brower_OnConfirm;
         }
+
+        private void PlayBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (!ViewModel.IsNotEmpty)
+            {
+                OpenProjectBtn_Click(sender, e);
+                return;
+            }
+            StartBtn_Click(sender, e);
+        }
+
+        private void PauseBtn1_Click(object sender, RoutedEventArgs e)
+        {
+            PauseBtn_Click(sender, e);
+        }
+
+        private void StopBtn1_Click(object sender, RoutedEventArgs e)
+        {
+            StopBtn_Click(sender, e);
+        }
+
+        private void AboutBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new AboutView();
+            page.Show();
+        }
     }
 }

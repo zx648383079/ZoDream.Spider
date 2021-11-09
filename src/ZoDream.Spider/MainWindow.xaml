@@ -19,6 +19,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
@@ -42,11 +43,16 @@
                 </MenuItem>
                 <MenuItem Header="关于">
                     <MenuItem Header="查看帮助"/>
-                    <MenuItem Header="关于 ZoDream Spider"/>
+                    <MenuItem x:Name="AboutBtn" Header="关于 ZoDream Spider" Click="AboutBtn_Click"/>
                 </MenuItem>
             </Menu>
         </Grid>
-        <ListBox x:Name="UrlListBox" Grid.Row="1" ItemsSource="{Binding UrlItems}" SelectionChanged="UrlListBox_SelectionChanged">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button x:Name="PlayBtn" Click="PlayBtn_Click" Content="&#xE102;" Style="{DynamicResource IconBtn}" ToolTip="回放" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
+            <Button x:Name="PauseBtn1" Click="PauseBtn1_Click" Content="&#xE103;" Style="{DynamicResource IconBtn}" ToolTip="停止" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+            <Button x:Name="StopBtn1" Click="StopBtn1_Click" Content="&#xE15B;" Style="{DynamicResource IconBtn}" ToolTip="停止" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+        </StackPanel>
+        <ListBox x:Name="UrlListBox" Grid.Row="2" ItemsSource="{Binding UrlItems}" SelectionChanged="UrlListBox_SelectionChanged">
             <ListBox.ContextMenu>
                 <ContextMenu Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}">
                     <MenuItem Header="任务">
@@ -80,9 +86,9 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <TextBox x:Name="InfoTb" Background="#f4f4f4" IsReadOnly="True" 
-                 Grid.Row="2" 
+                 Grid.Row="3" 
                  Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
                 <ColumnDefinition Width="*"/>

@@ -5,6 +5,13 @@
     <converter:FalseVisibilityConverter x:Key="FalseConverter"/>
     <converter:StatusIconConverter x:Key="StatusIconConverter"/>
 
+    <FontFamily x:Key="IconFontFamily">Segoe MDL2 Assets</FontFamily>
+    <Style x:Key="IconBtn" TargetType="Button">
+        <Setter Property="FontFamily" Value="{DynamicResource IconFontFamily}"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Width" Value="40"/>
+    </Style>
+    
     <ToolTip x:Key="UriTip">
         <StackPanel>
             <TextBlock Text="网址："/>
