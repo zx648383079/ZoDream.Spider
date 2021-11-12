@@ -25,10 +25,11 @@
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid>
-            <Menu>
+            <Menu Background="#fff">
                 <MenuItem Header="菜单">
                     <MenuItem x:Name="NewProjectBtn" Header="新建任务" Click="NewProjectBtn_Click"/>
                     <MenuItem x:Name="OpenProjectBtn" Header="打开任务" Click="OpenProjectBtn_Click"/>
+                    <MenuItem x:Name="EditProjectBtn" Header="编辑任务" Click="EditTaskBtn_Click" Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}"/>
                     <MenuItem x:Name="SaveProjectBtn" Header="保存" Click="SaveProjectBtn_Click" Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}"/>
                     <MenuItem x:Name="SaveProjectAsBtn" Header="另存为" Click="SaveProjectAsBtn_Click" Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}"/>
                 </MenuItem>
@@ -40,6 +41,12 @@
                 </MenuItem>
                 <MenuItem Header="面板">
                     <MenuItem x:Name="InfoToggle" Header="输出" IsCheckable="True"/>
+                    <Separator/>
+                    <MenuItem Header="设置">
+                        <MenuItem.Icon>
+                            <TextBlock Text="&#xE115;" VerticalAlignment="Center" FontFamily="{DynamicResource IconFontFamily}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </MenuItem>
                 <MenuItem Header="关于">
                     <MenuItem Header="查看帮助"/>
@@ -48,8 +55,8 @@
             </Menu>
         </Grid>
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button x:Name="PlayBtn" Click="PlayBtn_Click" Content="&#xE102;" Style="{DynamicResource IconBtn}" ToolTip="回放" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
-            <Button x:Name="PauseBtn1" Click="PauseBtn1_Click" Content="&#xE103;" Style="{DynamicResource IconBtn}" ToolTip="停止" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+            <Button x:Name="PlayBtn" Click="PlayBtn_Click" Content="&#xE102;" Style="{DynamicResource IconBtn}" ToolTip="开始" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
+            <Button x:Name="PauseBtn1" Click="PauseBtn1_Click" Content="&#xE103;" Style="{DynamicResource IconBtn}" ToolTip="暂停" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
             <Button x:Name="StopBtn1" Click="StopBtn1_Click" Content="&#xE15B;" Style="{DynamicResource IconBtn}" ToolTip="停止" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
         </StackPanel>
         <ListBox x:Name="UrlListBox" Grid.Row="2" ItemsSource="{Binding UrlItems}" SelectionChanged="UrlListBox_SelectionChanged">
