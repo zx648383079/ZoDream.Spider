@@ -39,7 +39,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Plugins\BookCrawlerRule\BookCrawlerRule.csproj" />
     <ProjectReference Include="..\ZoDream.Shared\ZoDream.Shared.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Loggers\ZoDream.Spider.Loggers.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Programs\ZoDream.Spider.Programs.csproj" />
