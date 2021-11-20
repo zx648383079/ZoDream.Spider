@@ -13,20 +13,30 @@ namespace ZoDream.Spider.Loggers
     {
         public LogLevel Level => LogLevel.Debug;
 
+        public FileLogger()
+        {
+
+        }
+
         public void Error(string message)
         {
-            throw new NotImplementedException();
+            Log(LogLevel.Error, message);
+        }
+
+        public void Debug(string message)
+        {
+            Log(LogLevel.Debug, message);
         }
 
         public void Info(string message)
         {
-            throw new NotImplementedException();
+            Log(LogLevel.Info, message);
         }
 
 
         public void Waining(string message)
         {
-            throw new NotImplementedException();
+            Log(LogLevel.Warn, message);
         }
 
         public void Log(string message)
@@ -35,7 +45,7 @@ namespace ZoDream.Spider.Loggers
             {
                 return;
             }
-            Debug.WriteLine(message);
+            Log(Level, message);
         }
         public void Log(IRule rule)
         {
@@ -64,12 +74,16 @@ namespace ZoDream.Spider.Loggers
 
         public void Log(LogLevel level, string message)
         {
-            throw new NotImplementedException();
+            if (level < Level)
+            {
+                return;
+            }
+
         }
 
         public void Progress(long current, long total)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }

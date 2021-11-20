@@ -35,6 +35,11 @@ namespace ZoDream.Spider.Loggers
             Log(LogLevel.Info, message);
         }
 
+        public void Debug(string message)
+        {
+            Log(LogLevel.Debug, message);
+        }
+
         public void Log(string message)
         {
             Log(Level, message);
@@ -46,7 +51,7 @@ namespace ZoDream.Spider.Loggers
             {
                 OnLog?.Invoke(message, level);
             }
-            Debug.WriteLine(message);
+            // Debug.WriteLine(message);
         }
 
         public void Progress(long current, long total)

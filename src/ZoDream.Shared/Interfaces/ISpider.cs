@@ -29,6 +29,8 @@ namespace ZoDream.Shared.Interfaces
 
         public IRequestProvider RequestProvider {  get; set; }
 
+        public IPluginLoader PluginLoader {  get; set; }
+
         public ILogger? Logger {  get;}
 
         public event PausedEventHandler? PausedChanged;

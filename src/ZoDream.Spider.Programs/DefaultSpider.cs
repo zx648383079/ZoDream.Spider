@@ -28,23 +28,29 @@ namespace ZoDream.Spider.Programs
         /// </summary>
         private readonly object _lock = new object();
 
-        public DefaultSpider() : this(null)
+        public DefaultSpider(IPluginLoader plugin) : this(null, plugin)
         {
 
         }
 
-        public DefaultSpider(ILogger? logger)
+        public DefaultSpider(ILogger? logger, IPluginLoader plugin)
         {
             UrlProvider = new UrlProvider(this);
             RequestProvider = new RequestProvider(this);
             RuleProvider = new RuleProvider(this);
             Storage = new StorageProvider(this);
             Logger = logger;
+            PluginLoader = plugin;
         }
 
         public bool IsDebug { get; set; } = false;
 
-        public bool Paused { get; private set; } = true;
+        private volatile bool _paused = true;
+        public bool Paused
+        {
+            get { return _paused; }
+            set { _paused = value; }
+        }
         public SpiderOption Option { get; set; } = new SpiderOption();
 
         public IStorageProvider<string, string, FileStream> Storage { get; set; }
@@ -55,6 +61,8 @@ namespace ZoDream.Spider.Programs
         public IProxyProvider ProxyProvider { get; set; } = new ProxyProvider();
 
         public IRequestProvider RequestProvider { get; set; }
+
+        public IPluginLoader PluginLoader { get; set; }
 
         public ILogger? Logger { get; private set; }
 
@@ -243,16 +251,19 @@ namespace ZoDream.Spider.Programs
                     for (var i = 0; i < tasksLength; i++)
                     {
                         var item = items[i];
-                        tasks[i] = new Task(async () =>
+                        UrlProvider.UpdateItem(item, UriStatus.DOING);
+                        tasks[i] = new Task(() =>
                         {
                             try
                             {
                                 // TODO 执行具体规则
-                                await RunTaskAsync(item);
+                                RunTaskAsync(item).GetAwaiter().GetResult();
                             }
                             catch (Exception ex)
                             {
-                                Debug.WriteLine($"{item.Source}, {ex.Message},{ex.TargetSite}");
+                                var error = $"{item.Source}, {ex.Message},{ex.TargetSite}";
+                                Debug.WriteLine(error);
+                                Logger?.Error(error);
                                 UrlProvider.UpdateItem(item, UriStatus.ERROR);
                             }
                         });
@@ -287,7 +298,7 @@ namespace ZoDream.Spider.Programs
             var items = RuleProvider.GetEvent(name);
             foreach (var item in items)
             {
-                var con = GetContainer(new UriItem(), RuleProvider.Render(item.Rules));
+                var con = GetContainer(new UriItem(), PluginLoader.Render(item.Rules));
                 await con.NextAsync();
             }
         }
@@ -331,7 +342,7 @@ namespace ZoDream.Spider.Programs
             var shouldPrepare = false;
             foreach (var item in rules)
             {
-                items.Add(GetContainer(url, RuleProvider.Render(item.Rules, ref shouldPrepare)));
+                items.Add(GetContainer(url, PluginLoader.Render(item.Rules, ref shouldPrepare)));
             }
             if (!shouldPrepare)
             {
@@ -370,7 +381,7 @@ namespace ZoDream.Spider.Programs
             var success = true;
             foreach (var item in rules)
             {
-                var con = GetContainer(uri, RuleProvider.Render(item.Rules));
+                var con = GetContainer(uri, PluginLoader.Render(item.Rules));
                 con.Data = new RuleString(html);
                 try
                 {

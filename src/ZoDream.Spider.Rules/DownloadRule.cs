@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
@@ -34,8 +35,8 @@ namespace ZoDream.Spider.Rules
                 return path;
             }
             var uri = new Uri(url);
-            return Str.ReplaceCallback(fileName, @"\${([a-zA-Z0-9_])}", match => {
-                switch (match.Groups[0].Value)
+            return Regex.Replace(fileName, @"\${([a-zA-Z0-9_])}", match => {
+                switch (match.Groups[1].Value)
                 {
                     case "host":
                         return uri.Host;

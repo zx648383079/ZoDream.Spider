@@ -320,7 +320,7 @@ namespace ZoDream.Spider.Pages
             return GetAsync(url);
         }
 
-        public Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy)
+        public Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
         {
             return GetAsync(url);
         }

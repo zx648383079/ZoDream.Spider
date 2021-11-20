@@ -8,17 +8,16 @@
         Title="添加网址" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="起始网址：" 
-                   VerticalAlignment="Center"/>
+            <TextBlock Text="起始网址：" Style="{StaticResource CenterTb}"/>
             <TextBlock x:Name="AmountTb" Grid.Column="1" VerticalAlignment="Center"/>
             <Button x:Name="ConfirmBtn" Click="ConfirmBtn_Click" Content="确定" Grid.Column="2"/>
         </Grid>

@@ -8,6 +8,9 @@ namespace ZoDream.Shared.Interfaces
     {
         public ISpider Application { get; set; }
 
+
+        public ILogger? Logger { get; }
+
         public UriItem Url { get; set; }
 
         public IList<IRule> Rules { get; set; }

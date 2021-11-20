@@ -35,7 +35,7 @@ namespace ZoDream.Shared.Interfaces
 
         public Task<string?> ReadAsync();
 
-        public Task<T?> ReadAsync<T>();
+        public Task<T?> ReadJsonAsync<T>();
 
         public Task<Stream?> ReadStreamAsync();
 

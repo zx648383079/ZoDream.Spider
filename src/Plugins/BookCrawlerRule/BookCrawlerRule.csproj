@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	  <LangVersion>9.0</LangVersion>
+	  <Nullable>enable</Nullable>
+	  <UseWPF>true</UseWPF>
+	  <BaseOutputPath>..\..\bin</BaseOutputPath>
+	  <RootNamespace>ZoDream.Spider.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\ZoDream.Shared\ZoDream.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

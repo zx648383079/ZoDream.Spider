@@ -8,11 +8,11 @@ using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Spider.Providers
 {
-    public class RequestProvider : IRequestProvider
+    public class BrowserProvider : IRequestProvider
     {
         private ISpider Application;
 
-        public RequestProvider(ISpider spider)
+        public BrowserProvider(ISpider spider)
         {
             Application = spider;
         }

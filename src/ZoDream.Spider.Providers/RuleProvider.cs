@@ -6,18 +6,16 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
-using ZoDream.Shared.Rules;
 
 namespace ZoDream.Spider.Providers
 {
-    public class RuleProvider : IRuleProvider, IServiceCollection
+    public class RuleProvider : IRuleProvider
     {
         public IList<RuleGroupItem> Items { get; private set; } = new List<RuleGroupItem>();
 
-        internal IDictionary<string, PluginItem> PluginItems = new Dictionary<string, PluginItem>();
+        
         private ISpider Application;
 
         public RuleProvider(ISpider spider)
@@ -60,73 +58,7 @@ namespace ZoDream.Spider.Providers
             return Items.ToList();
         }
 
-        public IRule? Render(string name)
-        {
-            if (!PluginItems.ContainsKey(name))
-            {
-                Application.Logger?.Waining($"RULE <{name}> IS NOT PLUGIN");
-                return null;
-            }
-            var item = PluginItems[name];
-            if (item == null || item.Callback == null)
-            {
-                return null;
-            }
-            var rule = item.Callback;
-            var ctor = rule.GetConstructor(new Type[] { });
-            if (ctor == null)
-            {
-                return null;
-            }
-            return ctor.Invoke(new object[] { }) as IRule;
-        }
-
-        public IRule? Render(RuleItem rule)
-        {
-            var instance = Render(rule.Name);
-            if (instance == null)
-            {
-                return null;
-            }
-            instance.Ready(rule);
-            return instance;
-        }
-
-        public IList<IRule> Render(IEnumerable<RuleItem> rules)
-        {
-            var shouldPrepare = false;
-            return Render(rules, ref shouldPrepare);
-        }
-        public IList<IRule> Render(IEnumerable<RuleItem> rules, ref bool shouldPrepare)
-        {
-            var items = new List<IRule>();
-            var booted = false;
-            foreach (var rule in rules)
-            {
-                if (rule == null)
-                {
-                    continue;
-                }
-                var r = Render(rule);
-                if (r == null)
-                {
-                    continue;
-                }
-                items.Add(r);
-                if (!booted && (r is not IRuleSaver || (r as IRuleSaver).ShouldPrepare))
-                {
-                    // 只取第一个判断是否需要预载
-                    shouldPrepare = true;
-                    booted = true;
-                }
-                if (r is IRuleSaver && !(r as IRuleSaver).CanNext)
-                {
-                    break;
-                }
-            }
-            return items;
-        }
-
+        
         /// <summary>
         /// 返回的不一定是绝对路径
         /// </summary>
@@ -143,12 +75,11 @@ namespace ZoDream.Spider.Providers
                     {
                         continue;
                     }
-                    var plugin = PluginItems[it.Name];
-                    if (plugin == null || !plugin.IsSaver)
+                    if (!Application.PluginLoader.IsSaver(it))
                     {
                         continue;
                     }
-                    var rule = Render(it);
+                    var rule = Application.PluginLoader.Render(it);
                     if (rule is not IRuleSaver)
                     {
                         continue;
@@ -161,11 +92,6 @@ namespace ZoDream.Spider.Providers
                 }
             }
             return string.Empty;
-        }
-
-        public IList<PluginItem> AllPlugin()
-        {
-            return PluginItems.Values.Cast<PluginItem>().ToList();
         }
 
         public void Deserializer(StreamReader reader)
@@ -192,97 +118,5 @@ namespace ZoDream.Spider.Providers
             writer.WriteLine(JsonConvert.SerializeObject(Items));
         }
 
-        public void Load()
-        {
-            new Rules.Startup().Boot(this);
-        }
-
-        public void Load(string pluginDirectory)
-        {
-            Load();
-            if (string.IsNullOrWhiteSpace(pluginDirectory))
-            {
-                return;
-            }
-            var info = new DirectoryInfo(pluginDirectory);
-            if (!info.Exists)
-            {
-                return;
-            }
-            var files = info.GetFiles();
-            foreach (var item in files)
-            {
-                if (item.Name.IndexOf("Rule.dll") < 0)
-                {
-                    continue;
-                }
-                LoadDll(item.FullName);
-            }
-            Debug.WriteLine($"成功加载{PluginItems.Count}条规则");
-        }
-
-        public void LoadPlugin(Type[] ruleMaps, string fileName)
-        {
-            foreach (var item in ruleMaps)
-            {
-                LoadPlugin(item, fileName);
-            }
-        }
-
-        public void LoadPlugin(Type rule, string fileName)
-        {
-            AddRule(rule, fileName);
-        }
-
-        public void LoadDll(string path)
-        {
-            var assem = Assembly.LoadFile(path);
-            if (assem == null)
-            {
-                return;
-            }
-            LoadPlugin(assem.GetTypes(), path);
-        }
-
-        public void AddRule(Type rule)
-        {
-            AddRule(rule, string.Empty);
-        }
-
-        public void AddRule(Type rule, string fileName)
-        {
-            if (rule == null || !typeof(IRule).IsAssignableFrom(rule))
-            {
-                return;
-            }
-            var ctor = rule.GetConstructor(new Type[] { });
-            if (ctor == null)
-            {
-                return;
-            }
-            var instance = ctor.Invoke(new object[] { }) as IRule;
-            if (instance == null)
-            {
-                return;
-            }
-            var info = instance.Info();
-            var isSaver = instance is not IRuleSaver;
-            PluginItems.Add(info.Name, new PluginItem(info)
-            {
-                Callback = rule,
-                FileName = fileName,
-                ShouldPrepare = isSaver || (instance as IRuleSaver).ShouldPrepare,
-                CanNext = isSaver || (instance as IRuleSaver).CanNext,
-                IsSaver = isSaver
-            });
-        }
-
-        public void AddRule(IEnumerable<Type> rules)
-        {
-            foreach (var item in rules)
-            {
-                AddRule(item);
-            }
-        }
     }
 }

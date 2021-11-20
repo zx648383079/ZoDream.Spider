@@ -19,9 +19,14 @@ namespace ZoDream.Shared.Http
             return GetAsync(url, headers, null);
         }
 
-        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy)
+
+        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
         {
-            var client = new Client();
+            var client = new Client()
+            {
+                MaxRetries = maxRetries,
+                RetryTime = waitTime,
+            };
             foreach (var item in headers)
             {
                 client.Headers.Add(item.Name, item.Value);

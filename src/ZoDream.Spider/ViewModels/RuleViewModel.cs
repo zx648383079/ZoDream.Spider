@@ -15,11 +15,7 @@ namespace ZoDream.Spider.ViewModels
 
         public RuleViewModel()
         {
-            if (App.ViewModel.Instance == null)
-            {
-                return;
-            }
-            PluginItems = App.ViewModel.Instance.RuleProvider.AllPlugin();
+            PluginItems = App.ViewModel.Plugin.All();
         }
 
         private int selectedIndex = -1;

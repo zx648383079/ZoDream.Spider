@@ -18,9 +18,21 @@ namespace ZoDream.Spider.ViewModels
 {
     public class MainViewModel: BindableBase
     {
+
+        public MainViewModel()
+        {
+            Plugin = new PluginLoader();
+            Task.Factory.StartNew(() =>
+            {
+                Plugin.Load(AppDomain.CurrentDomain.BaseDirectory);
+            });
+        }
+
         public string FileName { get; set; } = string.Empty;
 
         public ILogger? Logger { get; set; }
+
+        public IPluginLoader Plugin;
 
         private ISpider? instance;
 
@@ -97,10 +109,9 @@ namespace ZoDream.Spider.ViewModels
         public void Load(string file)
         {
             FileName = file;
-            Instance = new DefaultSpider(Logger);
+            Instance = new DefaultSpider(Logger, Plugin);
             Instance.Storage.EntranceFile = file;
-            Instance.RequestProvider = new RequestProvider(Instance);
-            Instance.RuleProvider.Load(AppDomain.CurrentDomain.BaseDirectory);
+            Instance.RequestProvider = new BrowserProvider(Instance);
             Instance.UrlProvider.UrlChanged += UrlProvider_UrlChanged;
             Instance.PausedChanged += v =>
             {

@@ -60,7 +60,7 @@ namespace ZoDream.Spider.Rules
             var keys = container.AttributeKeys;
             foreach (var item in rules)
             {
-                var con = spider.GetContainer(url, spider.RuleProvider.Render(item.Rules));
+                var con = spider.GetContainer(url, spider.PluginLoader.Render(item.Rules));
                 foreach (var key in keys)
                 {
                     con.SetAttribute(key, con.GetAttribute(key));

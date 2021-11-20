@@ -4,20 +4,21 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZoDream.Spider.Pages"
+        xmlns:ctl="clr-namespace:ZoDream.Spider.Controls"
         mc:Ignorable="d"
-        Title="EditView" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="编辑" Height="450" Width="800" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="60"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <Grid Grid.ColumnSpan="3">
             <Grid.ColumnDefinitions>
@@ -26,19 +27,20 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="60"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="线程数："/>
+            <TextBlock Text="线程数：" Style="{StaticResource CenterTb}"/>
             <TextBox x:Name="CountTb" Text="1" Grid.Column="1" Grid.Row="0" MaxLines="1"/>
-            <TextBlock Grid.Column="2" Text="等待时间/s："/>
+            <TextBlock Grid.Column="2" Text="等待时间/s："  Style="{StaticResource CenterTb}"/>
             <TextBox x:Name="WaitTb" Text="60" Grid.Column="3" Grid.Row="0"  MaxLines="1"/>
-            <CheckBox x:Name="BrowserCb" Content="使用浏览器下载" Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>
+            <CheckBox x:Name="BrowserCb" Content="使用浏览器下载" 
+                      VerticalAlignment="Center"
+                      Grid.Column="4" ToolTip="勾选后请不要关闭已打开的内置浏览器"/>
             <Button x:Name="ConfirmBtn" Content="确定" Grid.Column="5" Click="ConfirmBtn_Click"/>
         </Grid>
 
-        <TextBlock Text="保存路径：" Grid.Row="1" Grid.Column="0" />
-        <TextBox x:Name="FolderTb" Grid.Row="1" Grid.Column="1"  MaxLines="1"/>
-        <Button x:Name="OpenBtn" Click="OpenBtn_Click" Content="..." Grid.Row="1" Grid.Column="2"/>
+        <TextBlock Text="保存路径：" Grid.Row="1" Grid.Column="0" Style="{StaticResource CenterTb}"/>
+        <ctl:FileInput x:Name="FolderTb" IsFile="False" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2"/>
 
 
         <ListView x:Name="RuleBox" 
@@ -90,7 +92,9 @@
                 </ContextMenu>
             </ListView.ContextMenu>
         </ListView>
-        <ComboBox x:Name="HeaderTb" IsEditable="True" ItemsSource="{Binding HeaderKeys}" Grid.Row="4" Grid.Column="0">
+        <ComboBox x:Name="HeaderTb" IsEditable="True" ItemsSource="{Binding HeaderKeys}"
+                  VerticalContentAlignment="Center"
+                  Grid.Row="4" Grid.Column="0">
         </ComboBox>
         <TextBox x:Name="HeaderValueTb" Grid.Row="4" Grid.Column="1" MaxLines="1"/>
         <Button x:Name="HeaderSaveBtn" Content="保存" 

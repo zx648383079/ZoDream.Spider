@@ -24,8 +24,10 @@ namespace ZoDream.Spider.ImportSearchRule
 
         public async Task RenderAsync(ISpiderContainer container)
         {
+            var logger = container.Logger;
             var segmenter = new JiebaNet.Analyser.TfidfExtractor();
             var tags = segmenter.ExtractTags(container.Data.ToString());
+            logger?.Debug(string.Join(" ", tags));
             var client = new Client();
             if (!string.IsNullOrEmpty(apiToken))
             {

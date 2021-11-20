@@ -37,6 +37,12 @@ namespace ZoDream.Shared.Http
         /// </summary>
         public int TimeOut { get; set; } = 5 * 1000;
 
+        public int MaxRetries { get; set; } = 1;
+        /// <summary>
+        /// 重试间隔时间(/s)
+        /// </summary>
+        public int RetryTime { get; set; } = 0;
+
         public Client()
         {
 
@@ -80,10 +86,15 @@ namespace ZoDream.Shared.Http
                     password: Proxy.Password)
                 };
             }
-            var client = new HttpClient(handler)
+            HttpClient client;
+            if (MaxRetries > 1)
             {
-                Timeout = TimeSpan.FromMilliseconds(TimeOut)
-            };
+                client = new HttpClient(new HttpRetryHandler(handler, MaxRetries, RetryTime));
+            } else
+            {
+                client = new HttpClient(handler);
+            }
+            client.Timeout = TimeSpan.FromMilliseconds(TimeOut);
             return client;
         }
 
@@ -148,8 +159,6 @@ namespace ZoDream.Shared.Http
             return string.Empty;
         }
 
-
-
         /// <summary>
         /// 获取HTML网页的编码
         /// </summary>
@@ -190,20 +199,27 @@ namespace ZoDream.Shared.Http
 
         public async Task<string?> ReadAsync()
         {
-            using (var response = await ReadResponseAsync())
+            return await ReadAsync(ReadAsync);
+        }
+
+        public async Task<T?> ReadAsync<T>(Func<HttpResponseMessage, Task<T?>> func)
+        {
+            using (var request = PrepareRequest())
+            using (var client = PrepareClient())
+            using (var response = await client.SendAsync(request))
             {
                 if (response == null || response.StatusCode != HttpStatusCode.OK)
                 {
-                    return null;
+                    return default(T);
                 }
-                return await ReadAsync(response);
+                return await func.Invoke(response);
             }
-        }
+        } 
 
         public async Task<string?> ReadAsync(HttpResponseMessage response)
         {
             #region 判断解压
-            var stream = await ReadStreamAsync(response);
+            using var stream = await ReadStreamAsync(response);
             #region 把网络流转成内存流
             var ms = new MemoryStream();
             var buffer = new byte[1024];
@@ -222,7 +238,7 @@ namespace ZoDream.Shared.Http
             return html;
         }
 
-        public async Task<T?> ReadAsync<T>()
+        public async Task<T?> ReadJsonAsync<T>()
         {
             var content = await ReadAsync();
             if (content == null)
@@ -243,27 +259,18 @@ namespace ZoDream.Shared.Http
             return default(T);
         }
 
-        public Task<string?> ReadFileAsync()
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<HttpResponseMessage?> ReadResponseAsync()
         {
-            using (var request = PrepareRequest())
-            using (var client = PrepareClient())
-            using (var response = await client.SendAsync(request))
-            {
-                return response;
-            }
+            using var request = PrepareRequest();
+            using var client = PrepareClient();
+            return await client.SendAsync(request);
         }
 
         public async Task<Stream?> ReadStreamAsync()
         {
-            using (var response = await ReadResponseAsync())
-            {
-                return await ReadStreamAsync(response);
-            }
+            using var response = await ReadResponseAsync();
+            return await ReadStreamAsync(response);
         }
 
         public async Task<Stream?> ReadStreamAsync(HttpResponseMessage? response)
@@ -311,17 +318,15 @@ namespace ZoDream.Shared.Http
                 {
                     return false;
                 }
-                using (var stream = new FileStream(file, FileMode.Create))
+                using var stream = new FileStream(file, FileMode.Create);
+                var bArr = new byte[1024];
+                if (responseStream != null)
                 {
-                    var bArr = new byte[1024];
-                    if (responseStream != null)
+                    var size = responseStream.Read(bArr, 0, bArr.Length);
+                    while (size > 0)
                     {
-                        var size = responseStream.Read(bArr, 0, bArr.Length);
-                        while (size > 0)
-                        {
-                            stream.Write(bArr, 0, size);
-                            size = responseStream.Read(bArr, 0, bArr.Length);
-                        }
+                        stream.Write(bArr, 0, size);
+                        size = responseStream.Read(bArr, 0, bArr.Length);
                     }
                 }
             }

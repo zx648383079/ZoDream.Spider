@@ -39,7 +39,7 @@ namespace ZoDream.Spider.Pages
                     MaxCount = int.Parse(CountTb.Text),
                     UseBrowser = BrowserCb.IsChecked == true,
                     TimeOut = int.Parse(WaitTb.Text),
-                    WorkFolder = FolderTb.Text.Trim(),
+                    WorkFolder = FolderTb.FileName.Trim(),
                     HeaderItems = ViewModel.HeaderItems.ToList()
                 };
             }
@@ -48,7 +48,7 @@ namespace ZoDream.Spider.Pages
                 CountTb.Text = value.MaxCount.ToString();
                 WaitTb.Text = value.TimeOut.ToString();
                 BrowserCb.IsChecked = value.UseBrowser;
-                FolderTb.Text = value.WorkFolder;
+                FolderTb.FileName = value.WorkFolder;
                 ViewModel.HeaderItems.Clear();
                 foreach (var item in value.HeaderItems)
                 {
@@ -132,22 +132,6 @@ namespace ZoDream.Spider.Pages
 
 
 
-        private void OpenBtn_Click(object sender, RoutedEventArgs e)
-        {
-            var folder = new System.Windows.Forms.FolderBrowserDialog
-            {
-                SelectedPath = AppDomain.CurrentDomain.BaseDirectory,
-                ShowNewFolderButton = false
-            };
-            if (folder.ShowDialog() != System.Windows.Forms.DialogResult.OK)
-            {
-                return;
-            }
-            FolderTb.Text = folder.SelectedPath;
-        }
-
-
-
         private int headerSelected = -1;
 
         private void tapHeaderClear()
@@ -208,7 +192,7 @@ namespace ZoDream.Spider.Pages
 
         private void ConfirmBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (ViewModel.RuleItems.Count < 0 || string.IsNullOrWhiteSpace(FolderTb.Text))
+            if (ViewModel.RuleItems.Count < 0 || string.IsNullOrWhiteSpace(FolderTb.FileName))
             {
                 return;
             }

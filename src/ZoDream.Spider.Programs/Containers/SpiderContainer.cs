@@ -17,10 +17,13 @@ namespace ZoDream.Spider.Programs
         public SpiderContainer(ISpider spider, UriItem url, IList<IRule> rules)
         {
             Application = spider;
+            Logger = spider.Logger;
             Url = url;
             Rules = rules;
         }
         public ISpider Application { get; set; }
+
+        public ILogger? Logger { get; private set; }
 
         public IDictionary<string, string> MapItems = new Dictionary<string, string>();
         public IList<IRule> Rules { get; set; } = new List<IRule>();
@@ -83,8 +86,8 @@ namespace ZoDream.Spider.Programs
             {
                 return Data == null ? string.Empty : Data.ToString();
             }
-            return Str.ReplaceCallback(RenderTemplate(content), @"\${([a-zA-Z0-9_])}", match => {
-                return GetAttribute(match.Groups[0].Value);
+            return Regex.Replace(RenderTemplate(content), @"\${([a-zA-Z0-9_])}", match => {
+                return GetAttribute(match.Groups[1].Value);
             });
         }
 

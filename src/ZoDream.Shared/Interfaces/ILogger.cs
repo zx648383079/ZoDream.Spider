@@ -14,6 +14,8 @@ namespace ZoDream.Shared.Interfaces
         public void Log(LogLevel level, string message);
         public void Log(string message);
 
+        public void Debug(string message);
+
         public void Info(string message);
 
         public void Waining(string message);
@@ -26,5 +28,6 @@ namespace ZoDream.Shared.Interfaces
         /// <param name="current"></param>
         /// <param name="total"></param>
         public void Progress(long current, long total);
+        
     }
 }
