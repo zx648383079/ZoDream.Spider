@@ -178,7 +178,7 @@ namespace ZoDream.Spider
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             var height = this.ActualHeight;
-            InfoTb.Height = Math.Max(200, height / 4);
+            InfoTb.MinHeight = Math.Max(60, height / 5);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -188,7 +188,7 @@ namespace ZoDream.Spider
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    InfoTb.Text += s + "\n";
+                    InfoTb.AppendLine(s);
                 });
             };
             logger.OnProgress += (s, e) =>

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZoDream.Spider"
+        xmlns:ctl="clr-namespace:ZoDream.Spider.Controls"
         mc:Ignorable="d"
         Title="ZoDream Spider" Height="450" Width="800"
         SizeChanged="Window_SizeChanged"
@@ -92,9 +93,12 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <TextBox x:Name="InfoTb" Background="#f4f4f4" IsReadOnly="True" 
+        <ctl:ConsoleContainer x:Name="InfoTb" 
                  Grid.Row="3" 
                  Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
+        <GridSplitter Grid.Row="3" Height="2" VerticalAlignment="Top" 
+                      HorizontalAlignment="Stretch" ResizeDirection="Rows" Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
+
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>
