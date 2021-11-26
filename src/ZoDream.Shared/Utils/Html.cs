@@ -26,7 +26,7 @@ namespace ZoDream.Shared.Utils
         public static IList<string> GenerateUrl(string template)
         {
             var sourceItems = new List<string> { template };
-            var matches = Regex.Matches(template, @"\${(.+?)}");
+            var matches = Regex.Matches(template, @"\$\{(.+?)\}");
             if (matches == null)
             {
                 return sourceItems;

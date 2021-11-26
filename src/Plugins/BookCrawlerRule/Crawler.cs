@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -31,7 +32,17 @@ namespace ZoDream.Spider.BookCrawlerRule
 
         public async Task RenderAsync(string url, string fileName)
         {
-            Open.Write(fileName, await RenderAsync(url));
+            await RenderAsync(new Uri(url), await GetAsync(url), fileName);
+        }
+
+        public async Task RenderAsync(Uri url, string? html, string fileName)
+        {
+            if (html == null || string.IsNullOrWhiteSpace(html))
+            {
+                return;
+            }
+            using var writer = Open.Writer(fileName);
+            await RenderAsync(url, html, writer);
         }
 
         public async Task<string?> RenderAsync(string url)
@@ -45,9 +56,19 @@ namespace ZoDream.Spider.BookCrawlerRule
             {
                 return null;
             }
+            using var writer = new StringWriter();
+            await RenderAsync(url, html, writer);
+            return writer.ToString();
+
+        }
+
+        public async Task RenderAsync(Uri url, string html, TextWriter writer)
+        {
             var book = RenderTitle(html);
             Log($"开始下载 《{book}》");
-            return await RenderCatalogAsync(html, url);
+            await writer.WriteLineAsync($"《{book}》");
+            await writer.WriteLineAsync();
+            await RenderCatalogAsync(html, url, writer);
         }
 
         public async Task<string?> GetAsync(string url)
@@ -99,28 +120,32 @@ namespace ZoDream.Spider.BookCrawlerRule
         /// <param name="baseUri"></param>
         /// <param name="IsCatalog">是否可能是章节页</param>
         /// <returns></returns>
-        private async Task<string> RenderCatalogAsync(string html, Uri baseUri, bool IsCatalog = true)
+        private async Task<bool> RenderCatalogAsync(string html, Uri baseUri, TextWriter writer, bool IsCatalog = true)
         {
             var data = GetMainContent(html);
             if (data == null)
             {
-                return string.Empty;
+                return false;
             }
             if (data is not List<ChapterItem>)
             {
-                return data.ToString();
+                writer.WriteLine(data.ToString());
+                return true;
             }
             if (!IsCatalog)
             {
-                return string.Empty;
+                return false;
             }
             var items = (List<ChapterItem>)data;
             if (items == null)
             {
-                return string.Empty;
+                return false;
             }
-            return await LoadChapter(baseUri, items);
+            await LoadChapter(baseUri, items, writer);
+            return true;
         }
+
+
         /// <summary>
         /// 获取页面的主要内容，章节提取，文章提取
         /// </summary>
@@ -133,9 +158,8 @@ namespace ZoDream.Spider.BookCrawlerRule
             return GetContent(tags, html);
         }
 
-        private async Task<string> LoadChapter(Uri baseUri, List<ChapterItem> items)
+        private async Task LoadChapter(Uri baseUri, List<ChapterItem> items, TextWriter writer)
         {
-            var sb = new StringBuilder();
             for (int i = 0; i < items.Count; i++)
             {
                 if (Paused)
@@ -150,19 +174,17 @@ namespace ZoDream.Spider.BookCrawlerRule
                     Log($"[{i}/{items.Count}]下载章节 《{item.Title}》 失败");
                     continue;
                 }
-                content = await RenderCatalogAsync(content, uri, false);
-                if (string.IsNullOrWhiteSpace(content))
+                await writer.WriteLineAsync(item.Title);
+                await writer.WriteLineAsync();
+                var res = await RenderCatalogAsync(content!, uri, writer, false);
+                if (!res)
                 {
                     continue;
                 }
-                sb.AppendLine(item.Title);
-                sb.AppendLine();
-                sb.AppendLine(content);
-                sb.AppendLine();
-                sb.AppendLine();
+                await writer.WriteLineAsync();
+                await writer.WriteLineAsync();
                 Log($"[{i}/{items.Count}]下载章节 《{item.Title}》 完成");
             }
-            return sb.ToString();
         }
 
         private object GetContent(IList<NodeCountItem> tags, string html)

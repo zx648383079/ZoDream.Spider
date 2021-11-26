@@ -22,7 +22,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition x:Name="RowDef" Height="1"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid>
@@ -41,7 +41,7 @@
                     <MenuItem x:Name="ResumeBtn" Header="还原" Click="ResumeBtn_Click"/>
                 </MenuItem>
                 <MenuItem Header="面板">
-                    <MenuItem x:Name="InfoToggle" Header="输出" IsCheckable="True"/>
+                    <MenuItem x:Name="InfoToggle" Header="输出" IsCheckable="True" Unchecked="InfoToggle_Unchecked" Checked="InfoToggle_Checked"/>
                     <Separator/>
                     <MenuItem Header="设置">
                         <MenuItem.Icon>
@@ -94,11 +94,9 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <ctl:ConsoleContainer x:Name="InfoTb" 
-                 Grid.Row="3" 
-                 Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
+                 Grid.Row="3"/>
         <GridSplitter Grid.Row="3" Height="2" VerticalAlignment="Top" 
                       HorizontalAlignment="Stretch" ResizeDirection="Rows" Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
-
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>

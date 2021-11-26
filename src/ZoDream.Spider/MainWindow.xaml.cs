@@ -131,7 +131,11 @@ namespace ZoDream.Spider
 
         private void UrlListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ViewModel.ShowMessage(((sender as ListBox).SelectedItem as UriItem).FormatTip);
+            var item = (sender as ListBox).SelectedItem as UriItem;
+            if (item != null)
+            {
+                ViewModel.ShowMessage(item.FormatTip);
+            }
         }
 
         private void StartBtn_Click(object sender, RoutedEventArgs e)
@@ -177,8 +181,8 @@ namespace ZoDream.Spider
 
         private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            var height = this.ActualHeight;
-            InfoTb.MinHeight = Math.Max(60, height / 5);
+            //var height = this.ActualHeight;
+            //RowDef.Height = new GridLength(Math.Max(60, height / 5));
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -224,8 +228,10 @@ namespace ZoDream.Spider
             }
             var brower = sender as BrowserView;
             spider.UrlProvider.Add(brower.Source);
+            brower.BrowserFlag = BrowserFlags.DOING;
             await spider.InvokeAsync(brower.Source, await brower.GetHtmlAsync());
-            brower.OnConfirm -= Brower_OnConfirm;
+            // brower.OnConfirm -= Brower_OnConfirm;
+            brower.BrowserFlag = BrowserFlags.DEBUG;
         }
 
         private void PlayBtn_Click(object sender, RoutedEventArgs e)
@@ -252,6 +258,18 @@ namespace ZoDream.Spider
         {
             var page = new AboutView();
             page.Show();
+        }
+
+        private void InfoToggle_Unchecked(object sender, RoutedEventArgs e)
+        {
+            RowDef.Height = new GridLength(1);
+            InfoTb.Visibility = Visibility.Collapsed;
+        }
+
+        private void InfoToggle_Checked(object sender, RoutedEventArgs e)
+        {
+            RowDef.Height = new GridLength(Math.Max(60, ActualHeight / 5));
+            InfoTb.Visibility = Visibility.Visible;
         }
     }
 }

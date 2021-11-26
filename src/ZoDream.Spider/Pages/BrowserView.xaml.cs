@@ -50,11 +50,18 @@ namespace ZoDream.Spider.Pages
                         break;
                     case BrowserFlags.CONFIRM:
                         YesBtn.Content = "确定";
+                        YesBtn.IsEnabled = true;
                         YesBtn.Visibility = Visibility.Visible;
                         break;
                     case BrowserFlags.DEBUG:
                         YesBtn.Content = "执行调试";
+                        YesBtn.IsEnabled = true;
                         YesBtn.Visibility = Visibility.Visible;
+                        break;
+                    case BrowserFlags.DOING:
+                        YesBtn.Content = "执行中";
+                        YesBtn.Visibility = Visibility.Visible;
+                        YesBtn.IsEnabled = false;
                         break;
                     default:
                         break;
@@ -333,5 +340,6 @@ namespace ZoDream.Spider.Pages
         NONE,
         CONFIRM,
         DEBUG,
+        DOING,
     }
 }

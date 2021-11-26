@@ -379,6 +379,8 @@ namespace ZoDream.Spider.Programs
             }
             UrlProvider.UpdateItem(uri, UriStatus.DOING);
             var success = true;
+            Paused = false;
+            PausedChanged?.Invoke(Paused);
             foreach (var item in rules)
             {
                 var con = GetContainer(uri, PluginLoader.Render(item.Rules));
@@ -394,6 +396,8 @@ namespace ZoDream.Spider.Programs
                 }
             }
             UrlProvider.UpdateItem(uri, success ? UriStatus.DONE : UriStatus.ERROR);
+            Paused = true;
+            PausedChanged?.Invoke(Paused);
         }
     }
 }

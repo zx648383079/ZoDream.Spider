@@ -41,11 +41,22 @@ namespace ZoDream.Shared.Models
             {
                 return false;
             }
+            if (Name == "*")
+            {
+                return true;
+            }
             if (Regex.IsMatch(Name, @"^\w+\.\w+(\.\w+)?$"))
             {
                 return new Uri(uri).Host == Name;
             }
-            return Regex.IsMatch(uri, Name);
+            try
+            {
+                return Regex.IsMatch(uri, Name);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

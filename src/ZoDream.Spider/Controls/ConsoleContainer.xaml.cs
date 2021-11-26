@@ -30,9 +30,9 @@ namespace ZoDream.Spider.Controls
         public void AppendLine(string line)
         {
             var val = ContentTb.Text;
-            if (val.Length > 500)
+            if (val.Length > 1000)
             {
-                var i = val.IndexOf('\n', val.Length - 300);
+                var i = val.IndexOf('\n', val.Length - 600);
                 if (i < 0)
                 {
                     val = "";

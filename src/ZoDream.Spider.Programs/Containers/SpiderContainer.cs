@@ -86,7 +86,7 @@ namespace ZoDream.Spider.Programs
             {
                 return Data == null ? string.Empty : Data.ToString();
             }
-            return Regex.Replace(RenderTemplate(content), @"\${([a-zA-Z0-9_])}", match => {
+            return Regex.Replace(RenderTemplate(content), @"\$\{([a-zA-Z0-9_]+)\}", match => {
                 return GetAttribute(match.Groups[1].Value);
             });
         }

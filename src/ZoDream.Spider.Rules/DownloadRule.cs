@@ -35,7 +35,7 @@ namespace ZoDream.Spider.Rules
                 return path;
             }
             var uri = new Uri(url);
-            return Regex.Replace(fileName, @"\${([a-zA-Z0-9_])}", match => {
+            return Regex.Replace(fileName, @"\$\{([a-zA-Z0-9_]+)\}", match => {
                 switch (match.Groups[1].Value)
                 {
                     case "host":
