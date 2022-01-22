@@ -112,9 +112,15 @@ namespace ZoDream.Spider.Providers
                 return new FileStream(path, FileMode.Open);
             });
         }
+
+        public string GetFileName(UriItem uri)
+        {
+            return Application.RuleProvider.GetFileName(uri.Source);
+        }
+
         public Task<FileStream?> OpenStreamAsync(UriItem uri)
         {
-            return OpenStreamAsync(Application.RuleProvider.GetFileName(uri.Source));
+            return OpenStreamAsync(GetFileName(uri));
         }
 
         public string GetAbsolutePath(string fileName)

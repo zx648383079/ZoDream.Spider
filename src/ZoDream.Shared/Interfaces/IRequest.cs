@@ -15,6 +15,15 @@ namespace ZoDream.Shared.Interfaces
         public bool SupportTask { get; }
         public Task<string?> GetAsync(string url);
         public Task<string?> GetAsync(string url, IList<HeaderItem> headers);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="headers"></param>
+        /// <param name="proxy"></param>
+        /// <param name="maxRetries">重试次数</param>
+        /// <param name="waitTime">重试间隔时间(/s)</param>
+        /// <returns></returns>
         public Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy, int maxRetries = 1, int waitTime = 0);
 
         /// <summary>

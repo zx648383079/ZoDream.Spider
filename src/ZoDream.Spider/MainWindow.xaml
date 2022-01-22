@@ -43,7 +43,7 @@
                 <MenuItem Header="面板">
                     <MenuItem x:Name="InfoToggle" Header="输出" IsCheckable="True" Unchecked="InfoToggle_Unchecked" Checked="InfoToggle_Checked"/>
                     <Separator/>
-                    <MenuItem Header="设置">
+                    <MenuItem x:Name="SettingBtn" Header="设置" Click="SettingBtn_Click">
                         <MenuItem.Icon>
                             <TextBlock Text="&#xE115;" VerticalAlignment="Center" FontFamily="{DynamicResource IconFontFamily}"/>
                         </MenuItem.Icon>

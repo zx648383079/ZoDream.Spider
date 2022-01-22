@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.16.1" />
     <PackageReference Include="CHTCHSConv" Version="1.0.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.38" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.40" />
   </ItemGroup>
 
   <ItemGroup>

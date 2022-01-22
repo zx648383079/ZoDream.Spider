@@ -34,7 +34,14 @@ namespace ZoDream.Shared.Interfaces
         /// <param name="fileName"></param>
         /// <returns></returns>
         public Task<FileStreamT> CreateStreamAsync(string fileName);
+        /// <summary>
+        /// 创造写入流，
+        /// </summary>
+        /// <param name="uri">已经确定的不需要走规则确定</param>
+        /// <returns></returns>
         public Task<FileStreamT> CreateStreamAsync(UriItem uri);
+
+        public string GetFileName(UriItem uri);
 
         public Task<FileStreamT?> OpenStreamAsync(string fileName);
         public Task<FileStreamT?> OpenStreamAsync(UriItem uri);

@@ -271,5 +271,11 @@ namespace ZoDream.Spider
             RowDef.Height = new GridLength(Math.Max(60, ActualHeight / 5));
             InfoTb.Visibility = Visibility.Visible;
         }
+
+        private void SettingBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var page = new SettingView();
+            page.ShowDialog();
+        }
     }
 }

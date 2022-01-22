@@ -68,7 +68,10 @@ namespace ZoDream.Spider.Pages
                 }
             }
         }
-
+        /// <summary>
+        /// 当前页面是否加载成功
+        /// </summary>
+        public bool LoadSuccess { get; set; } = false;
 
         public bool IsLoading
         {
@@ -94,7 +97,6 @@ namespace ZoDream.Spider.Pages
 
         private void WebView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
         }
 
         private void EnterBtn_Click(object sender, RoutedEventArgs e)
@@ -183,11 +185,13 @@ namespace ZoDream.Spider.Pages
         private void Browser_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
             IsLoading = true;
+            LoadSuccess = false;
         }
 
         private void Browser_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
             Title = Browser.CoreWebView2.DocumentTitle;
+            LoadSuccess = e.IsSuccess;
             BeforeBtn.Visibility = Browser.CanGoBack ? Visibility.Visible : Visibility.Collapsed;
             ForwardBtn.Visibility = Browser.CanGoForward ? Visibility.Visible : Visibility.Collapsed;
             IsLoading = false;
@@ -327,9 +331,20 @@ namespace ZoDream.Spider.Pages
             return GetAsync(url);
         }
 
-        public Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
+        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
         {
-            return GetAsync(url);
+            string? res;
+            do
+            {
+                res = await GetAsync(url);
+                if (LoadSuccess)
+                {
+                    return res;
+                }
+                maxRetries--;
+                Thread.SpinWait(waitTime * 1000);
+            } while (maxRetries > 0 && waitTime > 0);
+            return res;
         }
     }
 
