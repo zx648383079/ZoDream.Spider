@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
-using ZoDream.Shared.Local;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Rules
@@ -146,7 +146,7 @@ namespace ZoDream.Spider.Rules
 
         private async Task SaveFileAsync(IStorageProvider<string, string, System.IO.FileStream> storage, string fileName, IList<string> files)
         {
-            var writer = Open.Writer(await storage.CreateStreamAsync(fileName), true);
+            var writer = LocationStorage.Writer(await storage.CreateStreamAsync(fileName), true);
             foreach (var item in files)
             {
                 if (string.IsNullOrWhiteSpace(item))
@@ -156,7 +156,7 @@ namespace ZoDream.Spider.Rules
                 var tempfile = await storage.OpenStreamAsync(item);
                 if (tempfile != null)
                 {
-                    writer.WriteLine(Open.Read(tempfile));
+                    writer.WriteLine(await LocationStorage.ReadAsync(tempfile));
                     writer.WriteLine();
                 }
                 tempfile?.Close();

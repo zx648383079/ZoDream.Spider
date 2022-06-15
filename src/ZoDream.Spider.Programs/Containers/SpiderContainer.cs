@@ -5,9 +5,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
-using ZoDream.Shared.Local;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
+using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Programs
@@ -115,7 +115,7 @@ namespace ZoDream.Spider.Programs
         {
             if (File.Exists(content))
             {
-                return Open.Read(content);
+                return LocationStorage.ReadAsync(content).GetAwaiter().GetResult();
             }
             return content;
         }

@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
-using ZoDream.Shared.Local;
+using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
 using ZoDream.Spider.BookCrawlerRule.Models;
 
@@ -26,6 +26,8 @@ namespace ZoDream.Spider.BookCrawlerRule
 
         private ISpider? Container;
 
+        private ILogger? Logger => Container?.Logger;
+
         public int MaxRetries { get; set; } = 3;
 
         public bool Paused => Container != null && Container.Paused;
@@ -41,7 +43,7 @@ namespace ZoDream.Spider.BookCrawlerRule
             {
                 return;
             }
-            using var writer = Open.Writer(fileName);
+            using var writer = LocationStorage.Writer(fileName);
             await RenderAsync(url, html, writer);
         }
 
@@ -96,11 +98,7 @@ namespace ZoDream.Spider.BookCrawlerRule
 
         private void Log(string message)
         {
-            if (Container == null)
-            {
-                return;
-            }
-            Container.Logger?.Debug(message);
+            Logger?.Debug(message);
         }
 
         private string RenderTitle(string html)
@@ -120,29 +118,30 @@ namespace ZoDream.Spider.BookCrawlerRule
         /// <param name="baseUri"></param>
         /// <param name="IsCatalog">是否可能是章节页</param>
         /// <returns></returns>
-        private async Task<bool> RenderCatalogAsync(string html, Uri baseUri, TextWriter writer, bool IsCatalog = true)
+        private async Task<int> RenderCatalogAsync(string html, Uri baseUri, TextWriter writer, bool IsCatalog = true)
         {
             var data = GetMainContent(html);
             if (data == null)
             {
-                return false;
+                return -1;
             }
             if (data is not List<ChapterItem>)
             {
-                writer.WriteLine(data.ToString());
-                return true;
+                var text = data.ToString()!;
+                writer.WriteLine(text);
+                return text.Length;
             }
             if (!IsCatalog)
             {
-                return false;
+                return -1;
             }
             var items = (List<ChapterItem>)data;
             if (items == null)
             {
-                return false;
+                return -1;
             }
             await LoadChapter(baseUri, items, writer);
-            return true;
+            return items.Count;
         }
 
 
@@ -171,19 +170,19 @@ namespace ZoDream.Spider.BookCrawlerRule
                 var content = await GetAsync(uri.ToString());
                 if (string.IsNullOrWhiteSpace(content))
                 {
-                    Log($"[{i}/{items.Count}]下载章节 《{item.Title}》 失败");
+                    Logger?.Info($"[{i + 1}/{items.Count}]下载章节 《{item.Title}》 失败");
                     continue;
                 }
                 await writer.WriteLineAsync(item.Title);
                 await writer.WriteLineAsync();
                 var res = await RenderCatalogAsync(content!, uri, writer, false);
-                if (!res)
+                if (res < 0)
                 {
                     continue;
                 }
                 await writer.WriteLineAsync();
                 await writer.WriteLineAsync();
-                Log($"[{i}/{items.Count}]下载章节 《{item.Title}》 完成");
+                Logger?.Progress(i + 1, items.Count, $"下载章节 《{item.Title}》 完成-{res}");
             }
         }
 
@@ -206,14 +205,15 @@ namespace ZoDream.Spider.BookCrawlerRule
                 return null;
             }
             var tag = tags[i];
-            if (tag.Tag.Contains("a"))
+            if (tag.Tag.Contains('a'))
             {
                 return GetCatalog(GetChaptersStart(tags, i),
                     GetChaptersEnd(tags, i), html);
             }
             var start = GetContentStart(tags, i);
             var content = html.Substring(start, tags[i + 1].Index - start + 1);
-            return Html.ToText(Regex.Replace(content, @"^<.+?</[^<>]+?>", ""));
+            // content = Regex.Replace(content, @"^\<.+?</[^<>]+?\>", "");
+            return Html.ToText(content);
         }
 
         private int GetContentStart(IList<NodeCountItem> tags, int i)
@@ -277,7 +277,7 @@ namespace ZoDream.Spider.BookCrawlerRule
             {
                 if (i == center && maps.Count > 0)
                 {
-                    maps[maps.Count - 1].Center = true;
+                    maps[^1].Center = true;
                 }
                 var code = html[i];
                 if (code == '/')

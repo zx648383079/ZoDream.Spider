@@ -82,7 +82,7 @@ namespace ZoDream.Spider.Providers
 
         public IEnumerator<UriItem> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return Items.GetEnumerator();
         }
 
         public void Remove(string url)
@@ -124,7 +124,7 @@ namespace ZoDream.Spider.Providers
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return Items.GetEnumerator();
         }
 
         public void Serializer(StreamWriter writer)
@@ -220,5 +220,6 @@ namespace ZoDream.Spider.Providers
                 UpdateItem(item, UriStatus.NONE);
             }
         }
+
     }
 }

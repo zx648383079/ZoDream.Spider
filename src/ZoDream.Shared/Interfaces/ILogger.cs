@@ -28,6 +28,8 @@ namespace ZoDream.Shared.Interfaces
         /// <param name="current"></param>
         /// <param name="total"></param>
         public void Progress(long current, long total);
-        
+
+        public void Progress(long current, long total, string message);
+
     }
 }

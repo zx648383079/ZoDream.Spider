@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Storage;
 using ZoDream.Shared.ViewModel;
 using ZoDream.Spider.Pages;
+using ZoDream.Spider.Plugins;
 using ZoDream.Spider.Programs;
 using ZoDream.Spider.Providers;
 
@@ -22,12 +24,14 @@ namespace ZoDream.Spider.ViewModels
         public MainViewModel()
         {
             Plugin = new PluginLoader();
+            _ = LoadOptionAsync();
             Task.Factory.StartNew(() =>
             {
                 Plugin.Load(AppDomain.CurrentDomain.BaseDirectory);
             });
         }
 
+        public AppOption Option = new();
         public string FileName { get; set; } = string.Empty;
 
         public ILogger? Logger { get; set; }
@@ -153,6 +157,21 @@ namespace ZoDream.Spider.ViewModels
         {
             FileName = string.Empty;
             Instance = null;
+        }
+
+        public async Task<AppOption> LoadOptionAsync()
+        {
+            var option = await AppData.LoadAsync<AppOption>();
+            if (option != null)
+            {
+                Option = option;
+            }
+            return Option;
+        }
+
+        public async Task SaveOptionAsync()
+        {
+            await AppData.SaveAsync(Option);
         }
 
         public void Save()

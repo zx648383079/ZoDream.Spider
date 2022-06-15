@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZoDream.Spider"
-        xmlns:ctl="clr-namespace:ZoDream.Spider.Controls"
+        xmlns:sctl="clr-namespace:ZoDream.Shared.Controls;assembly=ZoDream.Shared.Controls"
         mc:Ignorable="d"
         Title="ZoDream Spider" Height="450" Width="800"
         SizeChanged="Window_SizeChanged"
@@ -55,10 +55,13 @@
                 </MenuItem>
             </Menu>
         </Grid>
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button x:Name="PlayBtn" Click="PlayBtn_Click" Content="&#xE102;" Style="{DynamicResource IconBtn}" ToolTip="开始" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
-            <Button x:Name="PauseBtn1" Click="PauseBtn1_Click" Content="&#xE103;" Style="{DynamicResource IconBtn}" ToolTip="暂停" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
-            <Button x:Name="StopBtn1" Click="StopBtn1_Click" Content="&#xE15B;" Style="{DynamicResource IconBtn}" ToolTip="停止" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Height="50">
+            <sctl:IconButton x:Name="PlayBtn" Click="PlayBtn_Click" Icon="&#xE102;" 
+                             Label="开始" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
+            <sctl:IconButton x:Name="PauseBtn1" Click="PauseBtn1_Click" Icon="&#xE103;" 
+                             Label="暂停" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+            <sctl:IconButton x:Name="StopBtn1" Click="StopBtn1_Click" Icon="&#xE15B;" 
+                             Label="停止" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
         </StackPanel>
         <ListBox x:Name="UrlListBox" Grid.Row="2" ItemsSource="{Binding UrlItems}" SelectionChanged="UrlListBox_SelectionChanged">
             <ListBox.ContextMenu>
@@ -93,7 +96,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <ctl:ConsoleContainer x:Name="InfoTb" 
+        <sctl:ConsolePanel x:Name="InfoTb" 
                  Grid.Row="3"/>
         <GridSplitter Grid.Row="3" Height="2" VerticalAlignment="Top" 
                       HorizontalAlignment="Stretch" ResizeDirection="Rows" Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>

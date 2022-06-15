@@ -3,16 +3,103 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sctl="clr-namespace:ZoDream.Shared.Controls;assembly=ZoDream.Shared.Controls"
         xmlns:local="clr-namespace:ZoDream.Spider.Pages"
         mc:Ignorable="d"
         Title="设置" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <ResourceDictionary>
+            <Style x:Key="HeaderTb" TargetType="TextBlock">
+                <Setter Property="Padding" Value="0 8"/>
+            </Style>
+            <Style TargetType="ComboBox">
+                <Setter Property="HorizontalAlignment" Value="Left"/>
+                <Setter Property="Height" Value="30"/>
+                <Setter Property="VerticalContentAlignment" Value="Center"/>
+            </Style>
+            <Style TargetType="TabItem">
+                <Setter Property="Padding" Value="20 5"/>
+            </Style>
+            <Style TargetType="ScrollViewer">
+                <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+            </Style>
+            <Style TargetType="sctl:NumberInput">
+                <Setter Property="MinWidth" Value="80"/>
+            </Style>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <TabControl TabStripPlacement="Left">
             <TabItem Header="常规">
-                
+                <ScrollViewer>
+                    <GroupBox Header="视觉体验">
+                        <StackPanel>
+                            <TextBlock Text="输出日志显示" Style="{StaticResource HeaderTb}"/>
+                            <sctl:SwitchInput x:Name="LogTb"
+                                              Value="{Binding IsLogVisible, Mode=TwoWay}"
+                                             HorizontalAlignment="Left"/>
+                            <TextBlock Text="日志时间显示" Style="{StaticResource HeaderTb}"/>
+                            <sctl:SwitchInput x:Name="LogTimeTb"
+                                              Value="{Binding IsLogTime, Mode=TwoWay}"
+                                             HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </GroupBox>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="界面">
 
+            </TabItem>
+            <TabItem Header="插件">
+                <GroupBox Header="插件管理">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
+                        <ListBox ItemsSource="{Binding PluginFileItems}" HorizontalContentAlignment="Stretch">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="auto"/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Text="{Binding Name}" FontSize="20" VerticalAlignment="Bottom"/>
+                                        <TextBlock Text="{Binding Author}" 
+                                                   FontSize="12"
+                                                   Grid.Column="1" 
+                                                   HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+                                        <TextBlock Text="{Binding Version}"
+                                                   FontSize="12"
+                                                   Grid.Column="1" HorizontalAlignment="Right"/>
+                                        <TextBlock Text="{Binding Description}" 
+                                                   Grid.Row="1" Grid.ColumnSpan="2"/>
+                                        <Button x:Name="InstallBtn" Content="安装" 
+                                                DataContext="{Binding}"
+                                                Click="InstallBtn_Click"
+                                                Visibility="{Binding IsActive, Converter={StaticResource BoolCvt},ConverterParameter=false}"
+                                                Grid.Column="2" Grid.RowSpan="2"/>
+                                        <Button x:Name="UnInstallBtn" Content="卸载" 
+                                                DataContext="{Binding}"
+                                                Click="UnInstallBtn_Click"
+                                                Background="Red"
+                                                Foreground="White"
+                                                Visibility="{Binding IsActive, Converter={StaticResource BoolCvt}}"
+                                                Grid.Column="2" Grid.RowSpan="2"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <StackPanel Orientation="Horizontal" Grid.Row="1" HorizontalAlignment="Right">
+                            <Button x:Name="ImportBtn" Click="ImportBtn_Click" Content="导入" Width="80"/>
+                        </StackPanel>
+                    </Grid>
+                </GroupBox>
             </TabItem>
         </TabControl>
     </Grid>

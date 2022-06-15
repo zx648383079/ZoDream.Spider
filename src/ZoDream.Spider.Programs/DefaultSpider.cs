@@ -8,9 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
-using ZoDream.Shared.Local;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
+using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
 using ZoDream.Spider.Providers;
 
@@ -73,10 +73,8 @@ namespace ZoDream.Spider.Programs
             {
                 return;
             }
-            using (var sr = Open.Reader(file))
-            {
-                Deserializer(sr);
-            }
+            using var sr = LocationStorage.Reader(file);
+            Deserializer(sr);
         }
 
         public Task LoadAsync(string file)

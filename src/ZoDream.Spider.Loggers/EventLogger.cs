@@ -56,15 +56,21 @@ namespace ZoDream.Spider.Loggers
 
         public void Progress(long current, long total)
         {
-            OnProgress?.Invoke(current, total);
+            Progress(current, total, string.Empty);
         }
 
         public void Waining(string message)
         {
             Log(LogLevel.Warn, message);
         }
+
+        public void Progress(long current, long total, string message)
+        {
+            OnProgress?.Invoke(current, total, message);
+        }
+
     }
 
     public delegate void LogEventHandler(string message, LogLevel level);
-    public delegate void ProgressEventHandler(long current, long total);
+    public delegate void ProgressEventHandler(long current, long total, string message);
 }

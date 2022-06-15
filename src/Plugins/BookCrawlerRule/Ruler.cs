@@ -23,7 +23,7 @@ namespace ZoDream.Spider.BookCrawlerRule
             var crawler = new Crawler(container.Application);
             var content = await crawler.RenderAsync(
                 new Uri(container.Url.Source),
-                container.Data.ToString());
+                container.Data!.ToString());
             if (content != null && !string.IsNullOrWhiteSpace(content))
             {
                 container.Data = new RuleString(content);

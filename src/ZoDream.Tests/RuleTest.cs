@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using ZoDream.Shared.Local;
+using ZoDream.Shared.Storage;
 
 namespace ZoDream.Tests
 {
@@ -15,7 +15,10 @@ namespace ZoDream.Tests
         [TestMethod]
         public void TestOne()
         {
-            // var container = new SpiderContainer(null);
+            var ruler = new Spider.BookCrawlerRule.Crawler();
+            var text = LocationStorage.ReadAsync("D:\\Desktop\\1.txt").GetAwaiter().GetResult();
+            var html = ruler.GetMainContent(text);
+            Assert.AreEqual(html.ToString().Length, 10);
         }
 
         [TestMethod]

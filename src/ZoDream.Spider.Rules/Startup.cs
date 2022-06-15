@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Spider.Rules
@@ -7,23 +8,7 @@ namespace ZoDream.Spider.Rules
     {
         public void Boot(IServiceCollection service)
         {
-            service.AddRule(new Type[] {
-                typeof(DownloadRule),
-                typeof(HtmlToTextRule),
-                typeof(HtmlUrlRule),
-                typeof(JoinRule),
-                typeof(JQueryRule),
-                typeof(MatchRule),
-                typeof(NarrowRule),
-                typeof(RegexReplaceRule),
-                typeof(RegexRule),
-                typeof(ReplaceRule),
-                typeof(RestRule),
-                typeof(SaveRule),
-                typeof(TraditionalToSimplifiedRule),
-                typeof(UrlRule),
-                typeof(XPathRule),
-            });
+            service.AddRule(Assembly.GetExecutingAssembly());
         }
     }
 }

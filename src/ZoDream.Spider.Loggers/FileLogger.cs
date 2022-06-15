@@ -83,7 +83,13 @@ namespace ZoDream.Spider.Loggers
 
         public void Progress(long current, long total)
         {
+            Progress(current, total, string.Empty);
+        }
+
+        public void Progress(long current, long total, string message)
+        {
             
         }
+
     }
 }

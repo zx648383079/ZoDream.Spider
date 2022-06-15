@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
+	  <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spider.ico</ApplicationIcon>
@@ -10,7 +11,7 @@
     <UseWindowsForms>True</UseWindowsForms>
 	  <Authors>zodream</Authors>
 	  <Company>zodream.cn</Company>
-	  <Copyright>Copyright © 2021 zodream.cn</Copyright>
+	  <Copyright>Copyright © 2022 zodream.cn</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -39,18 +40,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\HttpRequester\shared\ZoDream.Shared.Controls\ZoDream.Shared.Controls.csproj" />
     <ProjectReference Include="..\ZoDream.Shared\ZoDream.Shared.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Loggers\ZoDream.Spider.Loggers.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Programs\ZoDream.Spider.Programs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <Folder Include="Controls\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1072.54" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1245.22" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="6.0.0" />
   </ItemGroup>
 
 </Project>

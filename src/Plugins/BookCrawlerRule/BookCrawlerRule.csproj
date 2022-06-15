@@ -1,16 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-	  <LangVersion>9.0</LangVersion>
+    <TargetFramework>net6.0-windows</TargetFramework>
+	  <LangVersion>10</LangVersion>
 	  <Nullable>enable</Nullable>
 	  <UseWPF>true</UseWPF>
+	  <EnableDynamicLoading>true</EnableDynamicLoading>
 	  <BaseOutputPath>..\..\bin</BaseOutputPath>
 	  <RootNamespace>ZoDream.Spider.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ZoDream.Shared\ZoDream.Shared.csproj" />
+    <ProjectReference Include="..\..\ZoDream.Shared\ZoDream.Shared.csproj">
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

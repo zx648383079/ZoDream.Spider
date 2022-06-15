@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sctl="clr-namespace:ZoDream.Shared.Controls;assembly=ZoDream.Shared.Controls"
         xmlns:local="clr-namespace:ZoDream.Spider.Pages"
         mc:Ignorable="d"
         Title="关于" Height="250" Width="300" ResizeMode="NoResize" 
@@ -16,7 +17,9 @@
         <StackPanel Orientation="Vertical" Grid.Row="1" HorizontalAlignment="Center">
             <TextBlock Text="ZoDream Spider" FontSize="30"/>
             <TextBlock Text="v1.0"/>
-            <TextBlock Text="Copyright © 2021 zodream.cn"/>
+            <sctl:HyperlinkButton Content="Copyright © 2022 zodream.cn" 
+                                             NavigateUri="https://github.com/zx648383079/ZoDream.Spider"
+                                             HorizontalAlignment="Left"/>
         </StackPanel>
     </Grid>
 </Window>

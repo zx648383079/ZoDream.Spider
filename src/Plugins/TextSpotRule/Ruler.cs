@@ -2,8 +2,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
-using ZoDream.Shared.Local;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.TextSpotRule
@@ -33,7 +33,7 @@ namespace ZoDream.Spider.TextSpotRule
 
         public async Task RenderAsync(ISpiderContainer container)
         {
-            var script = Open.Read(AppDomain.CurrentDomain.BaseDirectory + "\\html2canvas.js");
+            var script = await LocationStorage.ReadAsync(AppDomain.CurrentDomain.BaseDirectory + "\\html2canvas.js");
             var base64 = await container.Application.RequestProvider.Getter()
                 .ExecuteScriptAsync(container.Url.Source,
                 script + ";html2canvas(document.querySelector('" + tag 

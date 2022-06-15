@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ZoDream.Shared.Interfaces;
-using ZoDream.Shared.Local;
 using ZoDream.Shared.Loggers;
 using ZoDream.Shared.Models;
 using ZoDream.Spider.Loggers;
@@ -54,9 +54,11 @@ namespace ZoDream.Spider
             {
                 return;
             }
-            var page = new EditView();
-            page.Option = ViewModel.Instance.Option;
-            page.Rules = ViewModel.Instance.RuleProvider.All();
+            var page = new EditView
+            {
+                Option = ViewModel.Instance.Option,
+                Rules = ViewModel.Instance.RuleProvider.All()
+            };
             if (page.ShowDialog() != true)
             {
                 return;
@@ -188,19 +190,30 @@ namespace ZoDream.Spider
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var logger = new EventLogger();
+            var isLastProgress = false;
             logger.OnLog += (s, e) =>
             {
+                isLastProgress = false;
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    InfoTb.AppendLine(s);
+                    InfoTb.AppendLine(s, ViewModel.Option.IsLogTime);
                 });
             };
-            logger.OnProgress += (s, e) =>
+            logger.OnProgress += (s, e, msg) =>
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     progressBar.Value = s * 100 / e;
+                    if (isLastProgress)
+                    {
+                        InfoTb.ReplaceLine($"{s}/{e} {msg}");
+                    }
+                    else
+                    {
+                        InfoTb.AppendLine($"{s}/{e} {msg}");
+                    }
                 });
+                isLastProgress = true;
             };
             ViewModel.Logger = logger;
         }
@@ -227,7 +240,7 @@ namespace ZoDream.Spider
                 return;
             }
             var brower = sender as BrowserView;
-            spider.UrlProvider.Add(brower.Source);
+            spider.UrlProvider.Add(brower!.Source);
             brower.BrowserFlag = BrowserFlags.DOING;
             await spider.InvokeAsync(brower.Source, await brower.GetHtmlAsync());
             // brower.OnConfirm -= Brower_OnConfirm;
@@ -275,7 +288,24 @@ namespace ZoDream.Spider
         private void SettingBtn_Click(object sender, RoutedEventArgs e)
         {
             var page = new SettingView();
-            page.ShowDialog();
+            page.ViewModel.Option = ViewModel.Option;
+            page.ViewModel.PropertyChanged += (s, e) =>
+            {
+                ViewModel.Option = page.ViewModel.Option;
+                UpdateLogBox();
+                _ = ViewModel.SaveOptionAsync();
+            };
+            page.Show();
+        }
+
+        private void UpdateLogBox()
+        {
+            InfoToggle.IsChecked = ViewModel.Option.IsLogVisible;
+            InfoTb.Visibility = ViewModel.Option.IsLogVisible ? Visibility.Visible : Visibility.Collapsed;
+            if (ViewModel.Option.IsLogVisible)
+            {
+                InfoTb.Height = ActualHeight / 3;
+            }
         }
     }
 }

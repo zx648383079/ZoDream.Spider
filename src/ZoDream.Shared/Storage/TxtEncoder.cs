@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace ZoDream.Shared.Local
+namespace ZoDream.Shared.Storage
 {
     /// <summary>   
     /// 用于取得一个文本文件的编码方式(Encoding)。   
