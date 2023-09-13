@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-	  <LangVersion>10</LangVersion>
+    <TargetFramework>net7.0-windows</TargetFramework>
+	  <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spider.ico</ApplicationIcon>
@@ -11,32 +11,17 @@
     <UseWindowsForms>True</UseWindowsForms>
 	  <Authors>zodream</Authors>
 	  <Company>zodream.cn</Company>
-	  <Copyright>Copyright © 2022 zodream.cn</Copyright>
+	  <Copyright>Copyright © 2023 zodream.cn</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\failure.png" />
-    <None Remove="Assets\none.png" />
-    <None Remove="Assets\success.png" />
-    <None Remove="Assets\wait.png" />
+    <None Remove="Assets\spider.ico" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\failure.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\none.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\success.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\wait.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Resource Include="Assets\spider.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
   <ItemGroup>
@@ -47,12 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1462.37" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1938.49" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.ComponentModel.Composition" Version="7.0.0" />
   </ItemGroup>
 

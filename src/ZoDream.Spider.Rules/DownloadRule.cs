@@ -56,7 +56,7 @@ namespace ZoDream.Spider.Rules
             await container.Application.RequestProvider.Downloader().GetAsync(
                 file, 
                 container.Url.Source,
-                container.Application.Option.HeaderItems,
+                container.Application.Project.HeaderItems,
                 container.Application.ProxyProvider.Get());
         }
     }

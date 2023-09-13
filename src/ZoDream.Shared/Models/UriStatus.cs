@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace ZoDream.Shared.Models
 {
-    public enum UriStatus
+    public enum UriCheckStatus
     {
-        NONE,
-        DOING,
-        DONE,
-        ERROR,
-        JUMP,
+        None,
+        Waiting,
+        Doing,
+        Done,
+        Error,
+        Jump,
     }
 }

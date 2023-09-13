@@ -24,7 +24,7 @@ namespace ZoDream.Spider.Rules
         }
         public async Task RenderAsync(ISpiderContainer container)
         {
-            container.Data = container.Data.Select(i => RenderOne(container, i));
+            container.Data = container.Data!.Select(i => RenderOne(container, i));
             await container.NextAsync();
         }
 
@@ -56,25 +56,14 @@ namespace ZoDream.Spider.Rules
                     continue;
                 }
                 var uriType = UriType.File;
-                switch (item.Groups[2].Value.ToLower())
+                uriType = item.Groups[2].Value.ToLower() switch
                 {
-                    case "iframe":
-                    case "a":
-                        uriType = UriType.Html;
-                        break;
-                    case "link":
-                        uriType = UriType.Css;
-                        break;
-                    case "img":
-                        uriType = UriType.Image;
-                        break;
-                    case "script":
-                        uriType = UriType.Js;
-                        break;
-                    default:
-                        uriType = UriType.File;
-                        break;
-                }
+                    "iframe" or "a" => UriType.Html,
+                    "link" => UriType.Css,
+                    "img" => UriType.Image,
+                    "script" => UriType.Js,
+                    _ => UriType.File,
+                };
                 var uri = container.AddUri(url, uriType);
                 html = html.Replace(item.Value, item.Value.Replace(item.Groups[4].Value, uri));  // 需要相对路径
             }

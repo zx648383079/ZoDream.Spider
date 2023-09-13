@@ -21,9 +21,11 @@ namespace ZoDream.Shared.Http
             {
                 return false;
             }
-            var client = new Client();
-            client.Proxy = proxy;
-            client.TimeOut = 20 * 1000;
+            var client = new Client
+            {
+                Proxy = proxy,
+                TimeOut = 20 * 1000
+            };
             var html = await client.GetAsync(testUrl);
             return html != null;
         }

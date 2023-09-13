@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Providers
 {
@@ -16,11 +12,18 @@ namespace ZoDream.Spider.Providers
         public UrlProvider(ISpider spider)
         {
             Application = spider;
+            foreach (var item in spider.Project.EntryItems)
+            {
+                foreach (var url in Html.GenerateUrl(item))
+                {
+                    Add(url);
+                }
+            }
         }
 
         public ISpider Application { get; set; }
 
-        public IList<UriItem> Items { get; private set; } = new List<UriItem>();
+        public List<UriItem> Items { get; private set; } = new();
 
         public event UrlChangedEventHandler? UrlChanged;
 
@@ -33,10 +36,10 @@ namespace ZoDream.Spider.Providers
 
         public void Add(string url, UriType uriType)
         {
-            Add(url, uriType, UriStatus.NONE);
+            Add(url, uriType, UriCheckStatus.None);
         }
 
-        public void Add(string url, UriType uriType, UriStatus status)
+        public void Add(string url, UriType uriType, UriCheckStatus status)
         {
             if (Contains(url))
             {
@@ -105,7 +108,7 @@ namespace ZoDream.Spider.Providers
             }
             UrlChanged?.Invoke(null, true);
         }
-        public void Remove(UriStatus status)
+        public void Remove(UriCheckStatus status)
         {
             for (int i = Items.Count - 1; i >= 0; i--)
             {
@@ -127,45 +130,12 @@ namespace ZoDream.Spider.Providers
             return Items.GetEnumerator();
         }
 
-        public void Serializer(StreamWriter writer)
-        {
-            foreach (var item in Items)
-            {
-                writer.WriteLine($"{item.Status};{item.Type};{item.Source}");
-            }
-        }
-
-
-        public void Deserializer(StreamReader reader)
-        {
-            string? line;
-            while (null != (line = reader.ReadLine()))
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    return;
-                }
-                var args = line.Split(';');
-                if (args.Length == 1)
-                {
-                    Add(line);
-                    continue;
-                }
-                if (args.Length == 2)
-                {
-                    Add(args[1], UriType.Html, (UriStatus)Enum.Parse(typeof(UriStatus), args[0]));
-                    continue;
-                }
-                Add(args[2], (UriType)Enum.Parse(typeof(UriType), args[1]), (UriStatus)Enum.Parse(typeof(UriStatus), args[0]));
-            }
-        }
-
         public IList<UriItem> GetItems(int count)
         {
             var items = new List<UriItem>();
             foreach (var item in Items)
             {
-                if (item.Status == UriStatus.NONE)
+                if (item.Status == UriCheckStatus.None)
                 {
                     items.Add(item);
                     count--;
@@ -183,7 +153,7 @@ namespace ZoDream.Spider.Providers
             {
                 foreach (var item in Items)
                 {
-                    if (item.Status == UriStatus.NONE)
+                    if (item.Status == UriCheckStatus.None)
                     {
                         return true;
                     }
@@ -197,12 +167,12 @@ namespace ZoDream.Spider.Providers
             UpdateItem(Items[index] = item);
         }
 
-        public void UpdateItem(int index, UriStatus status)
+        public void UpdateItem(int index, UriCheckStatus status)
         {
             UpdateItem(Items[index], status);
         }
 
-        public void UpdateItem(UriItem item, UriStatus status)
+        public void UpdateItem(UriItem item, UriCheckStatus status)
         {
             item.Status = status;
             UpdateItem(item);
@@ -217,7 +187,7 @@ namespace ZoDream.Spider.Providers
         {
             foreach (var item in Items)
             {
-                UpdateItem(item, UriStatus.NONE);
+                UpdateItem(item, UriCheckStatus.None);
             }
         }
 

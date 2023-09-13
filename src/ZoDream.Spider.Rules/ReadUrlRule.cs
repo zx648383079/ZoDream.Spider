@@ -46,13 +46,13 @@ namespace ZoDream.Spider.Rules
         private async Task LoadNext(ISpiderContainer container, UriItem url)
         {
             var spider = container.Application;
-            spider.UrlProvider.UpdateItem(url, UriStatus.DOING);
+            spider.UrlProvider.UpdateItem(url, UriCheckStatus.Doing);
             var content = await spider.RequestProvider.Getter().GetAsync(url.Source,
-                spider.Option.HeaderItems,
+                spider.Project.HeaderItems,
                 spider.ProxyProvider.Get());
             if (content == null)
             {
-                spider.UrlProvider.UpdateItem(url, UriStatus.DONE);
+                spider.UrlProvider.UpdateItem(url, UriCheckStatus.Done);
                 await container.NextAsync();
                 return;
             }
@@ -67,7 +67,7 @@ namespace ZoDream.Spider.Rules
                 }
                 await con.NextAsync();
             }
-            spider.UrlProvider.UpdateItem(url, UriStatus.DONE);
+            spider.UrlProvider.UpdateItem(url, UriCheckStatus.Done);
             await container.NextAsync();
         }
     }

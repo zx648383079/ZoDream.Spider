@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ZoDream.Shared.ViewModel;
+﻿using ZoDream.Shared.ViewModel;
 
 namespace ZoDream.Shared.Models
 {
@@ -19,9 +14,9 @@ namespace ZoDream.Shared.Models
 
         public string Source { get; set; } = string.Empty;
 
-        private UriStatus status = UriStatus.NONE;
+        private UriCheckStatus status = UriCheckStatus.None;
 
-        public UriStatus Status
+        public UriCheckStatus Status
         {
             get => status;
             set => Set(ref status, value);
@@ -36,30 +31,20 @@ namespace ZoDream.Shared.Models
         }
 
         public UriType Type { get; set; } = UriType.File;
-        public string FormatTip { 
-            get
-            {
-                return $"{FormatStatus}: {Source}";
-            }
-        }
+        public string FormatTip => $"{FormatStatus}: {Source}";
 
         public string FormatStatus
         {
             get
             {
-                switch (Status)
+                return Status switch
                 {
-                    case UriStatus.DOING:
-                        return "作业中";
-                    case UriStatus.DONE:
-                        return "完成作业";
-                    case UriStatus.ERROR:
-                        return "作业失败";
-                    case UriStatus.JUMP:
-                        return "跳过";
-                    default:
-                        return "等待中";
-                }
+                    UriCheckStatus.Doing => "作业中",
+                    UriCheckStatus.Done => "完成作业",
+                    UriCheckStatus.Error => "作业失败",
+                    UriCheckStatus.Jump => "跳过",
+                    _ => "等待中",
+                };
             }
         }
     }

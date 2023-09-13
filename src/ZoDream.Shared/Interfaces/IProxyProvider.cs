@@ -7,7 +7,7 @@ using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
 {
-    public interface IProxyProvider: ILoader
+    public interface IProxyProvider
     {
         public ProxyItem? Get();
     }

@@ -1,0 +1,28 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:cvt="clr-namespace:ZoDream.Spider.Converters">
+    <cvt:BoolVisibilityConverter x:Key="BoolConverter"/>
+    <cvt:FalseVisibilityConverter x:Key="FalseConverter"/>
+    <cvt:StatusIconConverter x:Key="StatusIconConverter"/>
+    <Style x:Key="IconBtn" TargetType="Button">
+        <Setter Property="FontFamily" Value="{DynamicResource IconFontFamily}"/>
+        <Setter Property="Height" Value="40"/>
+        <Setter Property="Width" Value="40"/>
+    </Style>
+    
+    <ToolTip x:Key="UriTip">
+        <StackPanel>
+            <TextBlock Text="网址："/>
+            <TextBlock Text="{Binding Path=Source}"/>
+            <TextBlock Text="标题："/>
+            <TextBlock Text="{Binding Path=Title}"/>
+            <TextBlock Text="状态："/>
+            <TextBlock Text="{Binding Path=FormatStatus}"/>
+            <TextBlock Text="附加消息："/>
+            <TextBlock Text="{Binding Path=Message}"/>
+        </StackPanel>
+    </ToolTip>
+    <Style TargetType="ListBoxItem">
+        <Setter Property="ToolTip" Value="{StaticResource UriTip}"/>
+    </Style>
+</ResourceDictionary>

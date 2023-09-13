@@ -16,11 +16,10 @@ namespace ZoDream.Spider.Plugins
 
         public bool Can(string name)
         {
-            if (!PluginItems.ContainsKey(name))
+            if (!PluginItems.TryGetValue(name, out PluginItem? item))
             {
                 return false;
             }
-            var item = PluginItems[name];
             if (item == null || item.Callback == null)
             {
                 return false;
@@ -43,22 +42,21 @@ namespace ZoDream.Spider.Plugins
 
         public IRule? Render(string name)
         {
-            if (!PluginItems.ContainsKey(name))
+            if (!PluginItems.TryGetValue(name, out PluginItem? item))
             {
                 return null;
             }
-            var item = PluginItems[name];
             if (item == null || item.Callback == null)
             {
                 return null;
             }
             var rule = item.Callback;
-            var ctor = rule.GetConstructor(new Type[] { });
+            var ctor = rule.GetConstructor(Array.Empty<Type>());
             if (ctor == null)
             {
                 return null;
             }
-            return ctor.Invoke(new object[] { }) as IRule;
+            return ctor.Invoke(Array.Empty<object>()) as IRule;
         }
 
         public IRule? Render(RuleItem rule)
@@ -184,8 +182,7 @@ namespace ZoDream.Spider.Plugins
             {
                 return;
             }
-            var instance = Activator.CreateInstance(rule) as IRule;
-            if (instance == null)
+            if (Activator.CreateInstance(rule) is not IRule instance)
             {
                 return;
             }

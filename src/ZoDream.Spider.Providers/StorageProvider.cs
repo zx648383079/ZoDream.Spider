@@ -39,7 +39,7 @@ namespace ZoDream.Spider.Providers
                 {
                     return;
                 }
-                BaseFolder = value;
+                BaseFolder = value!;
             }
         }
 
@@ -47,7 +47,7 @@ namespace ZoDream.Spider.Providers
         {
             get
             {
-                var option = Application.Option;
+                var option = Application.Project;
                 if (string.IsNullOrWhiteSpace(option.WorkFolder) || option.WorkFolder == "\\")
                 {
                     return BaseFolder + '\\';

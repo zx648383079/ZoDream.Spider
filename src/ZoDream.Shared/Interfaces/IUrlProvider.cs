@@ -11,7 +11,7 @@ namespace ZoDream.Shared.Interfaces
     /// <summary>
     /// 这是转载所有网址的容器，用于验证网址是否重复
     /// </summary>
-    public interface IUrlProvider: IEnumerable<UriItem>, ILoader
+    public interface IUrlProvider: IEnumerable<UriItem>
     {
 
         public event UrlChangedEventHandler? UrlChanged;
@@ -25,7 +25,7 @@ namespace ZoDream.Shared.Interfaces
 
         public void Remove(string url);
         public void Remove(IEnumerable<UriItem> urls);
-        public void Remove(UriStatus status);
+        public void Remove(UriCheckStatus status);
         public void Clear();
 
         public bool Contains(string url);
@@ -35,9 +35,9 @@ namespace ZoDream.Shared.Interfaces
 
         public void UpdateItem(int index, UriItem item);
 
-        public void UpdateItem(int index, UriStatus status);
+        public void UpdateItem(int index, UriCheckStatus status);
 
-        public void UpdateItem(UriItem item, UriStatus status);
+        public void UpdateItem(UriItem item, UriCheckStatus status);
 
         public void UpdateItem(UriItem url);
         public UriItem? Get(string url);

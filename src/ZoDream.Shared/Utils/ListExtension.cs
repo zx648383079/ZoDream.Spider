@@ -19,9 +19,10 @@ namespace ZoDream.Shared.Utils
                     continue;
                 }
                 if (
-                    (item is HeaderItem && (item as HeaderItem).Name == name) ||
-                    (item is RuleItem && (item as RuleItem).Name == name) ||
-                    (item is PluginItem && (item as PluginItem).Name == name)
+                    (item is HeaderItem h && h.Name == name) ||
+                    (item is RuleItem r && r.Name == name) ||
+                    (item is UrlCheckItem u && u.Url == name) ||
+                    (item is PluginItem p && p.Name == name)
                     )
                 {
                     return i;

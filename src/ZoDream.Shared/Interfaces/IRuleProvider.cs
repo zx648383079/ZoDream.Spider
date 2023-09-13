@@ -7,7 +7,7 @@ using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
 {
-    public interface IRuleProvider: ILoader
+    public interface IRuleProvider
     {
         /// <summary>
         /// 是否有符合网址的规则

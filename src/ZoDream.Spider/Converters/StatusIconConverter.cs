@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Media;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Spider.Converters
@@ -13,17 +14,18 @@ namespace ZoDream.Spider.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            switch (value)
+            if (value is UriCheckStatus o)
             {
-                case UriStatus.DOING:
-                    return "pack://application:,,,/Assets/wait.png";
-                case UriStatus.DONE:
-                    return "pack://application:,,,/Assets/success.png";
-                case UriStatus.ERROR:
-                    return "pack://application:,,,/Assets/failure.png";
-                default:
-                    return "pack://application:,,,/Assets/none.png";
+                return o switch
+                {
+                    UriCheckStatus.Waiting => "\uE916",
+                    UriCheckStatus.Doing => "\uE712",
+                    UriCheckStatus.Done => "\uE930",
+                    UriCheckStatus.Error => "\uE7BA",
+                    _ => string.Empty
+                };
             }
+            return string.Empty;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

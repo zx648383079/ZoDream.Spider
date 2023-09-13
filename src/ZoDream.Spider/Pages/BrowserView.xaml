@@ -10,7 +10,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ZoDream.Spider;component/Skins/BrowserSkin.xaml"/>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/BrowserSkin.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>

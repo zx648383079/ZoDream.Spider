@@ -1,14 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace ZoDream.Shared.Utils
 {
     public static class Html
     {
+        public static string MatchHost(string url)
+        {
+            if (!url.Contains("//"))
+            {
+                return url.Split('/')[0];
+            }
+            return new Uri(url).Host;
+        }
+
         public static string MatchTitle(string content)
         {
             if (string.IsNullOrEmpty(content))

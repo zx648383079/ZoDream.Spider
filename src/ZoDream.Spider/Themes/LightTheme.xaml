@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ZoDream.Reader.Themes">
+    <SolidColorBrush x:Key="WindowHostBrush" Color="#F0F3F9" />
+    <SolidColorBrush x:Key="WindowBodyBrush" Color="#f4f4f4" />
+    <SolidColorBrush x:Key="WindowCaptionBackground" Color="#F0F3F9" />
+    <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled" Color="#F0F3F9" />
+    <SolidColorBrush x:Key="CardBackgroundBrush" Color="White"/>
+    <SolidColorBrush x:Key="CardStrokeBrush" Color="LightGray"/>
+    <SolidColorBrush x:Key="TranspantBackground"
+        Opacity="0.3"
+        Color="Black" />
+</ResourceDictionary>

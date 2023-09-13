@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
+using ZoDream.Shared.Loaders;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
@@ -12,12 +13,12 @@ namespace ZoDream.Shared.Interfaces
     /// <summary>
     /// 这是一个爬虫程序，需要装载网址容器和规则容器
     /// </summary>
-    public interface ISpider: ILoader
+    public interface ISpider
     {
         public bool IsDebug { get; set; }
 
         public bool Paused { get; }
-        public SpiderOption Option { get; set; }
+        public ProjectLoader Project { get;}
 
         public IStorageProvider<string, string, FileStream> Storage { get; set; }
 
@@ -34,6 +35,7 @@ namespace ZoDream.Shared.Interfaces
         public ILogger? Logger {  get;}
 
         public event PausedEventHandler? PausedChanged;
+        public event ProgressEventHandler? ProgressChanged;
 
         public void Start();
 
@@ -46,20 +48,6 @@ namespace ZoDream.Shared.Interfaces
         /// </summary>
         public void Resume();
 
-        /// <summary>
-        /// 加载爬虫任务
-        /// </summary>
-        /// <param name="file"></param>
-        public void Load(string file);
-
-        public Task LoadAsync(string file);
-
-        /// <summary>
-        /// 保存爬虫任务
-        /// </summary>
-        /// <param name="file"></param>
-        public void Save(string file);
-        public Task SaveAsync(string file);
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules);
         public Task InvokeAsync(string url, string html);

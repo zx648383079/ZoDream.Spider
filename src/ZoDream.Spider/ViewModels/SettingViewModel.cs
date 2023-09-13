@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Windows.Media.Animation;
+﻿using System.Windows.Input;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Routes;
 using ZoDream.Shared.ViewModel;
-using ZoDream.Spider.Models;
-using ZoDream.Spider.Plugins;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace ZoDream.Spider.ViewModels
 {
@@ -19,16 +10,43 @@ namespace ZoDream.Spider.ViewModels
 
         public SettingViewModel()
         {
-            //var plugins = PluginLoader.Load();
-            //foreach (var item in plugins)
-            //{
-            //    if (PluginItems.Contains(item.FileName))
-            //    {
-            //        item.IsActive = true;
-            //    }
-            //    PluginFileItems.Add(item);
-            //}
+            BackCommand = new RelayCommand(TapBack);
+            HomeCommand = new RelayCommand(TapHome);
+            RuleCommand = new RelayCommand(TapRule);
+            PluginCommand = new RelayCommand(TapPlugin);
+            ProxyCommand = new RelayCommand(TapProxy);
+            HeaderCommand = new RelayCommand(TapHeader);
+            Load();
         }
+
+        private int maxCount = 1;
+
+        public int MaxCount {
+            get => maxCount;
+            set => Set(ref maxCount, value);
+        }
+
+        private int timeOut = 60;
+
+        public int TimeOut {
+            get => timeOut;
+            set => Set(ref timeOut, value);
+        }
+
+        private bool useBrowser;
+
+        public bool UseBrowser {
+            get => useBrowser;
+            set => Set(ref useBrowser, value);
+        }
+
+        private string workspace = string.Empty;
+
+        public string Workspace {
+            get => workspace;
+            set => Set(ref workspace, value);
+        }
+
 
         private bool isLogVisible;
 
@@ -45,66 +63,58 @@ namespace ZoDream.Spider.ViewModels
             get => isLogTime;
             set => Set(ref isLogTime, value);
         }
+        public ICommand BackCommand { get; private set; }
+        public ICommand HomeCommand { get; private set; }
 
-        private ObservableCollection<PluginInfoItem> pluginFileItems = new();
+        public ICommand HeaderCommand { get; private set; }
+        public ICommand RuleCommand { get; private set; }
+        public ICommand PluginCommand { get; private set; }
+        public ICommand ProxyCommand { get; private set; }
 
-        public ObservableCollection<PluginInfoItem> PluginFileItems
+        private void TapBack(object? _)
         {
-            get => pluginFileItems;
-            set => Set(ref pluginFileItems, value);
+            ShellManager.BackAsync();
         }
 
-        private AppOption option = new();
-
-        public AppOption Option
+        private void TapHome(object? _)
         {
-            get
-            {
-                option.IsLogVisible = IsLogVisible;
-                option.IsLogTime = IsLogTime;
-                return option;
-            }
-            set
-            {
-                option = value;
-                IsLogVisible = option.IsLogVisible;
-                IsLogTime = option.IsLogTime;
-            }
+            ShellManager.GoToAsync("home");
         }
 
-        public void PluginImport(string[] fileNames)
+        private void TapHeader(object? _)
         {
-            //var items = PluginLoader.Save(fileNames);
-            //foreach (var item in items)
-            //{
-            //    PluginFileItems.Add(item);
-            //}
+            ShellManager.GoToAsync("header");
         }
 
-        public void PluginUnInstall(PluginInfoItem? pluginItem)
+        private void TapRule(object? _)
         {
-            foreach (var item in PluginFileItems)
-            {
-                if (item == pluginItem)
-                {
-                    item.IsActive = false;
-                    //PluginItems.Remove(item.FileName);
-                    // OnPropertyChanged(nameof(PluginItems));
-                }
-            }
+            ShellManager.GoToAsync("rule");
         }
 
-        public void PluginInstall(PluginInfoItem? pluginItem)
+        private void TapPlugin(object? _)
         {
-            foreach (var item in PluginFileItems)
+            ShellManager.GoToAsync("plugin");
+        }
+
+        private void TapProxy(object? _)
+        {
+            ShellManager.GoToAsync("proxy");
+        }
+
+
+        private void Load()
+        {
+            var project = App.ViewModel.Project;
+            if (project is not null)
             {
-                if (item == pluginItem)
-                {
-                    item.IsActive = true;
-                    // PluginItems.Add(item.FileName);
-                    // OnPropertyChanged(nameof(PluginItems));
-                }
+                MaxCount = project.MaxCount;
+                TimeOut = project.TimeOut;
+                UseBrowser = project.UseBrowser;
+                Workspace = project.WorkFolder;
             }
+            var option = App.ViewModel.Option;
+            IsLogVisible = option.IsLogVisible;
+            IsLogTime = option.IsLogTime;
         }
     }
 }

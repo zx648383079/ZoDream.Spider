@@ -105,7 +105,8 @@ namespace ZoDream.Shared.Storage
                         read = stream.ReadByte();
                         if (0x80 <= read && read <= 0xBF)
                         {
-                            targetEncoding = Encoding.UTF8;
+                            // 无 BOM 
+                            targetEncoding = new UTF8Encoding(false);;
                         }
                     }
                     break;

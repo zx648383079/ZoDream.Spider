@@ -1,0 +1,10 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ZoDream.Spider">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/ZoDream.Spider;component/Themes/Button.xaml"/>
+        <ResourceDictionary Source="/ZoDream.Spider;component/Themes/Dialog.xaml"/>
+        <ResourceDictionary Source="/ZoDream.Spider;component/Themes/Setting.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

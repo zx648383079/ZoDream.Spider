@@ -6,7 +6,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Skins/BaseSkin.xaml"/>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/BaseSkin.xaml"/>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/LightTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

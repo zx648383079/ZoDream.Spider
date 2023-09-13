@@ -1,0 +1,97 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ctl="clr-namespace:ZoDream.Spider.Controls">
+    <Style TargetType="ctl:LargeIconButton">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Height" Value="80"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ctl:LargeIconButton">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="5">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{TemplateBinding Icon}" 
+                                      FontSize="{TemplateBinding IconFontSize}" 
+                                       FontFamily="{DynamicResource IconFontFamily}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       FontWeight="Normal"/>
+                            <StackPanel VerticalAlignment="Center" Grid.Column="1">
+                                <TextBlock Text="{TemplateBinding Header}" FontSize="{TemplateBinding FontSize}" 
+                                           FontFamily="{TemplateBinding FontFamily}" 
+                                           FontWeight="{TemplateBinding FontWeight}"/>
+                                <TextBlock Text="{TemplateBinding Meta}" 
+                                           FontSize="{TemplateBinding MetaFontSize}" 
+                                           FontFamily="{TemplateBinding FontFamily}" FontWeight="Normal"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ctl:LargeIconRadio}">
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctl:LargeIconRadio}">
+                    <Border  
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="5">
+                        <Grid Margin="10,0">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="100"/>
+                                <RowDefinition Height="30"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="{TemplateBinding Icon}" 
+                              FontSize="{TemplateBinding IconFontSize}" 
+                               FontFamily="{DynamicResource IconFontFamily}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontWeight="Normal"/>
+                            <TextBlock Text="{TemplateBinding Header}" FontSize="{TemplateBinding FontSize}" 
+                               FontFamily="{TemplateBinding FontFamily}" 
+                               FontWeight="{TemplateBinding FontWeight}" 
+                                       HorizontalAlignment="Center" Grid.Row="1"/>
+                            <TextBlock Text="{TemplateBinding Meta}" 
+                                       FontSize="{TemplateBinding MetaFontSize}" 
+                                       FontFamily="{TemplateBinding FontFamily}"
+                                       TextWrapping="Wrap"
+                                       HorizontalAlignment="Center" FontWeight="Normal" Grid.Row="2"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type ctl:StepPanel}">
+        <Setter Property="SelectedBackground" Value="LightBlue"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ctl:StepPanel}">
+                    <Border >
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

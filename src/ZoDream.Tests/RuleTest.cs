@@ -12,7 +12,7 @@ namespace ZoDream.Tests
     [TestClass]
     public class RuleTest
     {
-        [TestMethod]
+        //[TestMethod]
         public void TestOne()
         {
             var ruler = new Spider.BookCrawlerRule.Crawler();

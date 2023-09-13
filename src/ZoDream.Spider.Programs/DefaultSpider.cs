@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Loaders;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
-using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
 using ZoDream.Spider.Providers;
 
@@ -26,19 +24,24 @@ namespace ZoDream.Spider.Programs
         /// <summary>
         /// 线程锁
         /// </summary>
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
 
-        public DefaultSpider(IPluginLoader plugin) : this(null, plugin)
+        public DefaultSpider(ProjectLoader loader, IPluginLoader plugin) : this(loader, null, plugin)
         {
 
         }
 
-        public DefaultSpider(ILogger? logger, IPluginLoader plugin)
+        public DefaultSpider(ProjectLoader loader, ILogger? logger, IPluginLoader plugin)
         {
+            Project = loader;
             UrlProvider = new UrlProvider(this);
             RequestProvider = new RequestProvider(this);
             RuleProvider = new RuleProvider(this);
-            Storage = new StorageProvider(this);
+            ProxyProvider = new ProxyProvider(this);
+            Storage = new StorageProvider(this)
+            {
+                EntranceFile = loader.FileName
+            };
             Logger = logger;
             PluginLoader = plugin;
         }
@@ -51,14 +54,14 @@ namespace ZoDream.Spider.Programs
             get { return _paused; }
             set { _paused = value; }
         }
-        public SpiderOption Option { get; set; } = new SpiderOption();
+        public ProjectLoader Project { get; private set; }
 
         public IStorageProvider<string, string, FileStream> Storage { get; set; }
 
         public IUrlProvider UrlProvider { get; set; }
         public IRuleProvider RuleProvider { get; set; }
 
-        public IProxyProvider ProxyProvider { get; set; } = new ProxyProvider();
+        public IProxyProvider ProxyProvider { get; set; }
 
         public IRequestProvider RequestProvider { get; set; }
 
@@ -67,42 +70,7 @@ namespace ZoDream.Spider.Programs
         public ILogger? Logger { get; private set; }
 
         public event PausedEventHandler? PausedChanged;
-        public void Load(string file)
-        {
-            if (string.IsNullOrEmpty(file))
-            {
-                return;
-            }
-            using var sr = LocationStorage.Reader(file);
-            Deserializer(sr);
-        }
-
-        public Task LoadAsync(string file)
-        {
-            return Task.Factory.StartNew(() => {
-                Load(file);
-            });
-        }
-
-        public void Save(string file)
-        {
-            if (string.IsNullOrEmpty(file))
-            {
-                return;
-            }
-            using (var sw = new StreamWriter(file, false, new UTF8Encoding(false)))
-            {
-                Serializer(sw);
-            }
-        }
-
-        public Task SaveAsync(string file)
-        {
-            return Task.Factory.StartNew(() =>
-            {
-                Save(file);
-            });
-        }
+        public event ProgressEventHandler? ProgressChanged;
 
         public void Pause()
         {
@@ -110,10 +78,7 @@ namespace ZoDream.Spider.Programs
             {
                 return;
             }
-            if (_tokenSource != null)
-            {
-                _tokenSource.Cancel();
-            }
+            _tokenSource?.Cancel();
             Paused = true;
             PausedChanged?.Invoke(Paused);
         }
@@ -146,7 +111,6 @@ namespace ZoDream.Spider.Programs
         {
             while (UrlProvider.HasMore)
             {
-
                 var items = UrlProvider.GetItems(1);
                 if (items == null)
                 {
@@ -174,64 +138,6 @@ namespace ZoDream.Spider.Programs
             Pause();
             UrlProvider.Reset();
         }
-
-
-        public void Deserializer(StreamReader reader)
-        {
-            if (reader == null)
-            {
-                return;
-            }
-            string? line;
-            var regex = new Regex(@"^\[(\w+)\]$");
-            while (null != (line = reader.ReadLine()))
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    continue;
-                }
-                if (!regex.IsMatch(line))
-                {
-
-                    continue;
-                }
-                var tag = regex.Match(line).Groups[1].Value.ToUpper();
-                switch (tag)
-                {
-                    case "OPTION":
-                        Option.Deserializer(reader);
-                        break;
-                    case "PROXY":
-                        ProxyProvider.Deserializer(reader);
-                        break;
-                    case "RULE":
-                        RuleProvider.Deserializer(reader);
-                        break;
-                    case "URL":
-                        UrlProvider.Deserializer(reader);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-
-        public void Serializer(StreamWriter writer)
-        {
-            writer.WriteLine("[OPTION]");
-            Option.Serializer(writer);
-            writer.WriteLine();
-            writer.WriteLine("[PROXY]");
-            ProxyProvider.Serializer(writer);
-            writer.WriteLine();
-            writer.WriteLine("[RULE]");
-            RuleProvider.Serializer(writer);
-            writer.WriteLine();
-            writer.WriteLine("[URL]");
-            UrlProvider.Serializer(writer);
-            writer.WriteLine();
-        }
-
         protected void RunTask()
         {
             #region 创造主线程，去分配多个下载线程
@@ -243,13 +149,13 @@ namespace ZoDream.Spider.Programs
                 while (!token.IsCancellationRequested)
                 {
                     #region 创建执行下载的线程数组
-                    var items = UrlProvider.GetItems(Option.MaxCount);
+                    var items = UrlProvider.GetItems(Project.MaxCount);
                     var tasksLength = items.Count;
                     var tasks = new Task[tasksLength];
                     for (var i = 0; i < tasksLength; i++)
                     {
                         var item = items[i];
-                        UrlProvider.UpdateItem(item, UriStatus.DOING);
+                        UrlProvider.UpdateItem(item, UriCheckStatus.Doing);
                         tasks[i] = new Task(() =>
                         {
                             try
@@ -262,7 +168,7 @@ namespace ZoDream.Spider.Programs
                                 var error = $"{item.Source}, {ex.Message},{ex.TargetSite}";
                                 Debug.WriteLine(error);
                                 Logger?.Error(error);
-                                UrlProvider.UpdateItem(item, UriStatus.ERROR);
+                                UrlProvider.UpdateItem(item, UriCheckStatus.Error);
                             }
                         });
                     }
@@ -307,21 +213,21 @@ namespace ZoDream.Spider.Programs
             if (items.Count < 1)
             {
                 Logger?.Info($"{url.Source} has 0 rule groups, jump");
-                UrlProvider.UpdateItem(url, UriStatus.ERROR);
+                UrlProvider.UpdateItem(url, UriCheckStatus.Error);
                 return;
             }
             Logger?.Info($"{url.Source} has {items.Count} rule groups");
-            UrlProvider.UpdateItem(url, UriStatus.DOING);
+            UrlProvider.UpdateItem(url, UriCheckStatus.Doing);
             foreach (var item in items)
             {
                 await item.NextAsync();
                 if (Paused)
                 {
-                    UrlProvider.UpdateItem(url, UriStatus.NONE);
+                    UrlProvider.UpdateItem(url, UriCheckStatus.None);
                     return;
                 }
             }
-            UrlProvider.UpdateItem(url, UriStatus.DONE);
+            UrlProvider.UpdateItem(url, UriCheckStatus.Done);
         }
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
@@ -346,7 +252,7 @@ namespace ZoDream.Spider.Programs
             {
                 return items;
             }
-            var content = await RequestProvider.Getter().GetAsync(url.Source, Option.HeaderItems, ProxyProvider.Get());
+            var content = await RequestProvider.Getter().GetAsync(url.Source, Project.HeaderItems, ProxyProvider.Get());
             if (content == null)
             {
                 Logger?.Waining($"{url.Source} HTML EMPTY");
@@ -375,7 +281,7 @@ namespace ZoDream.Spider.Programs
                 Logger?.Error("没有获取到规则");
                 return;
             }
-            UrlProvider.UpdateItem(uri, UriStatus.DOING);
+            UrlProvider.UpdateItem(uri, UriCheckStatus.Doing);
             var success = true;
             Paused = false;
             PausedChanged?.Invoke(Paused);
@@ -393,7 +299,7 @@ namespace ZoDream.Spider.Programs
                     Logger?.Error(ex.Message);
                 }
             }
-            UrlProvider.UpdateItem(uri, success ? UriStatus.DONE : UriStatus.ERROR);
+            UrlProvider.UpdateItem(uri, success ? UriCheckStatus.Done : UriCheckStatus.Error);
             Paused = true;
             PausedChanged?.Invoke(Paused);
         }

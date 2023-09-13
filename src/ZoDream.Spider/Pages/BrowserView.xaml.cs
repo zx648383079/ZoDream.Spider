@@ -24,7 +24,6 @@ namespace ZoDream.Spider.Pages
     {
         public BrowserView(): this(BrowserFlags.NONE)
         {
-
         }
 
         public BrowserView(BrowserFlags flag)
@@ -33,7 +32,7 @@ namespace ZoDream.Spider.Pages
             BrowserFlag = flag;
         }
 
-        private SpiderBridge bridge = new SpiderBridge();
+        private readonly SpiderBridge bridge = new();
         public bool SupportTask { get; } = false;
 
         private BrowserFlags browserFlag;
@@ -346,6 +345,7 @@ namespace ZoDream.Spider.Pages
             } while (maxRetries > 0 && waitTime > 0);
             return res;
         }
+
     }
 
     public delegate void ConfirmEventHandler(object sender);

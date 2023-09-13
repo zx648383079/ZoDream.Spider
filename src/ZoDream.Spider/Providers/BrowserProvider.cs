@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ZoDream.Shared.Http;
+﻿using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Spider.Providers
 {
     public class BrowserProvider : IRequestProvider
     {
-        private ISpider Application;
+        private readonly ISpider Application;
 
         public BrowserProvider(ISpider spider)
         {
             Application = spider;
         }
 
-        public bool SupportTask => !Application.Option.UseBrowser;
+        public bool SupportTask => !Application.Project.UseBrowser;
 
         public IDownloadRequest Downloader()
         {
@@ -26,7 +21,7 @@ namespace ZoDream.Spider.Providers
 
         public IRequest Getter()
         {
-            return Application.Option.UseBrowser ? App.ViewModel.BroswerRequest : new HttpRequest();
+            return Application.Project.UseBrowser ? App.ViewModel.BrowserRequest : new HttpRequest();
         }
     }
 }

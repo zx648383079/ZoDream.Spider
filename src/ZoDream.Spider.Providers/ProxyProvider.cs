@@ -11,9 +11,16 @@ namespace ZoDream.Spider.Providers
 {
     public class ProxyProvider : IProxyProvider
     {
+        public ProxyProvider(ISpider app)
+        {
+            foreach (var item in app.Project.ProxyItems)
+            {
+                Items.Add(new ProxyItem(item));
+            }
+        }
 
         private int _lastIndex = -1;
-        public IList<ProxyItem> Items { get; private set; } = new List<ProxyItem>();
+        public List<ProxyItem> Items { get; private set; } = new();
 
         public ProxyItem? Get()
         {
@@ -27,27 +34,6 @@ namespace ZoDream.Spider.Providers
                 _lastIndex = 0;
             }
             return Items[_lastIndex];
-        }
-
-        public void Serializer(StreamWriter writer)
-        {
-            foreach (var item in Items)
-            {
-                writer.WriteLine(item.ToString());
-            }
-        }
-
-        public void Deserializer(StreamReader reader)
-        {
-            string? line;
-            while (null != (line = reader.ReadLine()))
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    return;
-                }
-                Items.Add(new ProxyItem(line));
-            }
         }
     }
 }

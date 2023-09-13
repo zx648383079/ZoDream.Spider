@@ -36,17 +36,13 @@ namespace ZoDream.Spider.Rules
             }
             var uri = new Uri(url);
             return Regex.Replace(fileName, @"\$\{([a-zA-Z0-9_]+)\}", match => {
-                switch (match.Groups[1].Value)
+                return match.Groups[1].Value switch
                 {
-                    case "host":
-                        return uri.Host;
-                    case "path":
-                        return path;
-                    case "md5":
-                        return Md5.Encode(url);
-                    default:
-                        return match.Value;
-                }
+                    "host" => uri.Host,
+                    "path" => path,
+                    "md5" => Md5.Encode(url),
+                    _ => match.Value,
+                };
             });
         }
 

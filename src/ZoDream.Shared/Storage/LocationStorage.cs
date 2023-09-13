@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Storage
 {
@@ -15,18 +17,11 @@ namespace ZoDream.Shared.Storage
         /// <returns></returns>
         public static async Task<string> ReadAsync(string file)
         {
-            if (!System.IO.File.Exists(file))
+            if (!File.Exists(file))
             {
                 return string.Empty;
             }
             var fs = new FileStream(file, FileMode.Open);
-            using var reader = new StreamReader(fs, TxtEncoder.GetEncoding(fs));
-            var content = await reader.ReadToEndAsync();
-            return content;
-        }
-
-        public static async Task<string> ReadAsync(Stream fs)
-        {
             using var reader = new StreamReader(fs, TxtEncoder.GetEncoding(fs));
             var content = await reader.ReadToEndAsync();
             return content;
@@ -38,8 +33,15 @@ namespace ZoDream.Shared.Storage
             return new StreamReader(fs, TxtEncoder.GetEncoding(fs));
         }
 
+        public static async Task<string> ReadAsync(Stream fs)
+        {
+            using var reader = new StreamReader(fs, TxtEncoder.GetEncoding(fs));
+            var content = await reader.ReadToEndAsync();
+            return content;
+        }
+
         /// <summary>
-        /// 写文本文件 默认使用无bom 的UTF8编码
+        /// 写文本文件 默认使用无 bom 的UTF8编码
         /// </summary>
         /// <param name="file"></param>
         /// <param name="content"></param>
@@ -90,13 +92,35 @@ namespace ZoDream.Shared.Storage
 
         public static StreamWriter Writer(Stream stream, bool append)
         {
-            if (!append)
-            {
+            if (!append) { 
                 return new StreamWriter(stream, Encoding.UTF8);
             }
             var encoding = TxtEncoder.GetEncoding(stream);
             stream.Seek(0, SeekOrigin.End);
             return new StreamWriter(stream, encoding);
+        }
+
+
+        public static string GetMD5(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName) || !File.Exists(fileName))
+            {
+                return string.Empty;
+            }
+            using var fs = new FileStream(fileName, FileMode.Open);
+            return GetMD5(fs);
+        }
+
+        public static string GetMD5(Stream fs)
+        {
+            var md5 = MD5.Create();
+            var res = md5.ComputeHash(fs);
+            var sb = new StringBuilder();
+            foreach (var b in res)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+            return sb.ToString();
         }
     }
 }

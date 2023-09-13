@@ -1,11 +1,5 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 
@@ -41,7 +35,7 @@ namespace ZoDream.Spider.Providers
 
         public IList<RuleGroupItem> GetEvent(string name)
         {
-            return Items.Where(item => item.EventName == name).ToList();
+            return Items.Where(item => item.MatchType == RuleMatchType.Event && item.MatchValue == name).ToList();
         }
 
         public void Add(RuleGroupItem rule)
@@ -93,30 +87,5 @@ namespace ZoDream.Spider.Providers
             }
             return string.Empty;
         }
-
-        public void Deserializer(StreamReader reader)
-        {
-            var sb = new StringBuilder();
-            string? line;
-            while (null != (line = reader.ReadLine()))
-            {
-                if (string.IsNullOrWhiteSpace(line))
-                {
-                    break;
-                }
-                sb.AppendLine(line);
-            }
-            if (sb.Length < 1)
-            {
-                return;
-            }
-            Items = JsonConvert.DeserializeObject<IList<RuleGroupItem>>(sb.ToString());
-        }
-
-        public void Serializer(StreamWriter writer)
-        {
-            writer.WriteLine(JsonConvert.SerializeObject(Items));
-        }
-
     }
 }
