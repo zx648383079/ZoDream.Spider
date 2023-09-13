@@ -12,6 +12,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Models;
+using ZoDream.Spider.Loggers;
+using ZoDream.Spider.ViewModels;
 
 namespace ZoDream.Spider.Pages
 {
@@ -23,6 +27,58 @@ namespace ZoDream.Spider.Pages
         public HomePage()
         {
             InitializeComponent();
+            Loaded += HomePage_Loaded;
+        }
+
+        private HomeViewModel ViewModel => DataContext as HomeViewModel;
+
+        private void HomePage_Loaded(object sender, RoutedEventArgs e)
+        {
+            var logger = new EventLogger();
+            var isLastProgress = false;
+            logger.OnLog += (s, e) => {
+                isLastProgress = false;
+                App.ViewModel.DispatcherQueue.Invoke(() => {
+                    InfoTb.AppendLine(s, App.ViewModel.Option.IsLogTime);
+                });
+            };
+            logger.OnProgress += (s, e, msg) => {
+                App.ViewModel.DispatcherQueue.Invoke(() => {
+                    ViewModel.Progress = s * 100 / e;
+                    if (isLastProgress)
+                    {
+                        InfoTb.ReplaceLine($"{s}/{e} {msg}");
+                    }
+                    else
+                    {
+                        InfoTb.AppendLine($"{s}/{e} {msg}");
+                    }
+                });
+                isLastProgress = true;
+            };
+            ViewModel.Logger = logger;
+            ToggleDebug(App.ViewModel.Option.IsLogVisible);
+        }
+
+        public UriLoadItem[] SelectedItems {
+            get {
+                var items = new UriLoadItem[UrlListBox.SelectedItems.Count];
+                UrlListBox.SelectedItems.CopyTo(items, 0);
+                return items;
+            }
+        }
+
+        public void ToggleDebug(bool val)
+        {
+            if (val)
+            {
+                RowDef.Height = new GridLength(Math.Max(60, ActualHeight / 5));
+                InfoTb.Visibility = Visibility.Visible;
+            } else
+            {
+                RowDef.Height = new GridLength(1);
+                InfoTb.Visibility = Visibility.Collapsed;
+            }
         }
     }
 }

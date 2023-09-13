@@ -37,5 +37,7 @@ namespace ZoDream.Shared.Interfaces
         public Task NextAsync();
 
         public string RenderData(string content);
+
+        public void EmitProgress(int step, int count);
     }
 }

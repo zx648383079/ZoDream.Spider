@@ -55,7 +55,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            var project = new ProjectLoader(picker.SafeFileName)
+            var project = new ProjectLoader(picker.FileName)
             {
                 WorkFolder = Workspace,
             };
@@ -76,7 +76,7 @@ namespace ZoDream.Spider.ViewModels
                     }
                 }
             });
-            await App.ViewModel.CreateProjectAsync(picker.SafeFileName, project);
+            await App.ViewModel.CreateProjectAsync(picker.FileName, project);
             ShellManager.GoToAsync("home");
         }
     }

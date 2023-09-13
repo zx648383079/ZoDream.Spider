@@ -146,7 +146,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            var project = new ProjectLoader(picker.SafeFileName)
+            var project = new ProjectLoader(picker.FileName)
             {
                 WorkFolder = Workspace,
                 RuleItems = GroupItems.ToList(),
@@ -154,7 +154,7 @@ namespace ZoDream.Spider.ViewModels
                 ProxyItems = ProxyItems.Select(i => i.Url).ToList(),
             };
             project.EntryItems.Add(InputEntry);
-            await App.ViewModel.CreateProjectAsync(picker.SafeFileName, project);
+            await App.ViewModel.CreateProjectAsync(picker.FileName, project);
             ShellManager.GoToAsync("home");
         }
 

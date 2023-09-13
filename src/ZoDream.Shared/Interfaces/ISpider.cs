@@ -35,7 +35,6 @@ namespace ZoDream.Shared.Interfaces
         public ILogger? Logger {  get;}
 
         public event PausedEventHandler? PausedChanged;
-        public event ProgressEventHandler? ProgressChanged;
 
         public void Start();
 

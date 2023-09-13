@@ -15,6 +15,7 @@ namespace ZoDream.Shared.Interfaces
     {
 
         public event UrlChangedEventHandler? UrlChanged;
+        public event ProgressEventHandler? ProgressChanged;
         public int Count {  get; }
 
         public void Add(string url);
@@ -33,13 +34,15 @@ namespace ZoDream.Shared.Interfaces
         public IList<UriItem> GetItems(int count);
         public bool HasMore { get; }
 
-        public void UpdateItem(int index, UriItem item);
+        public void EmitUpdate(int index, UriItem item);
 
-        public void UpdateItem(int index, UriCheckStatus status);
+        public void EmitUpdate(int index, UriCheckStatus status);
 
-        public void UpdateItem(UriItem item, UriCheckStatus status);
+        public void EmitUpdate(UriItem item, UriCheckStatus status);
 
-        public void UpdateItem(UriItem url);
+        public void EmitUpdate(UriItem url);
+        public void EmitProgress(UriItem url, int groupIndex, int groupCount);
+        public void EmitProgress(UriItem url, int index, int count, bool isStep);
         public UriItem? Get(string url);
         public void Reset();
         

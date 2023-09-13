@@ -59,7 +59,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            var project = new ProjectLoader(picker.SafeFileName) { WorkFolder = Workspace };
+            var project = new ProjectLoader(picker.FileName) { WorkFolder = Workspace };
             project.EntryItems.Add(InputEntry);
             project.RuleItems.Add(new RuleGroupItem()
             {
@@ -73,7 +73,7 @@ namespace ZoDream.Spider.ViewModels
                     }
                 }
             });
-            await App.ViewModel.CreateProjectAsync(picker.SafeFileName, project);
+            await App.ViewModel.CreateProjectAsync(picker.FileName, project);
             ShellManager.GoToAsync("home");
         }
     }

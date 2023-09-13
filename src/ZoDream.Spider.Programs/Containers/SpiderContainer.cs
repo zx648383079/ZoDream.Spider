@@ -62,7 +62,13 @@ namespace ZoDream.Spider.Programs
             }
             var rule = Rules[RuleIndex];
             await rule.RenderAsync(this);
+            Application.UrlProvider.EmitProgress(Url, RuleIndex + 1, Rules.Count, false);
             return;
+        }
+
+        public void EmitProgress(int step, int count)
+        {
+            Application.UrlProvider.EmitProgress(Url, step, count, true);
         }
 
         public void SetAttribute(string name, string value)

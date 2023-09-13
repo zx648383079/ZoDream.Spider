@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AngleSharp.Dom;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -70,7 +71,6 @@ namespace ZoDream.Spider.Programs
         public ILogger? Logger { get; private set; }
 
         public event PausedEventHandler? PausedChanged;
-        public event ProgressEventHandler? ProgressChanged;
 
         public void Pause()
         {
@@ -155,7 +155,7 @@ namespace ZoDream.Spider.Programs
                     for (var i = 0; i < tasksLength; i++)
                     {
                         var item = items[i];
-                        UrlProvider.UpdateItem(item, UriCheckStatus.Doing);
+                        UrlProvider.EmitUpdate(item, UriCheckStatus.Doing);
                         tasks[i] = new Task(() =>
                         {
                             try
@@ -168,7 +168,7 @@ namespace ZoDream.Spider.Programs
                                 var error = $"{item.Source}, {ex.Message},{ex.TargetSite}";
                                 Debug.WriteLine(error);
                                 Logger?.Error(error);
-                                UrlProvider.UpdateItem(item, UriCheckStatus.Error);
+                                UrlProvider.EmitUpdate(item, UriCheckStatus.Error);
                             }
                         });
                     }
@@ -213,21 +213,24 @@ namespace ZoDream.Spider.Programs
             if (items.Count < 1)
             {
                 Logger?.Info($"{url.Source} has 0 rule groups, jump");
-                UrlProvider.UpdateItem(url, UriCheckStatus.Error);
+                UrlProvider.EmitUpdate(url, UriCheckStatus.Error);
                 return;
             }
             Logger?.Info($"{url.Source} has {items.Count} rule groups");
-            UrlProvider.UpdateItem(url, UriCheckStatus.Doing);
+            UrlProvider.EmitUpdate(url, UriCheckStatus.Doing);
+            var i = 0;
+            UrlProvider.EmitProgress(url, i, items.Count);
             foreach (var item in items)
             {
                 await item.NextAsync();
+                UrlProvider.EmitProgress(url, ++i, items.Count);
                 if (Paused)
                 {
-                    UrlProvider.UpdateItem(url, UriCheckStatus.None);
+                    UrlProvider.EmitUpdate(url, UriCheckStatus.None);
                     return;
                 }
             }
-            UrlProvider.UpdateItem(url, UriCheckStatus.Done);
+            UrlProvider.EmitUpdate(url, UriCheckStatus.Done);
         }
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
@@ -281,10 +284,12 @@ namespace ZoDream.Spider.Programs
                 Logger?.Error("没有获取到规则");
                 return;
             }
-            UrlProvider.UpdateItem(uri, UriCheckStatus.Doing);
+            UrlProvider.EmitUpdate(uri, UriCheckStatus.Doing);
             var success = true;
             Paused = false;
             PausedChanged?.Invoke(Paused);
+            var i = 0;
+            UrlProvider.EmitProgress(uri, i, rules.Count);
             foreach (var item in rules)
             {
                 var con = GetContainer(uri, PluginLoader.Render(item.Rules));
@@ -298,8 +303,9 @@ namespace ZoDream.Spider.Programs
                     success = false;
                     Logger?.Error(ex.Message);
                 }
+                UrlProvider.EmitProgress(uri, ++i, rules.Count);
             }
-            UrlProvider.UpdateItem(uri, success ? UriCheckStatus.Done : UriCheckStatus.Error);
+            UrlProvider.EmitUpdate(uri, success ? UriCheckStatus.Done : UriCheckStatus.Error);
             Paused = true;
             PausedChanged?.Invoke(Paused);
         }

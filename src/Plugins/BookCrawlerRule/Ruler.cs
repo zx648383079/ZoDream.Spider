@@ -20,7 +20,7 @@ namespace ZoDream.Spider.BookCrawlerRule
 
         public async Task RenderAsync(ISpiderContainer container)
         {
-            var crawler = new Crawler(container.Application);
+            var crawler = new Crawler(container);
             var content = await crawler.RenderAsync(
                 new Uri(container.Url.Source),
                 container.Data!.ToString());

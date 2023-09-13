@@ -33,10 +33,10 @@
         <ScrollViewer Grid.Row="1">
             <StackPanel>
                 <ctl:InputGroup Label="网址">
-                    <TextBox Text="{Binding InputEntry}" MaxLines="1"/>
+                    <TextBox Text="{Binding InputEntry, Mode=TwoWay}" MaxLines="1"/>
                 </ctl:InputGroup>
                 <ctl:InputGroup Label="保存地址">
-                    <ctl:FileInput FileName="{Binding Workspace}" IsFile="False"/>
+                    <ctl:FileInput FileName="{Binding Workspace, Mode=TwoWay}" IsFile="False"/>
                 </ctl:InputGroup>
             </StackPanel>
         </ScrollViewer>

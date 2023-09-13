@@ -32,11 +32,11 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <sctl:IconButton Icon="&#xE102;" 
-                    Label="开始" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
+                    Label="开始" Command="{Binding StartCommand}" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
                 <sctl:IconButton Icon="&#xE103;" 
-                    Label="暂停" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+                    Label="暂停" Command="{Binding PauseCommand}" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
                 <sctl:IconButton Icon="&#xE15B;" 
-                    Label="停止" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+                    Label="停止" Command="{Binding StopCommand}" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Column="1"  Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
                 <sctl:IconButton Icon="&#xE710;" 
@@ -46,7 +46,7 @@
             </StackPanel>
         </Grid>
 
-        <ListBox Grid.Row="1" ItemsSource="{Binding UrlItems}">
+        <ListBox x:Name="UrlListBox" Grid.Row="1" ItemsSource="{Binding UrlItems}" HorizontalContentAlignment="Stretch">
             <ListBox.ContextMenu>
                 <ContextMenu Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}">
                     <MenuItem Header="任务">
@@ -71,19 +71,29 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <ProgressBar Grid.Column="1" Grid.RowSpan="2" 
+                                     Value="{Binding Progress}"
+                                     Visibility="{Binding Status,Converter={StaticResource ProgressCvt}}"/>
                         <TextBlock Text="{Binding Status, Converter={StaticResource StatusIconCvt}}" 
                            Foreground="{Binding Status, Converter={StaticResource StatusColorCvt}}" 
+                                   Grid.ColumnSpan="2"
                            Style="{StaticResource IconLabel}"/>
                         <TextBlock Grid.Column="1" Text="{Binding Path=Title}" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="2" Text="{Binding Path=Source}" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Grid.Row="1" 
+                                   Text="{Binding Path=Source}"
+                                   Style="{StaticResource MetaLabelStyle}"/>
+                        
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <sctl:ConsolePanel Grid.Row="2"/>
+        <sctl:ConsolePanel x:Name="InfoTb" Grid.Row="2"/>
         <GridSplitter Grid.Row="2" Height="2" VerticalAlignment="Top" 
               HorizontalAlignment="Stretch" ResizeDirection="Rows" Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
         <Grid Grid.Row="3">
@@ -93,6 +103,7 @@
             </Grid.ColumnDefinitions>
             <TextBlock Text="{Binding Message}"/>
             <ProgressBar Grid.Column="1" Height="10" 
+                         Value="{Binding Progress}"
                  Visibility="{Binding Path=Paused, Converter={StaticResource FalseConverter}}"/>
         </Grid>
     </Grid>

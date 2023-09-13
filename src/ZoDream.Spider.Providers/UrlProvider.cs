@@ -26,6 +26,7 @@ namespace ZoDream.Spider.Providers
         public List<UriItem> Items { get; private set; } = new();
 
         public event UrlChangedEventHandler? UrlChanged;
+        public event ProgressEventHandler? ProgressChanged;
 
         public int Count {  get {  return Items.Count; }  }
 
@@ -162,32 +163,50 @@ namespace ZoDream.Spider.Providers
             }
         }
 
-        public void UpdateItem(int index, UriItem item)
+        public void EmitUpdate(int index, UriItem item)
         {
-            UpdateItem(Items[index] = item);
+            EmitUpdate(Items[index] = item);
         }
 
-        public void UpdateItem(int index, UriCheckStatus status)
+        public void EmitUpdate(int index, UriCheckStatus status)
         {
-            UpdateItem(Items[index], status);
+            EmitUpdate(Items[index], status);
         }
 
-        public void UpdateItem(UriItem item, UriCheckStatus status)
+        public void EmitUpdate(UriItem item, UriCheckStatus status)
         {
             item.Status = status;
-            UpdateItem(item);
+            EmitUpdate(item);
         }
 
-        public void UpdateItem(UriItem item)
+        public void EmitUpdate(UriItem item)
         {
             UrlChanged?.Invoke(item, false);
+        }
+
+        public void EmitProgress(UriItem url, int groupIndex, int groupCount)
+        {
+            url.Progress.UpdateGroup(groupIndex, groupCount);
+            ProgressChanged?.Invoke(url);
+        }
+        public void EmitProgress(UriItem url, int index, int count, bool isStep)
+        {
+            if (isStep)
+            {
+                url.Progress.UpdateStep(index, count);
+            }
+            else
+            {
+                url.Progress.UpdateRule(index, count);
+            }
+            ProgressChanged?.Invoke(url);
         }
 
         public void Reset()
         {
             foreach (var item in Items)
             {
-                UpdateItem(item, UriCheckStatus.None);
+                EmitUpdate(item, UriCheckStatus.None);
             }
         }
 

@@ -4,6 +4,7 @@
     <cvt:BoolVisibilityConverter x:Key="BoolConverter"/>
     <cvt:FalseVisibilityConverter x:Key="FalseConverter"/>
     <cvt:StatusIconConverter x:Key="StatusIconConverter"/>
+    <cvt:ProgressVisibleConverter x:Key="ProgressCvt"/>
     <Style x:Key="IconBtn" TargetType="Button">
         <Setter Property="FontFamily" Value="{DynamicResource IconFontFamily}"/>
         <Setter Property="Height" Value="40"/>

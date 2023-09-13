@@ -19,12 +19,18 @@ namespace ZoDream.Spider.BookCrawlerRule
         {
 
         }
+
+        public Crawler(ISpiderContainer container): this(container.Application)
+        {
+            TaskContainer = container;
+        }
         public Crawler(ISpider container)
         {
             Container = container;
         }
 
-        private ISpider? Container;
+        private readonly ISpiderContainer? TaskContainer;
+        private readonly ISpider? Container;
 
         private ILogger? Logger => Container?.Logger;
 
@@ -92,7 +98,7 @@ namespace ZoDream.Spider.BookCrawlerRule
             else
             {
                 return await Container.RequestProvider.Getter()
-                .GetAsync(url, Container.Option.HeaderItems, Container.ProxyProvider.Get(), MaxRetries, waitTime);
+                .GetAsync(url, Container.Project.HeaderItems, Container.ProxyProvider.Get(), MaxRetries, waitTime);
             }
         }
 
@@ -182,6 +188,7 @@ namespace ZoDream.Spider.BookCrawlerRule
                 }
                 await writer.WriteLineAsync();
                 await writer.WriteLineAsync();
+                TaskContainer?.EmitProgress(i + 1, items.Count);
                 Logger?.Progress(i + 1, items.Count, $"下载章节 《{item.Title}》 完成-{res}");
             }
         }
