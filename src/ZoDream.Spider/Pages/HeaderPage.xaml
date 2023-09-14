@@ -27,12 +27,17 @@
                 <ColumnDefinition Width="auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <sctl:IconButton Icon="&#xE112;" Label="返回" Command="{Binding BackCommand}"/>
             <sctl:IconButton Icon="&#xE109;" Label="添加" Command="{Binding AddCommand}" Grid.Column="2"/>
+            <sctl:IconButton Icon="&#xEBD3;" Label="浏览器获取" Command="{Binding GetCommand}" 
+                             Grid.Column="3"/>
         </Grid>
         <ListBox ItemsSource="{Binding HeaderItems}" 
-                 HorizontalContentAlignment="Stretch" Grid.Row="1">
+                 HorizontalContentAlignment="Stretch" 
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 Grid.Row="1">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -45,7 +50,9 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <TextBlock Text="{Binding Name}"/>
-                        <TextBlock Text="{Binding Value}" Style="{StaticResource MetaLabelStyle}" Grid.Row="1"/>
+                        <TextBlock Text="{Binding Value}" 
+                                   TextWrapping="Wrap"
+                                   Style="{StaticResource MetaLabelStyle}" Grid.Row="1"/>
                         <Button Content="&#xE106;" 
                                 Command="{Binding ElementName=root,Path=DataContext.DeleteCommand}"      
                                 CommandParameter="{Binding}"

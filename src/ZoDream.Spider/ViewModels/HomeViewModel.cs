@@ -8,6 +8,7 @@ using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Routes;
 using ZoDream.Shared.ViewModel;
+using ZoDream.Spider.Loggers;
 using ZoDream.Spider.Programs;
 using ZoDream.Spider.Providers;
 
@@ -206,13 +207,16 @@ namespace ZoDream.Spider.ViewModels
 
         public void Load()
         {
+            Logger = new EventLogger();
             Instance = new DefaultSpider(App.ViewModel.Project!, Logger, App.ViewModel.Plugin);
             Instance.RequestProvider = new BrowserProvider(Instance);
             Instance.UrlProvider.UrlChanged += UrlProvider_UrlChanged;
             Instance.UrlProvider.ProgressChanged += UrlProvider_UrlChanged;
             Instance.PausedChanged += v =>
             {
-                Paused = v;
+                App.ViewModel.DispatcherQueue.Invoke(() => {
+                    Paused = v;
+                });
             };
         }
 
@@ -222,7 +226,9 @@ namespace ZoDream.Spider.ViewModels
             {
                 if (item.Source == uri.Source)
                 {
-                    item.Progress = uri.Progress.Value;
+                    App.ViewModel.DispatcherQueue.Invoke(() => {
+                        item.Progress = uri.Progress.Value;
+                    });
                     return;
                 }
             }
@@ -232,32 +238,41 @@ namespace ZoDream.Spider.ViewModels
         {
             if (Instance == null)
             {
-                UrlItems.Clear();
+                App.ViewModel.DispatcherQueue.Invoke(() => {
+                    UrlItems.Clear();
+                });
                 return;
             }
             if (url == null)
             {
-                UrlItems.Clear();
-                foreach (var item in Instance.UrlProvider)
-                {
-                    UrlItems.Add(new UriLoadItem(item));
-                }
+                App.ViewModel.DispatcherQueue.Invoke(() => {
+                    UrlItems.Clear();
+                    foreach (var item in Instance.UrlProvider)
+                    {
+                        UrlItems.Add(new UriLoadItem(item));
+                    }
+                });
                 return;
             }
-            if (isNew)
-            {
-                UrlItems.Add(new UriLoadItem(url));
-                return;
-            }
+            //if (isNew)
+            //{
+            //    UrlItems.Add(new UriLoadItem(url));
+            //    return;
+            //}
             foreach (var item in UrlItems)
             {
                 if (item.Source == url.Source)
                 {
-                    item.Title = url.Title;
-                    item.Status = url.Status;
+                    App.ViewModel.DispatcherQueue.Invoke(() => {
+                        item.Title = url.Title;
+                        item.Status = url.Status;
+                    });
                     return;
                 }
             }
+            App.ViewModel.DispatcherQueue.Invoke(() => {
+                UrlItems.Add(new UriLoadItem(url));
+            });
         }
 
         public void Close()

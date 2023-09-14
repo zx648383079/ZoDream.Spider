@@ -25,6 +25,9 @@ namespace ZoDream.Shared.Loaders
 
         public List<string> ProxyItems { get; set; } = new();
         public List<string> EntryItems { get; set; } = new();
+
+        public List<HostItem> HostItems { get; set; } = new();
+
         public List<RuleGroupItem> RuleItems { get; set; } = new();
 
         public void Deserializer(StreamReader reader)

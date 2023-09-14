@@ -175,15 +175,18 @@ namespace ZoDream.Spider.Programs
                     #endregion
 
                     #region 监视线程数组完成
-                    var continuation = Task.Factory.ContinueWhenAll(tasks, (task) =>
-                    { }, token);
-                    foreach (var task in tasks)
+                    if (tasks.Length > 0)
                     {
-                        task.Start();
-                    }
-                    while (!continuation.IsCompleted)
-                    {
-                        Thread.Sleep(1000);
+                        var continuation = Task.Factory.ContinueWhenAll(tasks, (task) =>
+                        { }, token);
+                        foreach (var task in tasks)
+                        {
+                            task.Start();
+                        }
+                        while (!continuation.IsCompleted)
+                        {
+                            Thread.Sleep(1000);
+                        }
                     }
                     #endregion
                     if (UrlProvider.HasMore) continue;
@@ -255,6 +258,9 @@ namespace ZoDream.Spider.Programs
             {
                 return items;
             }
+            /**
+             * TODO 使用 host 的方法：把 网址中的 host 替换为 ip 在请求头中设置 Host 为被替换的域名 
+             */
             var content = await RequestProvider.Getter().GetAsync(url.Source, Project.HeaderItems, ProxyProvider.Get());
             if (content == null)
             {

@@ -21,7 +21,7 @@ namespace ZoDream.Spider.Providers
             }
         }
 
-        public ISpider Application { get; set; }
+        private readonly ISpider Application;
 
         public List<UriItem> Items { get; private set; } = new();
 

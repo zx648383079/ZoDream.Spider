@@ -15,21 +15,42 @@ namespace ZoDream.Shared.Loaders
             writer.WriteLine("[OPTION]");
             WriteOption(writer);
             writer.WriteLine();
-            writer.WriteLine("[HEADER]");
-            WriteHeader(writer);
-            writer.WriteLine();
-            writer.WriteLine("[PROXY]");
-            WriteProxy(writer);
-            writer.WriteLine();
-            writer.WriteLine("[ENTRY]");
-            WriteEntry(writer);
-            writer.WriteLine();
-            writer.WriteLine("[RULE]");
-            WriteRule(writer);
-            writer.WriteLine();
-            writer.WriteLine("[URL]");
-            WriteUrl(writer);
-            writer.WriteLine();
+            if (HeaderItems.Count > 0)
+            {
+                writer.WriteLine("[HEADER]");
+                WriteHeader(writer);
+                writer.WriteLine();
+            }
+            if (HostItems.Count > 0)
+            {
+                writer.WriteLine("[HOST]");
+                WriteHost(writer);
+                writer.WriteLine();
+            }
+            if (ProxyItems.Count > 0)
+            {
+                writer.WriteLine("[PROXY]");
+                WriteProxy(writer);
+                writer.WriteLine();
+            }
+            if (EntryItems.Count > 0)
+            {
+                writer.WriteLine("[ENTRY]");
+                WriteEntry(writer);
+                writer.WriteLine();
+            }
+            if (RuleItems.Count > 0)
+            {
+                writer.WriteLine("[RULE]");
+                WriteRule(writer);
+                writer.WriteLine();
+            }
+            if (false)
+            {
+                writer.WriteLine("[URL]");
+                WriteUrl(writer);
+                writer.WriteLine();
+            }
         }
 
         private void WriteHeader(StreamWriter writer)
@@ -37,6 +58,13 @@ namespace ZoDream.Shared.Loaders
             foreach (var item in HeaderItems)
             {
                 writer.WriteLine($"{item.Name}: {item.Value}");
+            }
+        }
+        private void WriteHost(StreamWriter writer)
+        {
+            foreach (var item in HostItems)
+            {
+                writer.WriteLine($"{item.Ip}      {item.Host}");
             }
         }
 

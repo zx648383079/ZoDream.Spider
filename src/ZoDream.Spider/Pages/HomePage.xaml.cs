@@ -34,7 +34,11 @@ namespace ZoDream.Spider.Pages
 
         private void HomePage_Loaded(object sender, RoutedEventArgs e)
         {
-            var logger = new EventLogger();
+            ToggleDebug(App.ViewModel.Option.IsLogVisible);
+            if (ViewModel.Logger is not EventLogger logger)
+            {
+                return;
+            }
             var isLastProgress = false;
             logger.OnLog += (s, e) => {
                 isLastProgress = false;
@@ -56,8 +60,6 @@ namespace ZoDream.Spider.Pages
                 });
                 isLastProgress = true;
             };
-            ViewModel.Logger = logger;
-            ToggleDebug(App.ViewModel.Option.IsLogVisible);
         }
 
         public UriLoadItem[] SelectedItems {

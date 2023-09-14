@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Routes;
-using ZoDream.Shared.Utils;
 using ZoDream.Shared.ViewModel;
 
 namespace ZoDream.Spider.ViewModels
 {
-    public class EntryViewModel : BindableBase, IExitAttributable
+    public class HostViewModel: BindableBase, IExitAttributable
     {
 
-        public EntryViewModel()
+        public HostViewModel()
         {
             BackCommand = new RelayCommand(TapBack);
             AddCommand = new RelayCommand(TapAdd);
-            CheckCommand = new RelayCommand(TapCheck);
             DialogConfirmCommand = new RelayCommand(TapDialogConfirm);
             DeleteCommand = new RelayCommand(TapDelete);
             Load();
@@ -27,11 +22,11 @@ namespace ZoDream.Spider.ViewModels
 
         private bool IsUpdated = false;
 
-        private ObservableCollection<UrlCheckItem> urlItems = new();
+        private ObservableCollection<HostBindingItem> hostItems = new();
 
-        public ObservableCollection<UrlCheckItem> UrlItems {
-            get => urlItems;
-            set => Set(ref urlItems, value);
+        public ObservableCollection<HostBindingItem> HostItems {
+            get => hostItems;
+            set => Set(ref hostItems, value);
         }
 
         private bool dialogVisible;
@@ -50,7 +45,6 @@ namespace ZoDream.Spider.ViewModels
 
         public ICommand BackCommand { get; private set; }
         public ICommand AddCommand { get; private set; }
-        public ICommand CheckCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         public ICommand DialogConfirmCommand { get; private set; }
 
@@ -64,20 +58,12 @@ namespace ZoDream.Spider.ViewModels
             DialogVisible = true;
         }
 
-        private void TapCheck(object? _)
-        {
-            foreach (var item in UrlItems)
-            {
-                var res = Html.GenerateUrl(item.Url);
-                item.Status = res.Count > 0 ? UriCheckStatus.Done : UriCheckStatus.Error;
-            }
-        }
 
         private void TapDelete(object? arg)
         {
-            if (arg is UrlCheckItem item)
+            if (arg is HostBindingItem item)
             {
-                UrlItems.Remove(item);
+                HostItems.Remove(item);
                 IsUpdated = true;
             }
         }
@@ -90,17 +76,44 @@ namespace ZoDream.Spider.ViewModels
                 {
                     continue;
                 }
-                Add(item.Trim());
+                var line = item.Trim();
+                if (line.StartsWith("#"))
+                {
+                    continue;
+                }
+                var args = line.Split(new char[] { ' ' }, 2);
+                var ip = args[0].Trim();
+                var host = args[2].Trim();
+                if (string.IsNullOrWhiteSpace(ip) || 
+                    string.IsNullOrWhiteSpace(host))
+                {
+                    continue;
+                }
+                Add(host, ip);
             }
             InputContent = string.Empty;
             DialogVisible = false;
         }
 
-        public bool Contains(string url)
+        public void Add(string host, string ip)
         {
-            foreach (var item in UrlItems)
+            IsUpdated = true;
+            foreach (var item in HostItems)
             {
-                if (item.Url == url)
+                if (item.Host == host)
+                {
+                    item.Ip = ip;
+                    return;
+                }
+            }
+            HostItems.Add(new HostBindingItem(host, ip));
+        }
+
+        public bool Contains(string host)
+        {
+            foreach (var item in HostItems)
+            {
+                if (item.Host == host)
                 {
                     return true;
                 }
@@ -108,42 +121,24 @@ namespace ZoDream.Spider.ViewModels
             return false;
         }
 
-        public void Add(string url)
-        {
-            if (Contains(url))
-            {
-                return;
-            }
-            UrlItems.Add(new UrlCheckItem(url));
-            IsUpdated = true;
-            //foreach (var item in Html.GenerateUrl(url))
-            //{
-            //    if (Contains(item))
-            //    {
-            //        continue;
-            //    }
-            //    UrlItems.Add(new UrlCheckItem(item));
-            //}
-        }
-
         private void Load()
         {
             var project = App.ViewModel.Project;
-            UrlItems.Clear();
+            HostItems.Clear();
             if (project == null)
             {
                 return;
             }
-            foreach (var item in project.EntryItems)
+            foreach (var item in project.HostItems)
             {
-                UrlItems.Add(new UrlCheckItem(item));
+                HostItems.Add(new HostBindingItem(item.Host, item.Ip));
             }
         }
 
         public void ApplyExitAttributes()
         {
-            if (!IsUpdated) 
-            { 
+            if (!IsUpdated)
+            {
                 return;
             }
             IsUpdated = false;
@@ -152,7 +147,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            project.EntryItems = UrlItems.Select(i => i.Url).ToList();
+            project.HostItems = HostItems.Select(i => new HostItem(i.Host, i.Ip)).ToList();
             project.SaveAsync();
         }
     }

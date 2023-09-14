@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Models;
 using ZoDream.Shared.ViewModel;
 
 namespace ZoDream.Spider.Models
@@ -26,5 +27,18 @@ namespace ZoDream.Spider.Models
             set => Set(ref isActive, value);
         }
 
+        public PluginInfoItem()
+        {
+            
+        }
+
+        public PluginInfoItem(PluginItem item)
+        {
+            Name = item.Name;
+            Description = item.Description;
+            Author = item.Author;
+            Version = item.Version;
+            FileName = item.FileName;
+        }
     }
 }

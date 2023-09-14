@@ -94,6 +94,7 @@ namespace ZoDream.Shared.Routes
             {
                 return;
             }
+            ExitPage(Current);
             var page = CreatePage(route);
             if (!InnerFrame.Navigate(page))
             {
@@ -141,6 +142,14 @@ namespace ZoDream.Shared.Routes
             return instance;
         }
 
+        private void ExitPage(FrameworkElement? page)
+        {
+            if (page is not null && page.DataContext is IExitAttributable o)
+            {
+                o.ApplyExitAttributes();
+            }
+        }
+
         public void Bind(Frame frame)
         {
             InnerFrame = frame;
@@ -153,6 +162,7 @@ namespace ZoDream.Shared.Routes
 
         public void Dispose()
         {
+            ExitPage(Current);
             Routes.Clear();
             Histories.Clear();
         }

@@ -10,7 +10,7 @@ using ZoDream.Shared.ViewModel;
 
 namespace ZoDream.Spider.ViewModels
 {
-    public class RuleViewModel: BindableBase
+    public class RuleViewModel: BindableBase, IExitAttributable
     {
 
         public RuleViewModel()
@@ -29,10 +29,10 @@ namespace ZoDream.Spider.ViewModels
             RuleEditCommand = new RelayCommand(TapRuleEdit);
             RuleUpCommand = new RelayCommand(TapRuleUp);
             PanelConfirmCommand = new RelayCommand(TapPanelConfirm);
-            PluginItems = App.ViewModel.Plugin.All();
             Load();
         }
 
+        private bool IsUpdated = false;
         private RuleGroupItem? EditGroup;
         private RuleItem? EditRule;
 
@@ -179,6 +179,7 @@ namespace ZoDream.Spider.ViewModels
             if (arg is RuleGroupItem o)
             {
                 GroupItems.Remove(o);
+                IsUpdated = true;
             }
         }
 
@@ -198,6 +199,7 @@ namespace ZoDream.Spider.ViewModels
             if (arg is RuleItem o)
             {
                 RuleItems.Remove(o);
+                IsUpdated = true;
             }
         }
 
@@ -212,6 +214,7 @@ namespace ZoDream.Spider.ViewModels
                 MatchValue = GroupName
             };
             GroupItems.Add(item);
+            IsUpdated = true;
             GroupName = string.Empty;
             EditGroup = item;
             PanelTitle = item.MatchValue;
@@ -248,6 +251,7 @@ namespace ZoDream.Spider.ViewModels
                 EditRule.Param1 = RuleParam1;
                 EditRule.Param2 = RuleParam2;
             }
+            IsUpdated = true;
             RuleParam1 = RuleParam2 = string.Empty;
             RuleVisible = false;
         }
@@ -257,6 +261,7 @@ namespace ZoDream.Spider.ViewModels
             if (arg is RuleItem o)
             {
                 ListExtension.MoveUp(RuleItems, RuleItems.IndexOf(o));
+                IsUpdated = true;
             }
         }
 
@@ -265,6 +270,7 @@ namespace ZoDream.Spider.ViewModels
             if (arg is RuleItem o)
             {
                 ListExtension.MoveDown(RuleItems, RuleItems.IndexOf(o));
+                IsUpdated = true;
             }
         }
 
@@ -297,6 +303,8 @@ namespace ZoDream.Spider.ViewModels
 
         private void Load()
         {
+            var activeItems = App.ViewModel.Option.PluginItems;
+            PluginItems = App.ViewModel.Plugin.All().Where(item => activeItems.Count == 0 || activeItems.Contains(item.FileName)).ToArray();
             var project = App.ViewModel.Project;
             GroupItems.Clear();
             if (project == null)
@@ -307,6 +315,22 @@ namespace ZoDream.Spider.ViewModels
             {
                 GroupItems.Add(item);
             }
+        }
+
+        public void ApplyExitAttributes()
+        {
+            if (!IsUpdated)
+            {
+                return;
+            }
+            IsUpdated = false;
+            var project = App.ViewModel.Project;
+            if (project == null)
+            {
+                return;
+            }
+            project.RuleItems = GroupItems.ToList();
+            project.SaveAsync();
         }
     }
 }

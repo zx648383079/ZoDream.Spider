@@ -7,21 +7,22 @@ namespace ZoDream.Spider.Providers
 {
     public class RuleProvider : IRuleProvider
     {
-        public IList<RuleGroupItem> Items { get; private set; } = new List<RuleGroupItem>();
+        public List<RuleGroupItem> Items { get; private set; } = new();
 
         
-        private ISpider Application;
+        private readonly ISpider Application;
 
         public RuleProvider(ISpider spider)
         {
             Application = spider;
+            Add(spider.Project.RuleItems);
         }
 
-        public bool Canable(string uri)
+        public bool Cannable(string uri)
         {
             foreach (var item in Items)
             {
-                if (item.IsMatch(uri))
+                if (item.IsAllow(uri))
                 {
                     return true;
                 }

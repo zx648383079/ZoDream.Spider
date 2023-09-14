@@ -10,11 +10,11 @@ namespace ZoDream.Shared.Interfaces
     public interface IRuleProvider
     {
         /// <summary>
-        /// 是否有符合网址的规则
+        /// 是否有符合网址的规则, 是否允许添加
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public bool Canable(string uri);
+        public bool Cannable(string uri);
         public IList<RuleGroupItem> Get(string uri);
         public IList<RuleGroupItem> GetEvent(string name);
 

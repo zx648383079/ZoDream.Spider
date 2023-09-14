@@ -5,7 +5,7 @@ namespace ZoDream.Spider.Providers
 {
     public class RequestProvider : IRequestProvider
     {
-        private ISpider Application;
+        private readonly ISpider Application;
 
         public RequestProvider(ISpider spider)
         {

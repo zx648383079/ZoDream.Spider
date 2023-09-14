@@ -58,7 +58,7 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="{Binding Name}"/>
+                        <TextBlock Text="{Binding MatchValue}"/>
                         <TextBlock Text="{Binding Rules.Count,StringFormat='共{0}条规则'}" Grid.Row="1"/>
                         <Button Content="&#xE104;" 
                             Command="{Binding ElementName=root,Path=DataContext.EditCommand}"      

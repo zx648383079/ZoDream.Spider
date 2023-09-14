@@ -185,6 +185,8 @@ namespace ZoDream.Spider.Pages
         {
             IsLoading = true;
             LoadSuccess = false;
+            // 可以自定义请求头
+            // e.RequestHeaders.SetHeader();
         }
 
         private void Browser_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
@@ -216,6 +218,8 @@ namespace ZoDream.Spider.Pages
         {
             // e.Cancel = true;
             // e.DownloadOperation.Uri;
+            // e.DownloadOperation.BytesReceivedChanged
+            // 可以获取下载文件的进度及相关信息
         }
 
         private void CoreWebView_DOMContentLoaded(object? sender, CoreWebView2DOMContentLoadedEventArgs e)
@@ -330,7 +334,8 @@ namespace ZoDream.Spider.Pages
             return GetAsync(url);
         }
 
-        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
+        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, 
+            ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
         {
             string? res;
             do

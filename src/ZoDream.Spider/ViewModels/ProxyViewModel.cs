@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using ZoDream.Shared.Http;
 using ZoDream.Shared.Models;
@@ -7,7 +8,7 @@ using ZoDream.Shared.ViewModel;
 
 namespace ZoDream.Spider.ViewModels
 {
-    public class ProxyViewModel : BindableBase
+    public class ProxyViewModel : BindableBase, IExitAttributable
     {
 
         public ProxyViewModel()
@@ -19,6 +20,8 @@ namespace ZoDream.Spider.ViewModels
             DeleteCommand = new RelayCommand(TapDelete);
             Load();
         }
+
+        private bool IsUpdated = false;
 
         private ObservableCollection<UrlCheckItem> urlItems = new();
 
@@ -75,6 +78,7 @@ namespace ZoDream.Spider.ViewModels
             if (arg is UrlCheckItem item)
             {
                 UrlItems.Remove(item);
+                IsUpdated = true;
             }
         }
 
@@ -92,6 +96,7 @@ namespace ZoDream.Spider.ViewModels
                     continue;
                 }
                 UrlItems.Add(new UrlCheckItem(real));
+                IsUpdated = true;
             }
             InputContent = string.Empty;
             DialogVisible = false;
@@ -122,6 +127,22 @@ namespace ZoDream.Spider.ViewModels
             {
                 UrlItems.Add(new UrlCheckItem(item));
             }
+        }
+
+        public void ApplyExitAttributes()
+        {
+            if (!IsUpdated)
+            {
+                return;
+            }
+            IsUpdated = false;
+            var project = App.ViewModel.Project;
+            if (project == null)
+            {
+                return;
+            }
+            project.ProxyItems = UrlItems.Select(i => i.Url).ToList();
+            project.SaveAsync();
         }
     }
 }

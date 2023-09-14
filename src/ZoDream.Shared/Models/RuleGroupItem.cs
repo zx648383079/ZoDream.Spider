@@ -15,11 +15,27 @@ namespace ZoDream.Shared.Models
 
         public List<RuleItem> Rules { get; set; } = new();
 
+        /// <summary>
+        /// 是否允许新的网址进入
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
+        public bool IsAllow(string uri)
+        {
+            return MatchType != RuleMatchType.None && IsMatch(uri);
+        }
+
+        /// <summary>
+        /// 是否配规则
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public bool IsMatch(string uri)
         {
             switch (MatchType)
             {
                 case RuleMatchType.All:
+                case RuleMatchType.None:
                     return true;
                 case RuleMatchType.Contains:
                     return uri.Contains(MatchValue);

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using ZoDream.Shared.Models;
 using ZoDream.Shared.Routes;
 using ZoDream.Shared.ViewModel;
 using ZoDream.Spider.Models;
@@ -12,7 +13,7 @@ using ZoDream.Spider.Plugins;
 
 namespace ZoDream.Spider.ViewModels
 {
-    public class PluginViewModel : BindableBase
+    public class PluginViewModel : BindableBase, IExitAttributable
     {
         public PluginViewModel()
         {
@@ -20,16 +21,10 @@ namespace ZoDream.Spider.ViewModels
             ImportCommand = new RelayCommand(TapImport);
             InstallCommand = new RelayCommand(TapInstall);
             UninstallCommand = new RelayCommand(TapUninstall);
-            //var plugins = PluginLoader.Load();
-            //foreach (var item in plugins)
-            //{
-            //    if (PluginItems.Contains(item.FileName))
-            //    {
-            //        item.IsActive = true;
-            //    }
-            //    PluginFileItems.Add(item);
-            //}
+            Load();
         }
+
+        private bool IsUpdated = false;
 
         private ObservableCollection<PluginInfoItem> pluginFileItems = new();
 
@@ -79,7 +74,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            PluginImport(picker.SafeFileNames);
+            PluginImport(picker.FileNames);
         }
 
 
@@ -101,6 +96,7 @@ namespace ZoDream.Spider.ViewModels
                     item.IsActive = false;
                     //PluginItems.Remove(item.FileName);
                     // OnPropertyChanged(nameof(PluginItems));
+                    IsUpdated = true;
                 }
             }
         }
@@ -112,10 +108,35 @@ namespace ZoDream.Spider.ViewModels
                 if (item == pluginItem)
                 {
                     item.IsActive = true;
-                    // PluginItems.Add(item.FileName);
-                    // OnPropertyChanged(nameof(PluginItems));
+                    IsUpdated = true;
                 }
             }
+        }
+
+        private void Load()
+        {
+            var plugins = App.ViewModel.Plugin.All();
+            var items = App.ViewModel.Option.PluginItems;
+            foreach (var item in plugins)
+            {
+                PluginFileItems.Add(new PluginInfoItem(item)
+                {
+                    IsActive = items.Count == 0 || items.Contains(item.FileName),
+                });
+            }
+        }
+
+        public void ApplyExitAttributes()
+        {
+            if (!IsUpdated)
+            {
+                return;
+            }
+            IsUpdated = false;
+            var option = App.ViewModel.Option;
+            option.PluginItems = PluginFileItems.Where(item => item.IsActive)
+                .Select(item => item.FileName).ToList();
+            App.ViewModel.SaveOptionAsync();
         }
     }
 }

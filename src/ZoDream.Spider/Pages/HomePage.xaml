@@ -46,7 +46,8 @@
             </StackPanel>
         </Grid>
 
-        <ListBox x:Name="UrlListBox" Grid.Row="1" ItemsSource="{Binding UrlItems}" HorizontalContentAlignment="Stretch">
+        <ListBox x:Name="UrlListBox" Grid.Row="1" 
+                 ItemsSource="{Binding UrlItems}" HorizontalContentAlignment="Stretch">
             <ListBox.ContextMenu>
                 <ContextMenu Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}">
                     <MenuItem Header="任务">
@@ -81,9 +82,9 @@
                                      Value="{Binding Progress}"
                                      Visibility="{Binding Status,Converter={StaticResource ProgressCvt}}"/>
                         <TextBlock Text="{Binding Status, Converter={StaticResource StatusIconCvt}}" 
-                           Foreground="{Binding Status, Converter={StaticResource StatusColorCvt}}" 
-                                   Grid.ColumnSpan="2"
-                           Style="{StaticResource IconLabel}"/>
+                               Foreground="{Binding Status, Converter={StaticResource StatusColorCvt}}"
+                               Grid.RowSpan="2"
+                               Style="{StaticResource IconLabel}"/>
                         <TextBlock Grid.Column="1" Text="{Binding Path=Title}" FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="1" Grid.Row="1" 
                                    Text="{Binding Path=Source}"

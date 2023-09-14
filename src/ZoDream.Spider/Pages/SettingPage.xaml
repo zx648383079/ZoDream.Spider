@@ -47,39 +47,40 @@
             <StackPanel Margin="10,20">
                 <TextBlock Text="项目设置" Style="{DynamicResource TitleTextBlockStyle}" Margin="0,10"/>
 
-                <ctl:SettingInput Icon="&#xE169;" Header="线程数">
+                <ctl:SettingInput Icon="&#xE169;" Header="线程数" Meta="指定同时可以执行多少个任务">
                     <sctl:NumberInput Value="{Binding MaxCount, Mode=TwoWay}"/>
                 </ctl:SettingInput>
-                <ctl:SettingInput Icon="&#xE121;" Header="等待时间/s">
+                <ctl:SettingInput Icon="&#xE121;" Header="等待时间/s" Meta="允许服务器响应时间，超时则失败">
                     <sctl:NumberInput Value="{Binding TimeOut, Mode=TwoWay}"/>
                 </ctl:SettingInput>
                 <ctl:SettingInput Icon="&#xE12B;" Header="使用浏览器下载" Meta="开启后请不要关闭已打开的内置浏览器">
                     <sctl:SwitchInput Value="{Binding UseBrowser, Mode=TwoWay}"/>
                 </ctl:SettingInput>
 
-                <ctl:SettingInputGroup Icon="&#xE19C;" Header="保存路径">
+                <ctl:SettingInputGroup Icon="&#xE19C;" Header="保存路径" Meta="下载的内容保存地址">
                     <ctl:FileInput FileName="{Binding Workspace, Mode=TwoWay}" IsFile="False" Height="32" Margin="10,20"/>
                 </ctl:SettingInputGroup>
 
-                <ctl:SettingInput Icon="&#xE16C;" Header="规则管理" Command="{Binding RuleCommand}"/>
-                <ctl:SettingInput Icon="&#xE17D;" Header="请求头管理" Command="{Binding HeaderCommand}"/>
-                <ctl:SettingInput Icon="&#xE17B;" Header="代理管理" Command="{Binding ProxyCommand}"/>
+                <ctl:SettingInput Icon="&#xE16C;" Header="规则管理" Meta="对网址执行的操作" Command="{Binding RuleCommand}"/>
+                <ctl:SettingInput Icon="&#xE17D;" Header="请求头管理" Meta="可以自定义请求头，例如登录COOKIE等" Command="{Binding HeaderCommand}"/>
+                <ctl:SettingInput Icon="&#xE17B;" Header="代理管理" Meta="可以指定使用代理，对浏览器无效" Command="{Binding ProxyCommand}"/>
+                <ctl:SettingInput Icon="&#xE17A;" Header="Host管理" Meta="指定域名映射到指定服务器IP" Command="{Binding HostCommand}"/>
 
                 <TextBlock Text="系统设置" Style="{DynamicResource TitleTextBlockStyle}" 
                            Margin="0,20,0,10"/>
 
-                <ctl:SettingInput Icon="&#xE167;" Header="插件管理" Command="{Binding PluginCommand}"/>
-                <ctl:SettingInput Icon="&#xE16D;" Header="输出日志显示">
+                <ctl:SettingInput Icon="&#xE167;" Header="插件管理" Meta="设置启用插件" Command="{Binding PluginCommand}"/>
+                <ctl:SettingInput Icon="&#xE16D;" Header="输出日志显示" Meta="是否在执行任务构成中显示执行日志，方便调试">
                     <sctl:SwitchInput Value="{Binding IsLogVisible, Mode=TwoWay}"/>
                 </ctl:SettingInput>
-                <ctl:SettingInput Icon="&#xE16E;" Header="日志时间显示">
+                <ctl:SettingInput Icon="&#xE16E;" Header="日志时间显示" Meta="是否显示日志时间">
                     <sctl:SwitchInput Value="{Binding IsLogTime, Mode=TwoWay}"/>
                 </ctl:SettingInput>
-                <ctl:SettingInputGroup Icon="&#xE129;" Header="关于">
+                <ctl:SettingInputGroup Icon="&#xE129;" Header="关于" Meta="程序作者信息">
                     <StackPanel Margin="10,20">
                         <TextBlock Text="ZoDream Spider" FontSize="30"/>
-                        <TextBlock Text="v1.0"/>
-                        <sctl:HyperlinkButton Content="Copyright © 2022 zodream.cn" 
+                        <TextBlock Text="{Binding Version}"/>
+                        <sctl:HyperlinkButton Content="Copyright © 2023 zodream.cn" 
                                  NavigateUri="https://github.com/zx648383079/ZoDream.Spider"
                                  HorizontalAlignment="Left"/>
                     </StackPanel>

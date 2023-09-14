@@ -1,0 +1,61 @@
+﻿<Page x:Class="ZoDream.Spider.Pages.HostPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:ZoDream.Spider.Pages"
+      xmlns:sctl="clr-namespace:ZoDream.Shared.Controls;assembly=ZoDream.Shared.Controls"
+      xmlns:ctl="clr-namespace:ZoDream.Spider.Controls"
+      xmlns:vm="clr-namespace:ZoDream.Spider.ViewModels"
+      x:Name="root"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="域名映射">
+
+    <Page.DataContext>
+        <vm:HostViewModel/>
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition  Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <sctl:IconButton Icon="&#xE112;" Label="返回" Command="{Binding BackCommand}"/>
+            <sctl:IconButton Icon="&#xE109;" Label="添加" Command="{Binding AddCommand}" Grid.Column="2"/>
+        </Grid>
+        <ListBox ItemsSource="{Binding HostItems}" HorizontalContentAlignment="Stretch" Grid.Row="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Height="40">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Host}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding Ip}" Grid.Column="1" VerticalAlignment="Center"/>
+                        <Button Content="&#xE106;" Grid.Column="2" 
+                            Command="{Binding ElementName=root,Path=DataContext.DeleteCommand}"      
+                            CommandParameter="{Binding}"
+                            ToolTip="删除"
+                            Style="{StaticResource ListIconBtn}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ctl:ContentDialog Title="添加Host映射" SubTitle="可以一次添加多个，一行代表一个，示例: IP空格HOST" 
+                    IsOpen="{Binding DialogVisible}"
+                    PrimaryCommand="{Binding DialogConfirmCommand}"
+                   Grid.RowSpan="2">
+            <TextBox Text="{Binding InputContent}" AcceptsReturn="True"/>
+        </ctl:ContentDialog>
+    </Grid>
+</Page>

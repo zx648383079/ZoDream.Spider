@@ -43,6 +43,9 @@ namespace ZoDream.Shared.Loaders
                     case "PROXY":
                         ReadProxy(reader);
                         break;
+                    case "HOST":
+                        ReadHost(reader);
+                        break;
                     case "RULE":
                         ReadRule(reader);
                         break;
@@ -72,6 +75,25 @@ namespace ZoDream.Shared.Loaders
                 if (!string.IsNullOrWhiteSpace(args[1]))
                 {
                     HeaderItems.Add(new HeaderItem(name, args[1].Trim()));
+                }
+            }
+        }
+
+        private void ReadHost(StreamReader reader)
+        {
+            string? line;
+            while (null != (line = reader.ReadLine()))
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                {
+                    return;
+                }
+                var args = line.Trim().Split(new char[] { ' ' }, 2);
+                var ip = args[0].Trim();
+                var host = args[1].Trim();
+                if (!string.IsNullOrWhiteSpace(ip) && !string.IsNullOrWhiteSpace(host))
+                {
+                    HostItems.Add(new HostItem(host, ip));
                 }
             }
         }

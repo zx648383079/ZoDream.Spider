@@ -46,6 +46,7 @@ namespace ZoDream.Spider
             ShellManager.RegisterRoute("proxy", typeof(ProxyPage));
             ShellManager.RegisterRoute("rule", typeof(RulePage));
             ShellManager.RegisterRoute("header", typeof(HeaderPage));
+            ShellManager.RegisterRoute("host", typeof(HostPage));
         }
 
         public static AppViewModel ViewModel { get; } = new();
