@@ -130,7 +130,8 @@
         <ctl:ContentDialog Title="添加规则组" SubTitle="先设置匹配规则" 
                            IsOpen="{Binding DialogVisible}"
                            PrimaryCommand="{Binding DialogConfirmCommand}"
-                           Grid.RowSpan="2">
+                           Grid.RowSpan="2"
+                           DialogHeight="340">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="32"/>
@@ -140,12 +141,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBlock Text="匹配方式" VerticalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <RadioButton Content="域名"/>
-                    <RadioButton Content="包含"/>
-                    <RadioButton Content="正则"/>
-                    <RadioButton Content="事件"/>
-                </StackPanel>
+                <ctl:RadioGroupPanel Value="{Binding GroupType}" Grid.Row="1"/>
                 <TextBlock Text="匹配值" VerticalAlignment="Center" Grid.Row="2"/>
                 <TextBox Text="{Binding GroupName}" MaxLines="1" Grid.Row="3"/>
             </Grid>

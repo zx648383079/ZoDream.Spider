@@ -63,9 +63,9 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref panelTitle, value);
         }
 
-        private int groupType;
+        private RuleMatchType groupType = RuleMatchType.None;
 
-        public int GroupType {
+        public RuleMatchType GroupType {
             get => groupType;
             set => Set(ref groupType, value);
         }
@@ -157,7 +157,8 @@ namespace ZoDream.Spider.ViewModels
             }
             var item = new RuleGroupItem()
             {
-                MatchValue = GroupName
+                MatchValue = GroupName,
+                MatchType = GroupType,
             };
             GroupItems.Add(item);
             GroupName = string.Empty;

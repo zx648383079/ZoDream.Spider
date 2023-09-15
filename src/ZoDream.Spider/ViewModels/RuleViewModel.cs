@@ -36,6 +36,7 @@ namespace ZoDream.Spider.ViewModels
         private RuleGroupItem? EditGroup;
         private RuleItem? EditRule;
 
+
         private IList<PluginItem> pluginItems = new List<PluginItem>();
 
         public IList<PluginItem> PluginItems
@@ -89,9 +90,10 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref panelTitle, value);
         }
 
-        private int groupType;
 
-        public int GroupType {
+        private RuleMatchType groupType = RuleMatchType.None;
+
+        public RuleMatchType GroupType {
             get => groupType;
             set => Set(ref groupType, value);
         }
@@ -211,7 +213,8 @@ namespace ZoDream.Spider.ViewModels
             }
             var item = new RuleGroupItem()
             {
-                MatchValue = GroupName
+                MatchValue = GroupName,
+                MatchType = GroupType
             };
             GroupItems.Add(item);
             IsUpdated = true;

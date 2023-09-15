@@ -6,5 +6,6 @@
         <ResourceDictionary Source="/ZoDream.Spider;component/Themes/Button.xaml"/>
         <ResourceDictionary Source="/ZoDream.Spider;component/Themes/Dialog.xaml"/>
         <ResourceDictionary Source="/ZoDream.Spider;component/Themes/Setting.xaml"/>
+        <ResourceDictionary Source="/ZoDream.Spider;component/Themes/Input.xaml"/>
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>
