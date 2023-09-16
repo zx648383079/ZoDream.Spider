@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -69,6 +70,24 @@ namespace ZoDream.Spider.Programs
         public void EmitProgress(int step, int count)
         {
             Application.UrlProvider.EmitProgress(Url, step, count, true);
+        }
+
+        public async Task<string?> GetAsync(string url)
+        {
+            return await Application.RequestProvider.Getter().GetAsync(
+                new RequestData(url,
+                Application.Project.HeaderItems,
+                Application.ProxyProvider.Get(), 
+                Application.Project.GetHostMap(url)));
+        }
+        public async Task GetAsync(string fileName, string url)
+        {
+            await Application.RequestProvider.Downloader().GetAsync(
+            fileName,
+                new RequestData(url,
+                Application.Project.HeaderItems,
+                Application.ProxyProvider.Get(),
+                Application.Project.GetHostMap(url)));
         }
 
         public void SetAttribute(string name, string value)

@@ -39,5 +39,18 @@ namespace ZoDream.Shared.Interfaces
         public string RenderData(string content);
 
         public void EmitProgress(int step, int count);
+        /// <summary>
+        /// 获取页面内容
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public Task<string?> GetAsync(string url);
+        /// <summary>
+        /// 下载页面内容
+        /// </summary>
+        /// <param name="fileName">保存地址</param>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public Task GetAsync(string fileName, string url);
     }
 }

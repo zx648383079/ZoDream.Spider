@@ -88,8 +88,9 @@ namespace ZoDream.Spider.Pages
         }
 
         private bool IsRunning = false;
+        private RequestData? RequestData = null;
 
-        public IList<HeaderItem> HeaderItems { get; private set; }
+        public IList<HeaderItem>? HeaderItems { get; private set; }
 
         public event ConfirmEventHandler? OnConfirm;
 
@@ -106,7 +107,7 @@ namespace ZoDream.Spider.Pages
         public void NavigateUrl(string url)
         {
             url = UriRender.Render(url, SearchCb.SelectedIndex);
-            UrlTb.Text = url;
+            UrlTb.Text = RequestData is not null ? RequestData.GetUrlByHostMap(url) : url;
             Browser.Source = new Uri(url);
             IsLoading = true;
         }
@@ -161,10 +162,10 @@ namespace ZoDream.Spider.Pages
         {
             var cookie = await Browser.CoreWebView2.CookieManager.GetCookiesAsync(Browser.Source.ToString());
             HeaderItems = new List<HeaderItem> {
-                new HeaderItem("Accept", HttpAccept.Html),
-                new HeaderItem("Cookie", string.Join(';', cookie.Select(i => i.ToSystemNetCookie().ToString()))),
-                new HeaderItem("Referer", Browser.Source.ToString()),
-                new HeaderItem("User-Agent", HttpUserAgent.Chrome)
+                new("Accept", HttpAccept.Html),
+                new("Cookie", string.Join(';', cookie.Select(i => i.ToSystemNetCookie().ToString()))),
+                new("Referer", Browser.Source.ToString()),
+                new("User-Agent", HttpUserAgent.Chrome)
             };
             DialogResult = true;
         }
@@ -186,7 +187,20 @@ namespace ZoDream.Spider.Pages
             IsLoading = true;
             LoadSuccess = false;
             // 可以自定义请求头
-            // e.RequestHeaders.SetHeader();
+            if (RequestData is not null)
+            {
+                if (RequestData.Headers is not null)
+                {
+                    foreach (var item in RequestData.Headers)
+                    {
+                        e.RequestHeaders.SetHeader(item.Name, item.Value);
+                    }
+                }
+                if (RequestData.HostMap is not null && e.Uri.Contains(RequestData.HostMap.Ip))
+                {
+                    e.RequestHeaders.SetHeader("Host", RequestData.HostMap.Host);
+                }
+            }
         }
 
         private void Browser_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
@@ -200,7 +214,8 @@ namespace ZoDream.Spider.Pages
 
         private void Browser_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
         {
-            UrlTb.Text = Browser.Source.ToString();
+            var uri = Browser.Source;
+            UrlTb.Text = RequestData is not null ? RequestData.GetUrlByHostMap(uri) : uri.ToString();
         }
 
         private void Browser_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
@@ -329,15 +344,23 @@ namespace ZoDream.Spider.Pages
             });
         }
 
-        public Task<string?> GetAsync(string url, IList<HeaderItem> headers)
-        {
-            return GetAsync(url);
-        }
-
-        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, 
-            ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
+        public async Task<string?> GetAsync(RequestData request)
         {
             string? res;
+            RequestData = request;
+            var url = request.RealUrl;
+            var maxRetries = request.RetryCount;
+            if (request.Proxy is not null)
+            {
+                // 使用代理服务器
+                var options = new CoreWebView2EnvironmentOptions()
+                {
+                    AdditionalBrowserArguments = "--proxy-server=" + request.Proxy.ToString()
+                };
+                var env =
+                    await CoreWebView2Environment.CreateAsync(null, null, options);
+                await Browser.EnsureCoreWebView2Async(env);
+            }
             do
             {
                 res = await GetAsync(url);
@@ -346,8 +369,8 @@ namespace ZoDream.Spider.Pages
                     return res;
                 }
                 maxRetries--;
-                Thread.SpinWait(waitTime * 1000);
-            } while (maxRetries > 0 && waitTime > 0);
+                Thread.SpinWait(request.Timeout * 1000);
+            } while (maxRetries > 0 && request.Timeout > 0);
             return res;
         }
 

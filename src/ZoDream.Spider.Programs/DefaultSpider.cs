@@ -261,7 +261,12 @@ namespace ZoDream.Spider.Programs
             /**
              * TODO 使用 host 的方法：把 网址中的 host 替换为 ip 在请求头中设置 Host 为被替换的域名 
              */
-            var content = await RequestProvider.Getter().GetAsync(url.Source, Project.HeaderItems, ProxyProvider.Get());
+            var content = await RequestProvider.Getter().GetAsync(
+                    new RequestData(url.Source, 
+                    Project.HeaderItems, 
+                    ProxyProvider.Get(),
+                    Project.GetHostMap(url.Source))
+                );
             if (content == null)
             {
                 Logger?.Waining($"{url.Source} HTML EMPTY");

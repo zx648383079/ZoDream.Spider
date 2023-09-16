@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Loaders
 {
@@ -64,6 +66,27 @@ namespace ZoDream.Shared.Loaders
                 Write(sw);
                 return true;
             });
+        }
+
+        public HostItem? GetHostMap(string url)
+        {
+            if (HostItems.Count == 0)
+            {
+                return null;
+            }
+            var host = Html.MatchHost(url);
+            if (string.IsNullOrWhiteSpace(host))
+            {
+                return null;
+            }
+            foreach (var item in HostItems)
+            {
+                if (item.Host == host)
+                {
+                    return item;
+                }
+            }
+            return null;
         }
 
         public ProjectLoader()

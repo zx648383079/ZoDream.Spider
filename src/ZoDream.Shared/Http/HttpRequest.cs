@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Http
 {
@@ -14,25 +17,26 @@ namespace ZoDream.Shared.Http
             return new Client().GetAsync(url);
         }
 
-        public Task<string?> GetAsync(string url, IList<HeaderItem> headers)
-        {
-            return GetAsync(url, headers, null);
-        }
-
-
-        public async Task<string?> GetAsync(string url, IList<HeaderItem> headers, ProxyItem? proxy, int maxRetries = 1, int waitTime = 0)
+        public async Task<string?> GetAsync(RequestData request)
         {
             var client = new Client()
             {
-                MaxRetries = maxRetries,
-                RetryTime = waitTime,
+                MaxRetries = request.RetryCount,
+                RetryTime = request.Timeout,
             };
-            foreach (var item in headers)
+            if (request.Headers is not null)
             {
-                client.Headers.Add(item.Name, item.Value);
+                foreach (var item in request.Headers)
+                {
+                    client.Headers.Add(item.Name, item.Value);
+                }
             }
-            client.Proxy = proxy;
-            return await client.GetAsync(url);
+            if (request.HostMap is not null)
+            {
+                client.Headers.Add("Host", request.HostMap.Host);
+            }
+            client.Proxy = request.Proxy;
+            return await client.GetAsync(request.RealUrl);
         }
 
         public Task GetAsync(string file, string url)
@@ -40,19 +44,22 @@ namespace ZoDream.Shared.Http
             return new Client(url).SaveAsync(file); ;
         }
 
-        public Task GetAsync(string file, string url, IList<HeaderItem> headers)
+        public Task GetAsync(string file, RequestData request)
         {
-            return GetAsync(file, url, headers, null);
-        }
-
-        public Task GetAsync(string file, string url, IList<HeaderItem> headers, ProxyItem? proxy)
-        {
-            var client = new Client(url);
-            foreach (var item in headers)
+            var client = new Client();
+            if (request.Headers is not null)
             {
-                client.Headers.Add(item.Name, item.Value);
+                foreach (var item in request.Headers)
+                {
+                    client.Headers.Add(item.Name, item.Value);
+                }
             }
-            client.Proxy = proxy;
+            if (request.HostMap is not null)
+            {
+                client.Headers.Add("Host", request.HostMap.Host);
+            }
+            client.Proxy = request.Proxy;
+            client.Url = request.RealUrl;
             return client.SaveAsync(file);
         }
 

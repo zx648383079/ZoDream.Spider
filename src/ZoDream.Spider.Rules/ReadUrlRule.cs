@@ -47,9 +47,7 @@ namespace ZoDream.Spider.Rules
         {
             var spider = container.Application;
             spider.UrlProvider.EmitUpdate(url, UriCheckStatus.Doing);
-            var content = await spider.RequestProvider.Getter().GetAsync(url.Source,
-                spider.Project.HeaderItems,
-                spider.ProxyProvider.Get());
+            var content = await container.GetAsync(url.Source);
             if (content == null)
             {
                 spider.UrlProvider.EmitUpdate(url, UriCheckStatus.Done);

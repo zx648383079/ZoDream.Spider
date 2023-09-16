@@ -15,6 +15,16 @@ namespace ZoDream.Shared.Utils
             return new Uri(url).Host;
         }
 
+        public static string ReplaceHost(string url, string search, string replace)
+        {
+            var i = url.IndexOf(search);
+            if (i < 0 || i > 10)
+            {
+                return url;
+            }
+            return url.Substring(0, i) + replace + url.Substring(i + search.Length);
+        }
+
         public static string MatchTitle(string content)
         {
             if (string.IsNullOrEmpty(content))

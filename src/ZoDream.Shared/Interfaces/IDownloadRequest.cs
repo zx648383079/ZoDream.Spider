@@ -13,7 +13,6 @@ namespace ZoDream.Shared.Interfaces
     public interface IDownloadRequest
     {
         public Task GetAsync(string file, string url);
-        public Task GetAsync(string file, string url, IList<HeaderItem> headers);
-        public Task GetAsync(string file, string url, IList<HeaderItem> headers, ProxyItem? proxy);
+        public Task GetAsync(string file, RequestData request);
     }
 }

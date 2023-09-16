@@ -49,11 +49,9 @@ namespace ZoDream.Spider.Rules
         public async Task RenderAsync(ISpiderContainer container)
         {
             var file = container.Application.Storage.GetAbsolutePath(GetFileName(container.Url.Source));
-            await container.Application.RequestProvider.Downloader().GetAsync(
-                file, 
-                container.Url.Source,
-                container.Application.Project.HeaderItems,
-                container.Application.ProxyProvider.Get());
+            await container.GetAsync(
+                file,
+                container.Url.Source);
         }
     }
 }
