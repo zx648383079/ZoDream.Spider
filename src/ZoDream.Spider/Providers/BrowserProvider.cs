@@ -10,9 +10,11 @@ namespace ZoDream.Spider.Providers
         public BrowserProvider(ISpider spider)
         {
             Application = spider;
+            UseBrowser = spider.Project.UseBrowser;
         }
 
-        public bool SupportTask => !Application.Project.UseBrowser;
+        public bool UseBrowser { get; set; } = false;
+        public bool SupportTask => UseBrowser;
 
         public IDownloadRequest Downloader()
         {
@@ -21,7 +23,7 @@ namespace ZoDream.Spider.Providers
 
         public IRequest Getter()
         {
-            return Application.Project.UseBrowser ? App.ViewModel.BrowserRequest : new HttpRequest();
+            return UseBrowser ? App.ViewModel.BrowserRequest : new HttpRequest();
         }
     }
 }

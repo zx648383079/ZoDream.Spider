@@ -47,20 +47,28 @@
         </Grid>
 
         <ListBox x:Name="UrlListBox" Grid.Row="1" 
-                 ItemsSource="{Binding UrlItems}" HorizontalContentAlignment="Stretch">
+                 ItemsSource="{Binding UrlItems}" 
+                 SelectionChanged="UrlListBox_SelectionChanged"
+                 HorizontalContentAlignment="Stretch">
             <ListBox.ContextMenu>
-                <ContextMenu Visibility="{Binding IsNotEmpty, Converter={StaticResource BoolConverter}}">
-                    <MenuItem Header="任务">
+                <ContextMenu Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
+                    <MenuItem Header="任务" >
                         <MenuItem Header="编辑" Command="{Binding SettingCommand}"/>
                         <MenuItem Header="打开" Command="{Binding OpenCommand}"/>
                         <MenuItem Header="保存" Command="{Binding SaveCommand}"/>
                     </MenuItem>
                     <MenuItem Header="添加网址" Command="{Binding EntryCommand}"/>
                     <MenuItem Header="添加代理" Command="{Binding ProxyCommand}"/>
-                    <MenuItem Header="浏览器调试" 
-                              Command="{Binding BrowserCommand}"
-                              Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
-                    <MenuItem Header="删除" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
+                    <MenuItem Header="手动同步网址" Command="{Binding SyncUrlCommand}"/>
+                    <MenuItem Header="调试">
+                        <MenuItem Header="浏览器打开" 
+                              Command="{Binding BrowserOpenCommand}"/>
+                        <MenuItem Header="浏览器调试" 
+                                Command="{Binding BrowserTestCommand}"/>
+                        <MenuItem Header="Http调试" 
+                              Command="{Binding HttpTestCommand}"/>
+                    </MenuItem>
+                    <MenuItem Header="删除">
                         <MenuItem Header="选中" Command="{Binding DeleteSelectedCommand}"/>
                         <MenuItem Header="已完成" Command="{Binding DeleteDoneCommand}"/>
                         <MenuItem Header="全部" Command="{Binding ClearCommand}"/>
@@ -89,7 +97,6 @@
                         <TextBlock Grid.Column="1" Grid.Row="1" 
                                    Text="{Binding Path=Source}"
                                    Style="{StaticResource MetaLabelStyle}"/>
-                        
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

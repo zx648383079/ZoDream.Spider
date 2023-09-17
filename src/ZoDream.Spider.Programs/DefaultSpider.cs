@@ -236,6 +236,28 @@ namespace ZoDream.Spider.Programs
             UrlProvider.EmitUpdate(url, UriCheckStatus.Done);
         }
 
+        public async Task ExecuteAsync(UriItem url)
+        {
+            PausedChanged?.Invoke(Paused = false);
+            try
+            {
+                await RunTaskAsync(url);
+            }
+            catch (Exception ex)
+            {
+                Logger?.Error(ex.Message);
+            }
+            PausedChanged?.Invoke(Paused = true);
+        }
+
+        public RequestData GetRequestData(string url)
+        {
+            return new RequestData(url,
+                    Project.HeaderItems,
+                    ProxyProvider.Get(),
+                    Project.GetHostMap(url));
+        }
+
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
         {
             return new SpiderContainer(this, url, rules);
@@ -262,10 +284,7 @@ namespace ZoDream.Spider.Programs
              * TODO 使用 host 的方法：把 网址中的 host 替换为 ip 在请求头中设置 Host 为被替换的域名 
              */
             var content = await RequestProvider.Getter().GetAsync(
-                    new RequestData(url.Source, 
-                    Project.HeaderItems, 
-                    ProxyProvider.Get(),
-                    Project.GetHostMap(url.Source))
+                    GetRequestData(url.Source)
                 );
             if (content == null)
             {

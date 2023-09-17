@@ -49,6 +49,14 @@ namespace ZoDream.Shared.Interfaces
 
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules);
+
+        public RequestData GetRequestData(string url);
+        /// <summary>
+        /// 执行一条网址
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public Task ExecuteAsync(UriItem url);
         public Task InvokeAsync(string url, string html);
     }
 }

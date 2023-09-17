@@ -1,7 +1,9 @@
-﻿using Microsoft.Web.WebView2.Core;
+﻿using AngleSharp.Io;
+using Microsoft.Web.WebView2.Core;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -112,6 +114,15 @@ namespace ZoDream.Spider.Pages
             IsLoading = true;
         }
 
+        public async Task NavigateUrlAsync(string url, RequestData? request)
+        {
+            RequestData = request;
+            await AddProxyAsync(request?.Proxy);
+            Dispatcher.Invoke(() => {
+                NavigateUrl(url);
+            });
+        }
+
         private void UrlTb_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -218,7 +229,8 @@ namespace ZoDream.Spider.Pages
             UrlTb.Text = RequestData is not null ? RequestData.GetUrlByHostMap(uri) : uri.ToString();
         }
 
-        private void Browser_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        private void Browser_CoreWebView2InitializationCompleted(object sender, 
+            CoreWebView2InitializationCompletedEventArgs e)
         {
             var coreWebView = Browser.CoreWebView2;
             coreWebView.NewWindowRequested += CoreWebView2_NewWindowRequested;
@@ -261,6 +273,33 @@ namespace ZoDream.Spider.Pages
         private void StopBtn_Click(object sender, RoutedEventArgs e)
         {
             Browser.Stop();
+        }
+        /// <summary>
+        /// 设置代理服务器, 这一步必须放在浏览器初始化完成之前
+        /// </summary>
+        /// <param name="proxy"></param>
+        /// <returns></returns>
+        public async Task AddProxyAsync(object? proxy)
+        {
+            while (IsRunning)
+            {
+                Thread.Sleep(100);
+            }
+            var data = proxy?.ToString();
+            var options = new CoreWebView2EnvironmentOptions();
+            if (!string.IsNullOrWhiteSpace(data))
+            {
+                options.AdditionalBrowserArguments = "--proxy-server=" + data.ToString();
+            }
+            var env = await CoreWebView2Environment.CreateAsync(null, null, options);
+            try
+            {
+                await Browser.EnsureCoreWebView2Async(env);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
         }
 
         public Task<string?> GetAsync(string url)
@@ -310,7 +349,7 @@ namespace ZoDream.Spider.Pages
                 {
                     Thread.Sleep(100);
                 }
-                App.Current.Dispatcher.Invoke(() =>
+                Dispatcher.Invoke(() =>
                 {
                     action.Invoke();
                     IsRunning = true;
@@ -319,8 +358,8 @@ namespace ZoDream.Spider.Pages
                 {
                     Thread.Sleep(100);
                 }
-                Tout? res = default(Tout);// default(Tout);
-                App.Current.Dispatcher.Invoke(async () =>
+                Tout? res = default;// default(Tout);
+                Dispatcher.Invoke(async () =>
                 {
                     res = await func.Invoke();
                     IsRunning = false;
@@ -350,17 +389,7 @@ namespace ZoDream.Spider.Pages
             RequestData = request;
             var url = request.RealUrl;
             var maxRetries = request.RetryCount;
-            if (request.Proxy is not null)
-            {
-                // 使用代理服务器
-                var options = new CoreWebView2EnvironmentOptions()
-                {
-                    AdditionalBrowserArguments = "--proxy-server=" + request.Proxy.ToString()
-                };
-                var env =
-                    await CoreWebView2Environment.CreateAsync(null, null, options);
-                await Browser.EnsureCoreWebView2Async(env);
-            }
+            await AddProxyAsync(request.Proxy);
             do
             {
                 res = await GetAsync(url);

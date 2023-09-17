@@ -3,10 +3,12 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Routes;
+using ZoDream.Shared.Utils;
 using ZoDream.Shared.ViewModel;
 using ZoDream.Spider.Loggers;
 using ZoDream.Spider.Programs;
@@ -27,7 +29,10 @@ namespace ZoDream.Spider.ViewModels
             ProxyCommand = new RelayCommand(TapProxy);
             OpenCommand = new RelayCommand(TapOpen);
             SaveCommand = new RelayCommand(TapSave);
-            BrowserCommand = new RelayCommand(TapBrowser);
+            SyncUrlCommand = new RelayCommand(TapSyncUrl);
+            BrowserOpenCommand = new RelayCommand(TapBrowserOpen);
+            BrowserTestCommand = new RelayCommand(TapBrowserTest);
+            HttpTestCommand = new RelayCommand(TapHttpTest);
             DeleteDoneCommand = new RelayCommand(TapDeleteDone);
             DeleteSelectedCommand = new RelayCommand(TapDeleteSelected);
             ClearCommand = new RelayCommand(TapClear);
@@ -86,6 +91,9 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref urlItems, value);
         }
 
+        public UriLoadItem? SelectedItem { get; set; }
+        public UriLoadItem[]? SelectedItems { get; set; }
+
         public ICommand SettingCommand { get; private set; }
         public ICommand StartCommand { get; private set; }
         public ICommand PauseCommand { get; private set; }
@@ -94,7 +102,11 @@ namespace ZoDream.Spider.ViewModels
         public ICommand ProxyCommand { get; private set; }
         public ICommand OpenCommand { get; private set; }
         public ICommand SaveCommand { get; private set; }
-        public ICommand BrowserCommand { get; private set; }
+
+        public ICommand SyncUrlCommand {  get; private set; }
+        public ICommand BrowserOpenCommand { get; private set; }
+        public ICommand BrowserTestCommand { get; private set; }
+        public ICommand HttpTestCommand { get; private set; }
         public ICommand DeleteSelectedCommand { get; private set; }
         public ICommand DeleteDoneCommand { get; private set; }
         public ICommand ClearCommand { get; private set; }
@@ -118,6 +130,10 @@ namespace ZoDream.Spider.ViewModels
             if (Instance == null)
             {
                 return;
+            }
+            if (Instance.RequestProvider is BrowserProvider o)
+            {
+                o.UseBrowser = Instance.Project.UseBrowser;
             }
             Instance.Start();
         }
@@ -166,18 +182,61 @@ namespace ZoDream.Spider.ViewModels
             MessageBox.Show("保存成功");
         }
 
-        private void TapBrowser(object? _)
+        private void TapSyncUrl(object? _)
         {
-            if (!Paused)
+            if (Instance is null)
+            {
+                foreach (var item in App.ViewModel.Project!.EntryItems)
+                {
+                    foreach (var url in Html.GenerateUrl(item))
+                    {
+                        Add(url);
+                    }
+                }
+                return;
+            }
+            foreach (var item in Instance.UrlProvider)
+            {
+                Add(item);
+            }
+        }
+
+        private void TapBrowserOpen(object? _)
+        {
+            if (!Paused || SelectedItem is null)
             {
                 return;
             }
             var browser = App.ViewModel.BrowserRequest;
-            if (UrlItems.Count == 0)
+            _ = browser.NavigateUrlAsync(SelectedItem.Source, 
+                Instance?.GetRequestData(SelectedItem.Source));
+        }
+
+        private void TapBrowserTest(object? _)
+        {
+            TapTestSelected(true);
+        }
+
+        private void TapHttpTest(object? _)
+        {
+            TapTestSelected(false);
+        }
+
+        private void TapTestSelected(bool useBrowser)
+        {
+            if (!Paused || SelectedItem is null)
             {
                 return;
             }
-            browser.NavigateUrl(UrlItems[0].Source);
+            if (Instance is null)
+            {
+                return;
+            }
+            if (Instance.RequestProvider is BrowserProvider o)
+            {
+                o.UseBrowser = useBrowser;
+            }
+            _ = Instance.ExecuteAsync(new UriItem(SelectedItem));
         }
 
         private void TapDeleteSelected(object? _)
@@ -186,6 +245,14 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
+            if (SelectedItems is null) {
+                return;
+            }
+            foreach (var item in SelectedItems)
+            {
+                UrlItems.Remove(item);
+                Instance?.UrlProvider?.Remove(item.Source);
+            }
         }
 
         private void TapDeleteDone(object? _)
@@ -193,6 +260,15 @@ namespace ZoDream.Spider.ViewModels
             if (!Paused)
             {
                 return;
+            }
+            for (int i = UrlItems.Count - 1; i >= 0; i--)
+            {
+                var item = UrlItems[i];
+                if (item.Status == UriCheckStatus.Done)
+                {
+                    UrlItems.RemoveAt(i);
+                    Instance?.UrlProvider?.Remove(item.Source);
+                }
             }
         }
 
@@ -203,6 +279,39 @@ namespace ZoDream.Spider.ViewModels
                 return;
             }
             UrlItems.Clear();
+            Instance?.UrlProvider?.Clear();
+        }
+
+        public void Add(string url)
+        {
+            foreach (var item in UrlItems)
+            {
+                if (item.Source == url)
+                {
+                    return;
+                }
+            }
+            App.ViewModel.DispatcherQueue.Invoke(() => {
+                UrlItems.Add(new UriLoadItem(url));
+            });
+        }
+
+        public void Add(UriItem data)
+        {
+            foreach (var item in UrlItems)
+            {
+                if (item.Source == data.Source)
+                {
+                    App.ViewModel.DispatcherQueue.Invoke(() => {
+                        item.Title = data.Title;
+                        item.Status = data.Status;
+                    });
+                    return;
+                }
+            }
+            App.ViewModel.DispatcherQueue.Invoke(() => {
+                UrlItems.Add(new UriLoadItem(data));
+            });
         }
 
         public void Load()

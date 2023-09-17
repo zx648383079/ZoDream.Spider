@@ -82,5 +82,11 @@ namespace ZoDream.Spider.Pages
                 InfoTb.Visibility = Visibility.Collapsed;
             }
         }
+
+        private void UrlListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ViewModel.SelectedItem = e.AddedItems.Count > 0 ? e.AddedItems[0] as UriLoadItem : null;
+            ViewModel.SelectedItems = SelectedItems;
+        }
     }
 }
