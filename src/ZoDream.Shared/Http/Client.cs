@@ -269,7 +269,7 @@ namespace ZoDream.Shared.Http
 
         public async Task<Stream?> ReadStreamAsync()
         {
-            using var response = await ReadResponseAsync();
+            var response = await ReadResponseAsync();
             return await ReadStreamAsync(response);
         }
 
@@ -312,22 +312,20 @@ namespace ZoDream.Shared.Http
 
         public async Task<bool> SaveAsync(string file)
         {
-            using (var responseStream = await ReadStreamAsync())
+            using var responseStream = await ReadStreamAsync();
+            if (responseStream == null)
             {
-                if (responseStream == null)
+                return false;
+            }
+            using var stream = new FileStream(file, FileMode.Create);
+            var bArr = new byte[1024];
+            if (responseStream != null)
+            {
+                var size = responseStream.Read(bArr, 0, bArr.Length);
+                while (size > 0)
                 {
-                    return false;
-                }
-                using var stream = new FileStream(file, FileMode.Create);
-                var bArr = new byte[1024];
-                if (responseStream != null)
-                {
-                    var size = responseStream.Read(bArr, 0, bArr.Length);
-                    while (size > 0)
-                    {
-                        stream.Write(bArr, 0, size);
-                        size = responseStream.Read(bArr, 0, bArr.Length);
-                    }
+                    stream.Write(bArr, 0, size);
+                    size = responseStream.Read(bArr, 0, bArr.Length);
                 }
             }
             return true;

@@ -88,11 +88,16 @@
                         </Grid.RowDefinitions>
                         <ProgressBar Grid.Column="1" Grid.RowSpan="2" 
                                      Value="{Binding Progress}"
-                                     Visibility="{Binding Status,Converter={StaticResource ProgressCvt}}"/>
+                                     Visibility="{Binding Status,Converter={StaticResource ProgressCvt}}"
+                                     Foreground="LightBlue"
+                                     BorderThickness="0"
+                                     Background="Transparent"/>
                         <TextBlock Text="{Binding Status, Converter={StaticResource StatusIconCvt}}" 
                                Foreground="{Binding Status, Converter={StaticResource StatusColorCvt}}"
                                Grid.RowSpan="2"
-                               Style="{StaticResource IconLabel}"/>
+                               Style="{StaticResource IconLabel}" 
+                                   FontSize="20"
+                                   Margin="5,0"/>
                         <TextBlock Grid.Column="1" Text="{Binding Path=Title}" FontWeight="Bold" VerticalAlignment="Center"/>
                         <TextBlock Grid.Column="1" Grid.Row="1" 
                                    Text="{Binding Path=Source}"

@@ -21,7 +21,6 @@
         <Setter Property="FontFamily" Value="{DynamicResource IconFontFamily}"/>
         <Setter Property="HorizontalAlignment" Value="Center"/>
         <Setter Property="VerticalAlignment"  Value="Center"/>
-
     </Style>
     <Style x:Key="CenterTb" TargetType="TextBlock">
         <Setter Property="HorizontalAlignment" Value="Center"/>

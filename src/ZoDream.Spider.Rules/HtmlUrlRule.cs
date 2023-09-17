@@ -75,7 +75,6 @@ namespace ZoDream.Spider.Rules
 
         public void GetUrlFromCss(ISpiderContainer container, ref string html)
         {
-            var items = new List<string>();
             var matches = Regex.Matches(html, @"url\([""']?([^""'\s\<\>]*)[""']?\)", RegexOptions.IgnoreCase);
             foreach (Match item in matches)
             {

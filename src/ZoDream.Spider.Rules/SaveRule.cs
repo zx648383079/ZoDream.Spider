@@ -51,7 +51,7 @@ namespace ZoDream.Spider.Rules
         {
             var storage = container.Application.Storage;
             using (var fs = await storage.CreateStreamAsync(GetFileName(container.Url.Source)))
-            using (var writer = new StreamWriter(fs, Encoding.UTF8))
+            using (var writer = new StreamWriter(fs, new UTF8Encoding(false)))
             {
                 writer.BaseStream.Position = writer.BaseStream.Length;
                 writer.WriteLine();

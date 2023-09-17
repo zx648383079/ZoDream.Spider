@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
+using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Programs
 {
@@ -85,6 +86,7 @@ namespace ZoDream.Spider.Programs
         }
         public async Task GetAsync(string fileName, string url)
         {
+            Disk.CreateDirectory(fileName);
             await Application.RequestProvider.Downloader().GetAsync(
             fileName,
                 Application.GetRequestData(url));

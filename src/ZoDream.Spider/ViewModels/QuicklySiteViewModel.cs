@@ -68,11 +68,7 @@ namespace ZoDream.Spider.ViewModels
                 {
                     new RuleItem()
                     {
-                        Name = "提取默认链接",
-                    },
-                    new RuleItem()
-                    {
-                        Name = "本地保存"
+                        Name = "网页保存"
                     }
                 }
             });

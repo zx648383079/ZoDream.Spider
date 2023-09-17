@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
-using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Http
 {
@@ -66,6 +63,7 @@ namespace ZoDream.Shared.Http
             {
                 client.Headers.Add("Host", request.HostMap.Host);
             }
+            client.TimeOut = request.Timeout * 1000;
             client.Proxy = request.Proxy;
             client.Url = request.RealUrl;
             return client.SaveAsync(file);

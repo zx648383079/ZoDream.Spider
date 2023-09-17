@@ -276,6 +276,10 @@ namespace ZoDream.Spider.Programs
             {
                 items.Add(GetContainer(url, PluginLoader.Render(item.Rules, ref shouldPrepare)));
             }
+            //if (shouldPrepare && url.Type != UriType.Html && url.Type != UriType.Css && url.Type != UriType.Js)
+            //{
+            //    shouldPrepare = false;
+            //}
             if (!shouldPrepare)
             {
                 return items;

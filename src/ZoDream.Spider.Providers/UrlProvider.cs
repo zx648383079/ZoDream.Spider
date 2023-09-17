@@ -16,7 +16,7 @@ namespace ZoDream.Spider.Providers
             {
                 foreach (var url in Html.GenerateUrl(item))
                 {
-                    Add(url);
+                    Add(url, UriType.Html);
                 }
             }
         }
