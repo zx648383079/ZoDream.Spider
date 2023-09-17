@@ -18,9 +18,13 @@ namespace ZoDream.Shared.Models
 
         public HostItem? HostMap { get; set; }
         /// <summary>
+        /// 请求超时/s
+        /// </summary>
+        public int Timeout { get; set; } = 10;
+        /// <summary>
         /// 重试间隔时间(/s)
         /// </summary>
-        public int Timeout { get; set; } = 0;
+        public int RetryTime { get; set; } = 0;
         /// <summary>
         /// 重试次数
         /// </summary>

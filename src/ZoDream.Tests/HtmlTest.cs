@@ -22,5 +22,14 @@ namespace ZoDream.Tests
             var url = "//job.zodream.cn";
             Assert.AreEqual(Html.MatchHost(url), "job.zodream.cn");
         }
+
+
+        [TestMethod]
+        public void TestRelative()
+        {
+            var baseFile = "a\\css\\index.html";
+            var fileName = "a\\js\\css.js";
+            Assert.AreEqual(Html.PathToRelativeUri(baseFile, fileName), "../js/css.js");
+        }
     }
 }

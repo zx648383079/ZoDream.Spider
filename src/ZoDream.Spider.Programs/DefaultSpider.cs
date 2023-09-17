@@ -149,7 +149,7 @@ namespace ZoDream.Spider.Programs
                 while (!token.IsCancellationRequested)
                 {
                     #region 创建执行下载的线程数组
-                    var items = UrlProvider.GetItems(Project.MaxCount);
+                    var items = UrlProvider.GetItems(Project.ParallelCount);
                     var tasksLength = items.Count;
                     var tasks = new Task[tasksLength];
                     for (var i = 0; i < tasksLength; i++)

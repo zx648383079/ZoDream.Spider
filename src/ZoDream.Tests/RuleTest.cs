@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
 
 namespace ZoDream.Tests
@@ -12,6 +13,17 @@ namespace ZoDream.Tests
     [TestClass]
     public class RuleTest
     {
+        [TestMethod]
+        public void TestMatch()
+        {
+            var rule = new RuleGroupItem() {
+                MatchType = RuleMatchType.Host,
+                MatchValue = "zodream.cn",
+            };
+
+            Assert.IsFalse(rule.IsAllow("http://zodream.com/"));
+        }
+
         //[TestMethod]
         public void TestOne()
         {

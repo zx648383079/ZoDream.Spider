@@ -187,13 +187,13 @@ namespace ZoDream.Spider.Plugins
                 return;
             }
             var info = instance.Info();
-            var isSaver = instance is not IRuleSaver;
+            var isSaver = instance is IRuleSaver;
             PluginItems.Add(info.Name, new PluginItem(info)
             {
                 Callback = rule,
                 FileName = fileName,
-                ShouldPrepare = isSaver || (instance as IRuleSaver)!.ShouldPrepare,
-                CanNext = isSaver || (instance as IRuleSaver)!.CanNext,
+                ShouldPrepare = isSaver && (instance as IRuleSaver)!.ShouldPrepare,
+                CanNext = isSaver && (instance as IRuleSaver)!.CanNext,
                 IsSaver = isSaver
             });
         }

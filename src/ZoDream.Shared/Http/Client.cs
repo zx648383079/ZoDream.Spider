@@ -210,7 +210,7 @@ namespace ZoDream.Shared.Http
             {
                 if (response == null || response.StatusCode != HttpStatusCode.OK)
                 {
-                    return default(T);
+                    return default;
                 }
                 return await func.Invoke(response);
             }

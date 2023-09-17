@@ -22,7 +22,8 @@ namespace ZoDream.Shared.Http
             var client = new Client()
             {
                 MaxRetries = request.RetryCount,
-                RetryTime = request.Timeout,
+                RetryTime = request.RetryTime,
+                TimeOut = request.Timeout * 1000,
             };
             if (request.Headers is not null)
             {
@@ -36,7 +37,14 @@ namespace ZoDream.Shared.Http
                 client.Headers.Add("Host", request.HostMap.Host);
             }
             client.Proxy = request.Proxy;
-            return await client.GetAsync(request.RealUrl);
+            try
+            {
+                return await client.GetAsync(request.RealUrl);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public Task GetAsync(string file, string url)

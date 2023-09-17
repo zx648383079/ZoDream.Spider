@@ -1,9 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Shared.Loaders
 {
@@ -111,10 +107,12 @@ namespace ZoDream.Shared.Loaders
 
         private void WriteOption(StreamWriter writer)
         {
-            writer.WriteLine($"count: {MaxCount}");
-            writer.WriteLine($"timeout: {TimeOut}");
-            writer.WriteLine("browser: " + (UseBrowser ? 'Y' : 'N'));
-            writer.WriteLine($"folder: {WorkFolder}");
+            writer.WriteLine($"{nameof(ParallelCount)}: {ParallelCount}");
+            writer.WriteLine($"{nameof(RetryCount)}: {RetryCount}");
+            writer.WriteLine($"{nameof(RetryTime)}: {RetryTime}");
+            writer.WriteLine($"{nameof(TimeOut)}: {TimeOut}");
+            writer.WriteLine($"{nameof(UseBrowser)}: " + (UseBrowser ? 'Y' : 'N'));
+            writer.WriteLine($"{nameof(Workspace)}: {Workspace}");
         }
     }
 }

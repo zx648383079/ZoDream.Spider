@@ -2,7 +2,7 @@
 
 namespace ZoDream.Shared.Models
 {
-    public class UriLoadItem: BindableBase
+    public class UriLoadItem : BindableBase
     {
         private string title = string.Empty;
 
@@ -63,6 +63,11 @@ namespace ZoDream.Shared.Models
                 return item.Source == Source;
             }
             return base.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public UriLoadItem()

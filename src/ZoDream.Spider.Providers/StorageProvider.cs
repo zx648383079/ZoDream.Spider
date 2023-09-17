@@ -18,6 +18,8 @@ namespace ZoDream.Spider.Providers
             BaseFolder = AppDomain.CurrentDomain.BaseDirectory;
         }
 
+        private readonly char Separator = '\\';
+
         public ISpider Application { get; set; }
 
         public string BaseFolder { get; set; }
@@ -48,20 +50,20 @@ namespace ZoDream.Spider.Providers
             get
             {
                 var option = Application.Project;
-                if (string.IsNullOrWhiteSpace(option.WorkFolder) || option.WorkFolder == "\\")
+                if (string.IsNullOrWhiteSpace(option.Workspace) || option.Workspace == Separator.ToString())
                 {
-                    return BaseFolder + '\\';
+                    return BaseFolder + Separator;
                 }
-                var fileName = option.WorkFolder;
-                if (option.WorkFolder.IndexOf(":\\", StringComparison.Ordinal) < 0)
+                var fileName = option.Workspace;
+                if (option.Workspace.IndexOf(":\\", StringComparison.Ordinal) < 0)
                 {
-                    fileName = BaseFolder + '\\' + option.WorkFolder.TrimStart('\\');
+                    fileName = BaseFolder + Separator + option.Workspace.TrimStart(Separator);
                 }
-                if (fileName.EndsWith("\\"))
+                if (fileName.EndsWith(Separator.ToString()))
                 {
                     return fileName;
                 }
-                return fileName + '\\';
+                return fileName + Separator;
             }
         }
 
@@ -136,9 +138,14 @@ namespace ZoDream.Spider.Providers
         {
             if (fileName.IndexOf(":\\", StringComparison.Ordinal) < 0)
             {
-                return fileName.TrimStart('\\');
+                return fileName.TrimStart(Separator);
             }
             return new Uri(fileName).MakeRelativeUri(new Uri(FullWorkFolder)).ToString();
+        }
+
+        public string GetRelativePath(string baseFileName, string fileName)
+        {
+            return Html.PathToRelativeUri(baseFileName, fileName);
         }
     }
 }

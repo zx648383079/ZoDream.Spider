@@ -14,14 +14,24 @@ namespace ZoDream.Shared.Loaders
     {
 
         public string FileName { get; set; } = string.Empty;
-
-        public int MaxCount { get; set; } = 1;
+        /// <summary>
+        /// 并发数
+        /// </summary>
+        public int ParallelCount { get; set; } = 1;
+        /// <summary>
+        /// 重试次数
+        /// </summary>
+        public int RetryCount { get; set; } = 1;
+        /// <summary>
+        /// 重试间隔时间(/s)
+        /// </summary>
+        public int RetryTime { get; set; } = 0;
         public int TimeOut { get; set; } = 60;
         public bool UseBrowser { get; set; } = false;
         /// <summary>
         /// 工作目录
         /// </summary>
-        public string WorkFolder { get; set; } = string.Empty;
+        public string Workspace { get; set; } = string.Empty;
 
         public List<HeaderItem> HeaderItems { get; set; } = new();
 

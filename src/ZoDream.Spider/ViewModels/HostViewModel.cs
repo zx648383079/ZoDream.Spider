@@ -83,7 +83,7 @@ namespace ZoDream.Spider.ViewModels
                 }
                 var args = line.Split(new char[] { ' ' }, 2);
                 var ip = args[0].Trim();
-                var host = args[2].Trim();
+                var host = args[1].Trim();
                 if (string.IsNullOrWhiteSpace(ip) || 
                     string.IsNullOrWhiteSpace(host))
                 {

@@ -86,7 +86,7 @@ namespace ZoDream.Spider.BookCrawlerRule
                 return null;
             }
             var waitTime = 2000;
-            if (Container == null)
+            if (TaskContainer == null)
             {
                 var client = new Client()
                 {
@@ -97,8 +97,7 @@ namespace ZoDream.Spider.BookCrawlerRule
             }
             else
             {
-                return await Container.RequestProvider.Getter()
-                .GetAsync(url, Container.Project.HeaderItems, Container.ProxyProvider.Get(), MaxRetries, waitTime);
+                return await TaskContainer.GetAsync(url);
             }
         }
 

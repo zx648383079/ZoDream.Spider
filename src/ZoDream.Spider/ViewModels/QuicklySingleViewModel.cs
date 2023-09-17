@@ -59,7 +59,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            var project = new ProjectLoader(picker.FileName) { WorkFolder = Workspace };
+            var project = new ProjectLoader(picker.FileName) { Workspace = Workspace };
             project.EntryItems.Add(InputEntry);
             project.RuleItems.Add(new RuleGroupItem()
             {

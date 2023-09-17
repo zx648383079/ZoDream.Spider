@@ -26,7 +26,12 @@ namespace ZoDream.Shared.Utils
             //m.Groups[5].Value 参数 
             //m.Groups[6].Value #id部分
             var fileName = m.Groups[3].Value;
-            var ext = string.IsNullOrEmpty(m.Groups[4].Value) ? ".html" : m.Groups[4].Value;
+            var pageExt = m.Groups[4].Value.ToLower();
+            var ext = pageExt switch
+            {
+                ".asp" or ".aspx" or ".php" => ".html",
+                 _ => pageExt
+            };
             if (!string.IsNullOrEmpty(m.Groups[5].Value))
             {
                 fileName = GetFileName(m.Groups[3].Value) + ext;
@@ -57,20 +62,20 @@ namespace ZoDream.Shared.Utils
             return fileName;
         }
 
-        public static void CreateDirectory(string filefullpath)
+        public static void CreateDirectory(string fileName)
         {
-            if (File.Exists(filefullpath))
+            if (File.Exists(fileName))
             {
                 return;
             }
             //判断路径中的文件夹是否存在
-            var dirpath = filefullpath.Substring(0, filefullpath.LastIndexOf('\\'));
-            var pathes = dirpath.Split('\\');
-            if (pathes.Length <= 1) return;
-            var path = pathes[0];
-            for (var i = 1; i < pathes.Length; i++)
+            var fileFolder = fileName.Substring(0, fileName.LastIndexOf('\\'));
+            var pathItems = fileFolder.Split('\\');
+            if (pathItems.Length <= 1) return;
+            var path = pathItems[0];
+            for (var i = 1; i < pathItems.Length; i++)
             {
-                path += "\\" + pathes[i];
+                path += "\\" + pathItems[i];
                 if (!Directory.Exists(path))
                 {
                     Directory.CreateDirectory(path);

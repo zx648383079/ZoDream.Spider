@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
-using ZoDream.Shared.Rules.Values;
 using ZoDream.Shared.Storage;
-using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Programs
 {
@@ -35,21 +31,31 @@ namespace ZoDream.Spider.Programs
 
         public IEnumerable<string> AttributeKeys => MapItems.Keys;
 
+        private string? saveFileName;
+
+        public string SaveFileName {
+            get {
+                saveFileName ??= Application.RuleProvider.GetFileName(Url.Source);
+                return saveFileName;
+            }
+        }
+
+
         public string AddUri(string uri, UriType uriType)
         {
             var fromUri = new Uri(Url.Source);
             var toUri = new Uri(fromUri, uri);
             var fullUri = toUri.ToString();
             var relativeUri = fromUri.MakeRelativeUri(toUri);
-            if (Application.RuleProvider.Cannable(fullUri))
+            if (!Application.RuleProvider.Cannable(fullUri))
             {
                 return Uri.UnescapeDataString(relativeUri.ToString());
             }
             Application.UrlProvider.Add(fullUri, uriType);
-            var saveFileName = Application.RuleProvider.GetFileName(uri);
+            var saveFileName = Application.RuleProvider.GetFileName(fullUri);
             if (!string.IsNullOrEmpty(saveFileName))
             {
-                return Application.Storage.GetRelativePath(saveFileName);
+                return Application.Storage.GetRelativePath(SaveFileName, saveFileName);
             }
             return Uri.UnescapeDataString(relativeUri.ToString());
         }

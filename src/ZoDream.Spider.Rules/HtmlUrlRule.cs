@@ -46,12 +46,12 @@ namespace ZoDream.Spider.Rules
             var matches = Regex.Matches(html, @"(\<(a|img|link|script|embed|audio|object|video|param|source|iframe)[^\<\>]+(src|href|value|data)\s?=)\s?[""']?([^""'\s\<\>]*)[""']?", RegexOptions.IgnoreCase);
             foreach (Match item in matches)
             {
-                var url = item.Groups[4].Value;
-                if (string.IsNullOrEmpty(url)
-                    || url.IndexOf("javascript:", StringComparison.Ordinal) >= 0
-                    || url.IndexOf("#", StringComparison.Ordinal) == 0
-                    || url.IndexOf("data:", StringComparison.OrdinalIgnoreCase) >= 0
-                    || url.IndexOf("ed2k://", StringComparison.OrdinalIgnoreCase) >= 0)
+                var originalUrl = item.Groups[4].Value;
+                if (string.IsNullOrEmpty(originalUrl)
+                    || originalUrl.IndexOf("javascript:", StringComparison.Ordinal) >= 0
+                    || originalUrl.IndexOf("#", StringComparison.Ordinal) == 0
+                    || originalUrl.IndexOf("data:", StringComparison.OrdinalIgnoreCase) >= 0
+                    || originalUrl.IndexOf("ed2k://", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     continue;
                 }
@@ -64,8 +64,12 @@ namespace ZoDream.Spider.Rules
                     "script" => UriType.Js,
                     _ => UriType.File,
                 };
-                var uri = container.AddUri(url, uriType);
-                html = html.Replace(item.Value, item.Value.Replace(item.Groups[4].Value, uri));  // 需要相对路径
+                var uri = container.AddUri(originalUrl, uriType);
+                if (originalUrl == uri)
+                {
+                    continue;
+                }
+                html = html.Replace(item.Value, item.Value.Replace(originalUrl, uri));  // 需要相对路径
             }
         }
 

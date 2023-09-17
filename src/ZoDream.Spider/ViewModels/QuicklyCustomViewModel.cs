@@ -148,7 +148,7 @@ namespace ZoDream.Spider.ViewModels
             }
             var project = new ProjectLoader(picker.FileName)
             {
-                WorkFolder = Workspace,
+                Workspace = Workspace,
                 RuleItems = GroupItems.ToList(),
                 HeaderItems = HeaderItems.ToList(),
                 ProxyItems = ProxyItems.Select(i => i.Url).ToList(),

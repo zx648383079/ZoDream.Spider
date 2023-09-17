@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ZoDream.Shared.Utils
@@ -13,6 +14,41 @@ namespace ZoDream.Shared.Utils
                 return url.Split('/')[0];
             }
             return new Uri(url).Host;
+        }
+
+        public static string PathToRelativeUri(string baseFileName, string fileName)
+        {
+            var separator = '\\';
+            var baseItems = baseFileName.Split(separator);
+            if (baseItems.Length <= 1 )
+            {
+                return fileName.Replace(separator, '/');
+            }
+            var fileItems = fileName.Split(separator);
+            var minIndex = Math.Min(baseItems.Length, fileItems.Length) - 2;
+            var i = 0;
+            for (; i <= minIndex; i++)
+            {
+                if (baseItems[i] == fileItems[i])
+                {
+                    continue;
+                }
+                break;
+            }
+            var sb = new StringBuilder();
+            for (var j = i; j < baseItems.Length - 1; j++)
+            {
+                sb.Append("../");
+            }
+            for (int j = i; j < fileItems.Length; j++)
+            {
+                if (j > i)
+                {
+                    sb.Append("/");
+                }
+                sb.Append(fileItems[j]);
+            }
+            return sb.ToString();
         }
 
         public static string ReplaceHost(string url, string search, string replace)

@@ -48,6 +48,7 @@ namespace ZoDream.Shared.Interfaces
 
         public string GetAbsolutePath(string fileName);
         public string GetRelativePath(string fileName);
+        public string GetRelativePath(string baseFileName, string fileName);
 
 
     }

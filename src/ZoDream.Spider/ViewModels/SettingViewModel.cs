@@ -21,17 +21,38 @@ namespace ZoDream.Spider.ViewModels
         private bool IsProjectUpdated = false;
         private bool IsSettingUpdated = false;
 
-        private int maxCount = 1;
+        private int parallelCount = 1;
 
-        public int MaxCount {
-            get => maxCount;
+        public int ParallelCount {
+            get => parallelCount;
             set {
-                Set(ref maxCount, value);
+                Set(ref parallelCount, value);
                 IsProjectUpdated = true;
             }
         }
 
-        private int timeOut = 60;
+
+        private int retryCount = 1;
+
+        public int RetryCount {
+            get => retryCount;
+            set {
+                Set(ref retryCount, value);
+                IsProjectUpdated = true;
+            }
+        }
+
+        private int retryTime = 0;
+
+        public int RetryTime {
+            get => retryCount;
+            set {
+                Set(ref retryTime, value);
+                IsProjectUpdated = true;
+            }
+        }
+
+        private int timeOut = 10;
 
         public int TimeOut {
             get => timeOut;
@@ -141,10 +162,12 @@ namespace ZoDream.Spider.ViewModels
             var project = App.ViewModel.Project;
             if (project is not null)
             {
-                MaxCount = project.MaxCount;
+                ParallelCount = project.ParallelCount;
+                RetryCount = project.RetryCount;
+                RetryTime = project.RetryTime;
                 TimeOut = project.TimeOut;
                 UseBrowser = project.UseBrowser;
-                Workspace = project.WorkFolder;
+                Workspace = project.Workspace;
             }
             var option = App.ViewModel.Option;
             IsLogVisible = option.IsLogVisible;
@@ -159,10 +182,12 @@ namespace ZoDream.Spider.ViewModels
                 var project = App.ViewModel.Project;
                 if (project is not null)
                 {
-                    project.MaxCount = MaxCount;
+                    project.ParallelCount = ParallelCount;
+                    project.RetryCount = RetryCount;
+                    project.RetryTime = RetryTime;
                     project.TimeOut = TimeOut;
                     project.UseBrowser = UseBrowser;
-                    project.WorkFolder = Workspace;
+                    project.Workspace = Workspace;
                     project.SaveAsync();
                 }
             }
@@ -171,7 +196,7 @@ namespace ZoDream.Spider.ViewModels
                 var option = App.ViewModel.Option;
                 option.IsLogVisible = IsLogVisible;
                 option.IsLogTime = IsLogTime;
-                App.ViewModel.SaveOptionAsync();
+                _ = App.ViewModel.SaveOptionAsync();
             }
         }
     }

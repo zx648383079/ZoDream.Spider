@@ -180,19 +180,25 @@ namespace ZoDream.Shared.Loaders
                 }
                 var args = line.Split(new char[] { ':' }, 2);
                 var name = args[0].Trim();
-                switch (name.ToLower())
+                switch (name)
                 {
-                    case "count":
-                        MaxCount = int.Parse(args[1].Trim());
+                    case nameof(ParallelCount):
+                        ParallelCount = int.Parse(args[1].Trim());
                         break;
-                    case "timeout":
+                    case nameof(RetryCount):
+                        RetryCount = int.Parse(args[1].Trim());
+                        break;
+                    case nameof(RetryTime):
+                        RetryTime = int.Parse(args[1].Trim());
+                        break;
+                    case nameof(TimeOut):
                         TimeOut = int.Parse(args[1].Trim());
                         break;
-                    case "browser":
+                    case nameof(UseBrowser):
                         UseBrowser = args[1].Trim().ToUpper() == "Y";
                         break;
-                    case "folder":
-                        WorkFolder = args[1].Trim();
+                    case nameof(Workspace):
+                        Workspace = args[1].Trim();
                         break;
                     default:
                         break;
