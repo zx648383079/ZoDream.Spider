@@ -10,13 +10,14 @@ using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Utils;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ZoDream.Spider.Rules
 {
     public class PageSaveRule : IRule, IRuleSaver
     {
         private string FileName = string.Empty;
+
+        private bool UseContentType = false;
         public PluginInfo Info()
         {
             return new PluginInfo("网页保存");
@@ -29,11 +30,13 @@ namespace ZoDream.Spider.Rules
         {
             return new IFormInput[] {
                 Input.Text(nameof(FileName), "保存地址"),
+                Input.Text(nameof(UseContentType), "开启内容判断(不支持浏览器)"),
             };
         }
         public void Ready(RuleItem option)
         {
             FileName = option.Get<string>(nameof(FileName)) ?? string.Empty;
+            UseContentType = option.Get<bool>(nameof(UseContentType));
         }
         public string GetFileName(string url)
         {
@@ -57,6 +60,11 @@ namespace ZoDream.Spider.Rules
 
         public async Task RenderAsync(ISpiderContainer container)
         {
+            if (UseContentType)
+            {
+                await SaveWithContentTypeAsync(container);
+                return;
+            }
             await SaveWithTypeAsync(container);
         }
         /// <summary>
