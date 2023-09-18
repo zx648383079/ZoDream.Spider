@@ -15,6 +15,8 @@ namespace ZoDream.Shared.Interfaces
 
         public PluginInfo Info();
 
+        public IFormInput[]? Form();
+
         public void Ready(RuleItem option);
 
         public Task RenderAsync(ISpiderContainer container);

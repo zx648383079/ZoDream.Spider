@@ -1,6 +1,6 @@
 using System;
-using System.IO;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
@@ -10,7 +10,7 @@ namespace ZoDream.Spider.TextSpotRule
 {
     public class Ruler : IRule, IRuleSaver
     {
-        private string tag = string.Empty;
+        private string Tag = string.Empty;
 
         public bool ShouldPrepare => false;
 
@@ -26,9 +26,14 @@ namespace ZoDream.Spider.TextSpotRule
             return new PluginInfo("½ØÍ¼Ê¶±ð");
         }
 
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] { Input.Text(nameof(Tag), "Ñ¡ÔñÆ÷", true) };
+        }
+
         public void Ready(RuleItem option)
         {
-            tag = option.Param1.Trim();
+            Tag = option.Get<string>(nameof(Tag)) ?? string.Empty;
         }
 
         public async Task RenderAsync(ISpiderContainer container)
@@ -36,7 +41,7 @@ namespace ZoDream.Spider.TextSpotRule
             var script = await LocationStorage.ReadAsync(AppDomain.CurrentDomain.BaseDirectory + "\\html2canvas.js");
             var base64 = await container.Application.RequestProvider.Getter()
                 .ExecuteScriptAsync(container.Url.Source,
-                script + ";html2canvas(document.querySelector('" + tag 
+                script + ";html2canvas(document.querySelector('" + Tag 
                 + "')).then(function(canvas) {zreSpider.Callback(canvas.toDataURL('image/png'))});"
             );
             if (base64 == null)
@@ -45,7 +50,7 @@ namespace ZoDream.Spider.TextSpotRule
             }
             if (base64.StartsWith("data:image/png;base64,"))
             {
-                base64 = base64.Substring(22);
+                base64 = base64[22..];
             }
             var data = Convert.FromBase64String(base64);
             var file = Disk.RenderFile(container.Url.Source) + ".png";

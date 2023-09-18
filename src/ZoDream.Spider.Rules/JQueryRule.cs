@@ -3,6 +3,7 @@ using AngleSharp.Dom;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
@@ -11,20 +12,27 @@ namespace ZoDream.Spider.Rules
 {
     public class JQueryRule : IRule
     {
-        private string tag = string.Empty;
-        private string tagFunc = "";
+        private string Tag = string.Empty;
+        private string TagFunc = "";
 
         public PluginInfo Info()
         {
             return new PluginInfo("JQuery查询");
         }
 
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] { 
+                Input.Text(nameof(Tag), "选择器"),
+                Input.Text(nameof(TagFunc), "属性"),
+            };
+        }
         public void Ready(RuleItem option)
         {
-            tag = option.Param1.Trim();
-            var v = option.Param2.Trim().ToUpper();
-            tagFunc = v != "0" && v != "F" && v != "N" && v != "FALSE" ? "html" : "text";
-            SplitTag(ref tag, ref tagFunc);
+            Tag = option.Get<string>(nameof(Tag)) ?? string.Empty;
+            var v = option.Get<string>(nameof(TagFunc))?.Trim().ToUpper();
+            TagFunc = v != "0" && v != "F" && v != "N" && v != "FALSE" ? "html" : "text";
+            SplitTag(ref Tag, ref TagFunc);
         }
 
         public async Task RenderAsync(ISpiderContainer container)
@@ -34,14 +42,14 @@ namespace ZoDream.Spider.Rules
             foreach (var item in container.Data)
             {
                 var doc = await context.OpenAsync(req => req.Content(item.ToString()));
-                var nodes = doc.QuerySelectorAll(tag);
+                var nodes = doc.QuerySelectorAll(Tag);
                 if (nodes == null || nodes.Length == 0)
                 {
                     return;
                 }
                 foreach (var node in nodes)
                 {
-                    items.Add(new RuleString(FormatNode(node, tagFunc)));
+                    items.Add(new RuleString(FormatNode(node, TagFunc)));
                 }
             }
             container.Data = new RuleArray(items);
@@ -73,7 +81,7 @@ namespace ZoDream.Spider.Rules
                     return node.InnerHtml;
                 default:
                     var res = node.GetAttribute(func);
-                    return res == null ? string.Empty : res;
+                    return res ?? string.Empty;
             }
         }
     }

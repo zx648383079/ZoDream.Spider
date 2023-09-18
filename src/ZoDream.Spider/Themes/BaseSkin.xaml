@@ -32,6 +32,14 @@
     <Style x:Key="CaptionTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="16"/>
     </Style>
+    <Style x:Key="InputHeaderStyle" TargetType="TextBlock">
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,10,0,0"/>
+    </Style>
+    <Style x:Key="InputEntryStyle" TargetType="TextBox">
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="MaxLines" Value="1"/>
+    </Style>
     <Style x:Key="MetaLabelStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="13"/>
         <Setter Property="Foreground" Value="Gray"/>

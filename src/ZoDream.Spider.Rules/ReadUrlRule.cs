@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 
@@ -10,21 +8,29 @@ namespace ZoDream.Spider.Rules
 {
     public class ReadUrlRule : IRule
     {
-        private string name = string.Empty;
+        private string? Name;
 
         public PluginInfo Info()
         {
             return new PluginInfo("载入二级页面");
         }
 
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] {
+                Input.Text(nameof(Name), "属性名"),
+            };
+        }
+
         public void Ready(RuleItem option)
         {
-            name = option.Param1.Trim();
+            Name = option.Get<string>(nameof(Name));
         }
 
         public async Task RenderAsync(ISpiderContainer container)
         {
-            var uri = string.IsNullOrWhiteSpace(name) ? container.Data.ToString() : container.GetAttribute(name);
+            var uri = string.IsNullOrWhiteSpace(Name) ? container.Data.ToString() : 
+                container.GetAttribute(Name);
             if (string.IsNullOrWhiteSpace(uri) || uri.Length > 500)
             {
                 await container.NextAsync();

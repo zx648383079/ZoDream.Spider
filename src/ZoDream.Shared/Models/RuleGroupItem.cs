@@ -9,6 +9,10 @@ namespace ZoDream.Shared.Models
 {
     public class RuleGroupItem
     {
+        /// <summary>
+        /// 规则组命名，可以为空
+        /// </summary>
+        public string Name { get; set; } = string.Empty;
         public RuleMatchType MatchType { get; set; } = RuleMatchType.All;
 
         public string MatchValue { get; set; } = string.Empty;

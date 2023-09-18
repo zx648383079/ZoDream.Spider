@@ -61,7 +61,7 @@ namespace ZoDream.Spider.Controls
             DependencyProperty.Register("Filter", typeof(string), typeof(FileInput), new PropertyMetadata(string.Empty));
 
 
-
+        public event RoutedPropertyChangedEventHandler<string>? FileChanged;
 
         private void OpenBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -89,7 +89,9 @@ namespace ZoDream.Spider.Controls
                 {
                     return;
                 }
+                var oldVal = FileName;
                 FileName = file;
+                FileChanged?.Invoke(this, new RoutedPropertyChangedEventArgs<string>(oldVal, FileName));
             }
         }
 
@@ -104,7 +106,9 @@ namespace ZoDream.Spider.Controls
             {
                 return;
             }
+            var oldVal = FileName;
             FileName = folder.SelectedPath;
+            FileChanged?.Invoke(this, new RoutedPropertyChangedEventArgs<string>(oldVal, FileName));
         }
 
         private void OpenFile()
@@ -121,7 +125,9 @@ namespace ZoDream.Spider.Controls
             {
                 return;
             }
+            var oldVal = FileName;
             FileName = picker.FileName;
+            FileChanged?.Invoke(this, new RoutedPropertyChangedEventArgs<string>(oldVal, FileName));
         }
     }
 }

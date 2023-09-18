@@ -26,7 +26,6 @@ namespace ZoDream.Spider.ViewModels
             HeaderDeleteCommand = new RelayCommand(TapHeaderDelete);
             HeaderDialogConfirmCommand = new RelayCommand(TapHeaderDialogConfirm);
             RuleDeleteCommand = new RelayCommand(TapRuleDelete);
-            RuleDialogConfirmCommand = new RelayCommand(TapRuleDialogConfirm);
             RuleAddCommand = new RelayCommand(TapRuleAdd);
             RuleConfirmCommand = new RelayCommand(TapRuleConfirm);
             RuleDeleteCommand = new RelayCommand(TapRuleDelete);

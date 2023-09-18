@@ -1,5 +1,7 @@
-﻿using System.Text;
+﻿using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
@@ -8,16 +10,20 @@ namespace ZoDream.Spider.Rules
 {
     public class JoinRule : IRule
     {
-        private string joinLink = string.Empty;
+        private string? Separator;
 
         public PluginInfo Info()
         {
             return new PluginInfo("合并字符串");
         }
 
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] { Input.Text(nameof(Separator), "连接符") };
+        }
         public void Ready(RuleItem option)
         {
-            joinLink = option.Param1;
+            Separator = option.Get<string>(nameof(Separator));
         }
 
         public async Task RenderAsync(ISpiderContainer container)
@@ -32,7 +38,7 @@ namespace ZoDream.Spider.Rules
                     i++;
                     if (i < 2)
                     {
-                        sb.Append(joinLink);
+                        sb.Append(Separator);
                     }
                     sb.Append(item.ToString());
                 }

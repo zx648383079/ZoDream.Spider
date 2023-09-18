@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Utils;
@@ -16,7 +17,6 @@ namespace ZoDream.Spider.Rules
     public class PageSaveRule : IRule, IRuleSaver
     {
         private string FileName = string.Empty;
-        private string Template = string.Empty;
         public PluginInfo Info()
         {
             return new PluginInfo("网页保存");
@@ -24,10 +24,16 @@ namespace ZoDream.Spider.Rules
 
         public bool ShouldPrepare { get; } = false;
         public bool CanNext { get; } = false;
+
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] {
+                Input.Text(nameof(FileName), "保存地址"),
+            };
+        }
         public void Ready(RuleItem option)
         {
-            FileName = option.Param1.Trim();
-            Template = option.Param2.Trim();
+            FileName = option.Get<string>(nameof(FileName)) ?? string.Empty;
         }
         public string GetFileName(string url)
         {

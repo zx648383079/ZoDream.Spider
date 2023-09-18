@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Utils;
@@ -13,8 +14,8 @@ namespace ZoDream.Spider.Rules
 {
     public class SaveRule : IRule, IRuleSaver
     {
-        private string fileName = string.Empty;
-        private string template = string.Empty;
+        private string FileName = string.Empty;
+        private string Template = string.Empty;
         public PluginInfo Info()
         {
             return new PluginInfo("本地保存");
@@ -22,20 +23,29 @@ namespace ZoDream.Spider.Rules
 
         public bool ShouldPrepare { get; } = true;
         public bool CanNext { get; } = true;
+
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] {
+                Input.File(nameof(FileName), "保存路径", true, true),
+                Input.File(nameof(Template), "模板文件"),
+            };
+        }
+
         public void Ready(RuleItem option)
         {
-            fileName = option.Param1.Trim();
-            template = option.Param2.Trim();
+            FileName = option.Get<string>(nameof(FileName)) ?? string.Empty;
+            Template = option.Get<string>(nameof(Template)) ?? string.Empty;
         }
         public string GetFileName(string url)
         {
             var path = Disk.RenderFile(url);
-            if (string.IsNullOrEmpty(fileName))
+            if (string.IsNullOrEmpty(FileName))
             {
                 return path;
             }
             var uri = new Uri(url);
-            return Regex.Replace(fileName, @"\$\{([a-zA-Z0-9_]+)\}", match => {
+            return Regex.Replace(FileName, @"\$\{([a-zA-Z0-9_]+)\}", match => {
                 return match.Groups[1].Value switch
                 {
                     "host" => uri.Host,
@@ -55,7 +65,7 @@ namespace ZoDream.Spider.Rules
             {
                 writer.BaseStream.Position = writer.BaseStream.Length;
                 writer.WriteLine();
-                writer.Write(container.RenderData(template));
+                writer.Write(container.RenderData(Template));
             }
         }
     }

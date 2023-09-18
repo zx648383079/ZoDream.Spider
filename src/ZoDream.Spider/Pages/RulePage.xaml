@@ -58,7 +58,7 @@
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        <TextBlock Text="{Binding MatchValue}"/>
+                        <TextBlock Text="{Binding Name}"/>
                         <TextBlock Text="{Binding Rules.Count,StringFormat='共{0}条规则'}" Grid.Row="1"/>
                         <Button Content="&#xE104;" 
                             Command="{Binding ElementName=root,Path=DataContext.EditCommand}"      
@@ -90,17 +90,15 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition/>
                                 <ColumnDefinition Width="auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition/>
                                 <RowDefinition/>
                             </Grid.RowDefinitions>
-                            <TextBlock Text="{Binding Name}" Grid.ColumnSpan="2"/>
-                            <TextBlock Text="{Binding Param1}" Grid.Row="1"/>
-                            <TextBlock Text="{Binding Param2}" Grid.Row="1" Grid.Column="1"/>
-                            <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.RowSpan="2">
+                            <TextBlock Text="{Binding Name}"/>
+                            <TextBlock Text="{Binding Values.Count,StringFormat='共{0}个参数'}" Grid.Row="1"/>
+                            <StackPanel Orientation="Horizontal" Grid.Column="1" Grid.RowSpan="2">
                                 <Button Content="&#xE110;" 
                                         Command="{Binding ElementName=root,Path=DataContext.RuleUpCommand}"      
                                         CommandParameter="{Binding}"
@@ -132,58 +130,46 @@
                            PrimaryCommand="{Binding DialogConfirmCommand}"
                            Grid.RowSpan="2"
                            DialogHeight="340">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="32"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="32"/>
-                    <RowDefinition Height="32"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="匹配方式" VerticalAlignment="Center"/>
-                <ctl:RadioGroupPanel Value="{Binding GroupType}" Grid.Row="1"/>
-                <TextBlock Text="匹配值" VerticalAlignment="Center" Grid.Row="2"/>
-                <TextBox Text="{Binding GroupName}" MaxLines="1" Grid.Row="3"/>
-            </Grid>
+            <ScrollViewer>
+                <StackPanel>
+                    <TextBlock Text="组名称" Style="{StaticResource InputHeaderStyle}"/>
+                    <TextBox Text="{Binding GroupName}" Style="{StaticResource InputEntryStyle}"/>
+                    <TextBlock Text="匹配方式"  Style="{StaticResource InputHeaderStyle}"/>
+                    <ctl:RadioGroupPanel Value="{Binding GroupType}"/>
+                    <TextBlock Text="匹配值"  Style="{StaticResource InputHeaderStyle}"/>
+                    <TextBox Text="{Binding GroupMatchValue}" Style="{StaticResource InputEntryStyle}"/>
+                </StackPanel>
+            </ScrollViewer>
         </ctl:ContentDialog>
         <ctl:ContentDialog Title="添加规则" SubTitle="设置匹配规则" 
                    IsOpen="{Binding RuleVisible}"
                    PrimaryCommand="{Binding RuleConfirmCommand}"
                    DialogHeight="400"
                    Grid.RowSpan="2">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="32"/>
-                    <RowDefinition Height="40"/>
-                    <RowDefinition Height="32"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="32"/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <TextBlock Text="插件" VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding PluginItems}" 
-                          SelectedIndex="{Binding PluginIndex,Mode=TwoWay}"
-                       Grid.Row="1">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Height="40">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-                                <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding Description}" 
-                                           Style="{StaticResource MetaLabelStyle}" 
-                                           VerticalAlignment="Center" Grid.Row="1"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-                </ComboBox>
-                <TextBlock Text="参数1" VerticalAlignment="Center" Grid.Row="2"/>
-                <TextBox Text="{Binding RuleParam1}" AcceptsReturn="True" AcceptsTab="True" Grid.Row="3"/>
-                <TextBlock Text="参数2" VerticalAlignment="Center" Grid.Row="4"/>
-                <TextBox Text="{Binding RuleParam2}" AcceptsReturn="True" AcceptsTab="True" Grid.Row="5"/>
-            </Grid>
+            <ScrollViewer>
+                <StackPanel>
+                    <TextBlock Text="插件" Style="{StaticResource InputHeaderStyle}"/>
+                    <ComboBox ItemsSource="{Binding PluginItems}" 
+                              SelectedIndex="{Binding PluginIndex,Mode=TwoWay}"
+                           Grid.Row="1" Height="40">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="40">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Description}" 
+                           Style="{StaticResource MetaLabelStyle}" 
+                           VerticalAlignment="Center" Grid.Row="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <ctl:RuleFormPanel InputItems="{Binding RuleInputItems}" DataItems="{Binding RuleDataItems}" Grid.Row="2"/>
+                </StackPanel>
+            </ScrollViewer>
         </ctl:ContentDialog>
     </Grid>
 </Page>

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
@@ -12,20 +13,27 @@ namespace ZoDream.Spider.Rules
 {
     public class XPathRule : IRule
     {
-        private string tag = string.Empty;
-        private string tagFunc = "";
+        private string Tag = string.Empty;
+        private string TagFunc = "";
 
         public PluginInfo Info()
         {
             return new PluginInfo("XPath查询");
         }
 
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] {
+                Input.Text(nameof(Tag), "选择器"),
+                Input.Text(nameof(TagFunc), "属性"),
+            };
+        }
         public void Ready(RuleItem option)
         {
-            tag = option.Param1.Trim();
-            var v = option.Param2.Trim().ToUpper();
-            tagFunc = v != "0" && v != "F" && v != "N" && v != "FALSE" ? "html" : "text";
-            JQueryRule.SplitTag(ref tag, ref tagFunc);
+            Tag = option.Get<string>(nameof(Tag)) ?? string.Empty;
+            var v = option.Get<string>(nameof(TagFunc))?.Trim().ToUpper();
+            TagFunc = v != "0" && v != "F" && v != "N" && v != "FALSE" ? "html" : "text";
+            JQueryRule.SplitTag(ref Tag, ref TagFunc);
         }
 
         public async Task RenderAsync(ISpiderContainer container)
@@ -35,14 +43,14 @@ namespace ZoDream.Spider.Rules
             foreach (var item in container.Data)
             {
                 doc.LoadHtml(item.ToString());
-                var nodes = doc.DocumentNode.SelectNodes(tag);
+                var nodes = doc.DocumentNode.SelectNodes(Tag);
                 if (nodes == null || nodes.Count == 0)
                 {
                     return;
                 }
                 foreach (var node in nodes)
                 {
-                    items.Add(new RuleString(FormatNode(node, tagFunc)));
+                    items.Add(new RuleString(FormatNode(node, TagFunc)));
                 }
             }
             container.Data = new RuleArray(items);
@@ -55,15 +63,12 @@ namespace ZoDream.Spider.Rules
             {
                 func = "html";
             }
-            switch (func)
+            return func switch
             {
-                case "text":
-                    return node.InnerText;
-                case "html":
-                    return node.InnerHtml;
-                default:
-                    return node.GetAttributeValue(func, string.Empty);
-            }
+                "text" => node.InnerText,
+                "html" => node.InnerHtml,
+                _ => node.GetAttributeValue(func, string.Empty),
+            };
         }
     }
 }

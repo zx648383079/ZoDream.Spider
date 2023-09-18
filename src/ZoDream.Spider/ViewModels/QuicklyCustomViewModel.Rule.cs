@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Utils;
 
@@ -77,28 +78,41 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref groupName, value);
         }
 
+        private string groupMatchValue = string.Empty;
+
+        public string GroupMatchValue {
+            get => groupMatchValue;
+            set => Set(ref groupMatchValue, value);
+        }
+
+
         private int pluginIndex;
 
         public int PluginIndex {
             get => pluginIndex;
-            set => Set(ref pluginIndex, value);
+            set {
+                Set(ref pluginIndex, value);
+                var plugin = value >= 0 && value < PluginItems.Count ?
+                    App.ViewModel.Plugin.Render(PluginItems[value].Name) : null;
+                RuleInputItems = plugin?.Form();
+            }
         }
 
-        private string ruleParam1 = string.Empty;
+        private IFormInput[]? ruleInputItems;
 
-        public string RuleParam1 {
-            get => ruleParam1;
-            set => Set(ref ruleParam1, value);
+        public IFormInput[]? RuleInputItems {
+            get => ruleInputItems;
+            set => Set(ref ruleInputItems, value);
         }
-        private string ruleParam2 = string.Empty;
 
-        public string RuleParam2 {
-            get => ruleParam2;
-            set => Set(ref ruleParam2, value);
+        private IList<DataItem>? ruleDataItems;
+
+        public IList<DataItem>? RuleDataItems {
+            get => ruleDataItems;
+            set => Set(ref ruleDataItems, value);
         }
 
         public ICommand GroupDialogConfirmCommand { get; private set; }
-        public ICommand RuleDialogConfirmCommand { get; private set; }
 
         public ICommand GroupEditCommand { get; private set; }
         public ICommand GroupDeleteCommand { get; private set; }
@@ -118,7 +132,7 @@ namespace ZoDream.Spider.ViewModels
             if (arg is RuleGroupItem o)
             {
                 EditGroup = o;
-                PanelTitle = o.MatchValue;
+                PanelTitle = o.Name;
                 PanelVisible = true;
                 RuleItems.Clear();
                 foreach (var item in o.Rules)
@@ -144,10 +158,6 @@ namespace ZoDream.Spider.ViewModels
             EditGroup.Rules = RuleItems.ToList();
         }
 
-        private void TapRuleDialogConfirm(object? _)
-        {
-
-        }
 
         private void TapGroupDialogConfirm(object? _)
         {
@@ -157,13 +167,14 @@ namespace ZoDream.Spider.ViewModels
             }
             var item = new RuleGroupItem()
             {
-                MatchValue = GroupName,
+                MatchValue = GroupMatchValue,
                 MatchType = GroupType,
+                Name = GroupName,
             };
             GroupItems.Add(item);
             GroupName = string.Empty;
             EditGroup = item;
-            PanelTitle = item.MatchValue;
+            PanelTitle = item.Name;
             RuleItems.Clear();
             GroupDialogVisible = false;
             PanelVisible = true;
@@ -173,7 +184,8 @@ namespace ZoDream.Spider.ViewModels
         {
             EditRule = null;
             PluginIndex = -1;
-            RuleParam2 = RuleParam1 = string.Empty;
+            RuleDataItems = null;
+            RuleInputItems = null;
             RuleDialogVisible = true;
         }
         private void TapRuleDelete(object? arg)
@@ -195,17 +207,16 @@ namespace ZoDream.Spider.ViewModels
                 RuleItems.Add(new RuleItem()
                 {
                     Name = PluginItems[PluginIndex].Name,
-                    Param1 = RuleParam1,
-                    Param2 = RuleParam2,
+                    Values = RuleDataItems is null ? new List<DataItem>() : RuleDataItems,
                 });
             }
             else
             {
                 EditRule.Name = PluginItems[PluginIndex].Name;
-                EditRule.Param1 = RuleParam1;
-                EditRule.Param2 = RuleParam2;
+                EditRule.Values = RuleDataItems is null ? new List<DataItem>() : RuleDataItems;
             }
-            RuleParam1 = RuleParam2 = string.Empty;
+            RuleDataItems = null;
+            RuleInputItems = null;
             RuleDialogVisible = false;
         }
 
@@ -231,8 +242,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 EditRule = o;
                 PluginIndex = PluginIndexOf(o.Name);
-                RuleParam1 = o.Param1;
-                RuleParam2 = o.Param2;
+                RuleDataItems = o.Values;
                 RuleDialogVisible = true;
             }
         }

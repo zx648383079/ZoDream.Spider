@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
@@ -15,6 +16,11 @@ namespace ZoDream.Spider.Rules
         public PluginInfo Info()
         {
             return new PluginInfo("简繁转换");
+        }
+
+        public IFormInput[]? Form()
+        {
+            return null;
         }
 
         public void Ready(RuleItem option)

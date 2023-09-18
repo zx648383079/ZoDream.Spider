@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
@@ -17,17 +18,17 @@ namespace ZoDream.Spider.Rules
 
         public bool CanNext => false;
 
-        private string ruleGroupName = string.Empty;
+        private string RuleGroupName = string.Empty;
 
-        private string fileNamePattern = string.Empty;
+        private string FileNamePattern = string.Empty;
 
         public string GetFileName(string url)
         {
             if (string.IsNullOrEmpty(url))
             {
-                return fileNamePattern;
+                return FileNamePattern;
             }
-            return RenderFileName(fileNamePattern, url); ;
+            return RenderFileName(FileNamePattern, url); ;
         }
 
         public PluginInfo Info()
@@ -35,10 +36,18 @@ namespace ZoDream.Spider.Rules
             return new PluginInfo("合并文件");
         }
 
+        public IFormInput[]? Form()
+        {
+            return new IFormInput[] {
+                Input.Text(nameof(RuleGroupName), "规则组名称"),
+                Input.Text(nameof(FileNamePattern), "文件匹配"),
+            };
+        }
+
         public void Ready(RuleItem option)
         {
-            ruleGroupName = option.Param1;
-            fileNamePattern = option.Param2;
+            RuleGroupName = option.Get<string>(nameof(RuleGroupName)) ?? string.Empty;
+            FileNamePattern = option.Get<string>(nameof(FileNamePattern)) ?? string.Empty;
         }
 
         public async Task RenderAsync(ISpiderContainer container)
@@ -48,16 +57,16 @@ namespace ZoDream.Spider.Rules
             try
             {
                 Dictionary<string, List<string>> files;
-                if (ruleGroupName == "*")
+                if (RuleGroupName == "*")
                 {
                     files = FindAll(storage, source);
                 }
-                if (Regex.IsMatch(ruleGroupName, @"^\w+\.\w+(\.\w+)?$"))
+                if (Regex.IsMatch(RuleGroupName, @"^\w+\.\w+(\.\w+)?$"))
                 {
-                    files = FindHost(storage, source, ruleGroupName);
+                    files = FindHost(storage, source, RuleGroupName);
                 } else
                 {
-                    files = FindRegex(storage, source, new Regex(ruleGroupName));
+                    files = FindRegex(storage, source, new Regex(RuleGroupName));
                 }
                 foreach (var item in files)
                 {
@@ -73,7 +82,7 @@ namespace ZoDream.Spider.Rules
 
         private Dictionary<string, List<string>> FindRegex(IStorageProvider<string, string, System.IO.FileStream> storage, IEnumerable<UriItem> source, Regex regex)
         {
-            var matches = Regex.Matches(fileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
+            var matches = Regex.Matches(FileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
             var data = new Dictionary<string, List<string>>();
             foreach (var item in source)
             {
@@ -87,7 +96,7 @@ namespace ZoDream.Spider.Rules
                 {
                     continue;
                 }
-                var saveFile = RenderFileName(fileNamePattern, matches, item.Source, match);
+                var saveFile = RenderFileName(FileNamePattern, matches, item.Source, match);
                 if (!data.ContainsKey(saveFile))
                 {
                     data.Add(saveFile, new List<string>());
@@ -99,7 +108,7 @@ namespace ZoDream.Spider.Rules
 
         private Dictionary<string, List<string>> FindHost(IStorageProvider<string, string, System.IO.FileStream> storage, IEnumerable<UriItem> source, string host)
         {
-            var matches = Regex.Matches(fileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
+            var matches = Regex.Matches(FileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
             var data = new Dictionary<string, List<string>>();
             foreach (var item in source)
             {
@@ -113,7 +122,7 @@ namespace ZoDream.Spider.Rules
                 {
                     continue;
                 }
-                var saveFile = RenderFileName(fileNamePattern, matches, uri);
+                var saveFile = RenderFileName(FileNamePattern, matches, uri);
                 if (!data.ContainsKey(saveFile))
                 {
                     data.Add(saveFile, new List<string>());
@@ -125,7 +134,7 @@ namespace ZoDream.Spider.Rules
 
         private Dictionary<string, List<string>> FindAll(IStorageProvider<string, string, System.IO.FileStream> storage, IEnumerable<UriItem> source)
         {
-            var matches = Regex.Matches(fileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
+            var matches = Regex.Matches(FileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
             var data = new Dictionary<string, List<string>>();
             foreach (var item in source)
             {
@@ -134,7 +143,7 @@ namespace ZoDream.Spider.Rules
                 {
                     continue;
                 }
-                var saveFile = RenderFileName(fileNamePattern, matches, item.Source);
+                var saveFile = RenderFileName(FileNamePattern, matches, item.Source);
                 if (!data.ContainsKey(saveFile))
                 {
                     data.Add(saveFile, new List<string>());

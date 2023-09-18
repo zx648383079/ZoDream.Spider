@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
@@ -17,6 +18,11 @@ namespace ZoDream.Spider.Rules
         public PluginInfo Info()
         {
             return new PluginInfo("去HTML化");
+        }
+
+        public IFormInput[]? Form()
+        {
+            return null;
         }
 
         public void Ready(RuleItem option)
