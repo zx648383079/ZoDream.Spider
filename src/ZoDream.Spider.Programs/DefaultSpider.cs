@@ -20,7 +20,7 @@ namespace ZoDream.Spider.Programs
         /// <summary>
         /// 多线程控制
         /// </summary>
-        private CancellationTokenSource? _tokenSource;
+        private CancellationTokenSource _tokenSource = new();
 
         /// <summary>
         /// 线程锁
@@ -97,6 +97,7 @@ namespace ZoDream.Spider.Programs
             }
             Paused = false;
             PausedChanged?.Invoke(Paused);
+            _tokenSource = new();
             if (RequestProvider.SupportTask)
             {
                 RunTask();
@@ -141,7 +142,6 @@ namespace ZoDream.Spider.Programs
         protected void RunTask()
         {
             #region 创造主线程，去分配多个下载线程
-            _tokenSource = new CancellationTokenSource();
             var token = _tokenSource.Token;
             Task.Factory.StartNew(() =>
             {
@@ -238,6 +238,8 @@ namespace ZoDream.Spider.Programs
 
         public async Task ExecuteAsync(UriItem url)
         {
+            Stop();
+            _tokenSource = new();
             PausedChanged?.Invoke(Paused = false);
             try
             {
@@ -260,7 +262,7 @@ namespace ZoDream.Spider.Programs
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
         {
-            return new SpiderContainer(this, url, rules);
+            return new SpiderContainer(this, url, rules, _tokenSource.Token);
         }
 
         public async Task<IList<ISpiderContainer>> GetContainerAsync(UriItem url)

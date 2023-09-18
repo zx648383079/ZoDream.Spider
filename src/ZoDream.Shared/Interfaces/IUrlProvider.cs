@@ -42,7 +42,7 @@ namespace ZoDream.Shared.Interfaces
 
         public void EmitUpdate(UriItem url);
         public void EmitProgress(UriItem url, int groupIndex, int groupCount);
-        public void EmitProgress(UriItem url, int index, int count, bool isStep);
+        public void EmitProgress(UriItem url, long index, long count, bool isStep);
         public UriItem? Get(string url);
         public void Reset();
         

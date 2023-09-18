@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using ZoDream.Shared.Http;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
@@ -13,6 +10,9 @@ namespace ZoDream.Shared.Interfaces
     public interface IRequest
     {
         public bool SupportTask { get; }
+
+        public IHttpClient Create(RequestData request);
+
         public Task<string?> GetAsync(RequestData request);
 
         /// <summary>

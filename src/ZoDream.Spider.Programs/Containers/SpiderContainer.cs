@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
@@ -12,14 +13,19 @@ namespace ZoDream.Spider.Programs
 {
     public class SpiderContainer : ISpiderContainer
     {
-        public SpiderContainer(ISpider spider, UriItem url, IList<IRule> rules)
+        public SpiderContainer(ISpider spider, 
+            UriItem url, 
+            IList<IRule> rules, CancellationToken token = default)
         {
+            Token = token;
             Application = spider;
             Logger = spider.Logger;
             Url = url;
             Rules = rules;
         }
         public ISpider Application { get; set; }
+
+        public CancellationToken Token { get; }
 
         public ILogger? Logger { get; private set; }
 
@@ -64,7 +70,7 @@ namespace ZoDream.Spider.Programs
         public async Task NextAsync()
         {
             RuleIndex++;
-            if (RuleIndex >= Rules.Count || Application.Paused)
+            if (RuleIndex >= Rules.Count || Application.Paused || Token.IsCancellationRequested)
             {
                 return;
             }
@@ -74,7 +80,7 @@ namespace ZoDream.Spider.Programs
             return;
         }
 
-        public void EmitProgress(int step, int count)
+        public void EmitProgress(long step, long count)
         {
             Application.UrlProvider.EmitProgress(Url, step, count, true);
         }
@@ -89,7 +95,7 @@ namespace ZoDream.Spider.Programs
             Disk.CreateDirectory(fileName);
             await Application.RequestProvider.Downloader().GetAsync(
             fileName,
-                Application.GetRequestData(url));
+                Application.GetRequestData(url), EmitProgress, Token);
         }
 
         public void SetAttribute(string name, string value)

@@ -403,6 +403,10 @@ namespace ZoDream.Spider.Pages
             return res;
         }
 
+        public IHttpClient Create(RequestData request)
+        {
+            return new HttpRequest().Create(request);
+        }
     }
 
     public delegate void ConfirmEventHandler(object sender);

@@ -14,4 +14,8 @@
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\shared\ZoDream.Shared.Http\ZoDream.Shared.Http.csproj" />
+  </ItemGroup>
+
 </Project>

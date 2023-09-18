@@ -14,9 +14,9 @@ namespace ZoDream.Shared.Models
 
         public int RuleCount { get; set; }
 
-        public int StepIndex { get; set; }
+        public long StepIndex { get; set; }
 
-        public int StepCount { get; set; }
+        public long StepCount { get; set; }
 
         public double Value 
         {
@@ -59,7 +59,7 @@ namespace ZoDream.Shared.Models
             StepCount = 0;
         }
 
-        public void UpdateStep(int index, int count)
+        public void UpdateStep(long index, long count)
         {
             StepIndex = index;
             StepCount = count;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Models;
 
@@ -7,6 +8,7 @@ namespace ZoDream.Shared.Interfaces
     public interface ISpiderContainer
     {
         public ISpider Application { get; set; }
+        public CancellationToken Token { get; }
 
 
         public ILogger? Logger { get; }
@@ -38,7 +40,7 @@ namespace ZoDream.Shared.Interfaces
 
         public string RenderData(string content);
 
-        public void EmitProgress(int step, int count);
+        public void EmitProgress(long step, long count);
         /// <summary>
         /// 获取页面内容
         /// </summary>

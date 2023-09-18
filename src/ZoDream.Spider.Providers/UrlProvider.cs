@@ -189,7 +189,7 @@ namespace ZoDream.Spider.Providers
             url.Progress.UpdateGroup(groupIndex, groupCount);
             ProgressChanged?.Invoke(url);
         }
-        public void EmitProgress(UriItem url, int index, int count, bool isStep)
+        public void EmitProgress(UriItem url, long index, long count, bool isStep)
         {
             if (isStep)
             {
@@ -197,7 +197,7 @@ namespace ZoDream.Spider.Providers
             }
             else
             {
-                url.Progress.UpdateRule(index, count);
+                url.Progress.UpdateRule((int)index, (int)count);
             }
             ProgressChanged?.Invoke(url);
         }

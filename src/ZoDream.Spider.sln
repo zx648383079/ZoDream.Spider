@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookCrawlerRule", "Plugins\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZoDream.Shared.Controls", "..\..\HttpRequester\shared\ZoDream.Shared.Controls\ZoDream.Shared.Controls.csproj", "{8C8555D2-86A7-406B-8A3B-04EA2BFD0465}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ZoDream.Shared.Http", "..\shared\ZoDream.Shared.Http\ZoDream.Shared.Http.csproj", "{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -263,6 +265,26 @@ Global
 		{8C8555D2-86A7-406B-8A3B-04EA2BFD0465}.Release|x64.Build.0 = Release|Any CPU
 		{8C8555D2-86A7-406B-8A3B-04EA2BFD0465}.Release|x86.ActiveCfg = Release|Any CPU
 		{8C8555D2-86A7-406B-8A3B-04EA2BFD0465}.Release|x86.Build.0 = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|ARM.Build.0 = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|x64.Build.0 = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Debug|x86.Build.0 = Debug|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|ARM.ActiveCfg = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|ARM.Build.0 = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|ARM64.Build.0 = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|x64.ActiveCfg = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|x64.Build.0 = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|x86.ActiveCfg = Release|Any CPU
+		{01D9D728-94FE-4C5A-90C1-3CC4EFCE65A3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
