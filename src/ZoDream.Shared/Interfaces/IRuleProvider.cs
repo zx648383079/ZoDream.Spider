@@ -14,7 +14,7 @@ namespace ZoDream.Shared.Interfaces
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public bool Cannable(string uri);
+        public bool Cannable(string uri, UriType uriType);
         public IList<RuleGroupItem> Get(string uri);
         public IList<RuleGroupItem> GetEvent(string name);
 

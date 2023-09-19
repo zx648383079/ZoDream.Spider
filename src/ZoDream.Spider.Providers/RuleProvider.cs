@@ -18,11 +18,11 @@ namespace ZoDream.Spider.Providers
             Add(spider.Project.RuleItems);
         }
 
-        public bool Cannable(string uri)
+        public bool Cannable(string uri, UriType uriType)
         {
             foreach (var item in Items)
             {
-                if (item.IsAllow(uri))
+                if (item.IsAllow(uri, uriType))
                 {
                     return true;
                 }

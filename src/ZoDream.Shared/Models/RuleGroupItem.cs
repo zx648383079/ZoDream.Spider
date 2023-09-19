@@ -24,8 +24,12 @@ namespace ZoDream.Shared.Models
         /// </summary>
         /// <param name="uri"></param>
         /// <returns></returns>
-        public bool IsAllow(string uri)
+        public bool IsAllow(string uri, UriType uriType)
         {
+            if (MatchType == RuleMatchType.Page)
+            {
+                return uriType != UriType.Html;
+            }
             return MatchType != RuleMatchType.None && IsMatch(uri);
         }
 
@@ -40,6 +44,7 @@ namespace ZoDream.Shared.Models
             {
                 case RuleMatchType.All:
                 case RuleMatchType.None:
+                case RuleMatchType.Page:
                     return true;
                 case RuleMatchType.Contains:
                     return uri.Contains(MatchValue);

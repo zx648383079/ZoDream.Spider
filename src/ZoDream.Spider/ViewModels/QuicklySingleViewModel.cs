@@ -71,7 +71,7 @@ namespace ZoDream.Spider.ViewModels
             project.EntryItems.Add(InputEntry);
             project.RuleItems.Add(new RuleGroupItem()
             {
-                MatchType = RuleMatchType.None,
+                MatchType = WithResource ? RuleMatchType.Page : RuleMatchType.None,
                 MatchValue = "page",
                 Rules =
                 {

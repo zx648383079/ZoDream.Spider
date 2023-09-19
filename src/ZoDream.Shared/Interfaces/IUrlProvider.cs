@@ -17,6 +17,10 @@ namespace ZoDream.Shared.Interfaces
         public event UrlChangedEventHandler? UrlChanged;
         public event ProgressEventHandler? ProgressChanged;
         public int Count {  get; }
+        /// <summary>
+        /// 同步项目添加的入口
+        /// </summary>
+        public void SyncEntry();
 
         public void Add(string url);
 

@@ -12,6 +12,7 @@ namespace ZoDream.Shared.Models
         Regex,
         Host,
         StartWith,
-        Event
+        Event,
+        Page, // 单页包含资源
     }
 }

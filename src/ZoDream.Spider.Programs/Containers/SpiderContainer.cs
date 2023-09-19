@@ -56,7 +56,7 @@ namespace ZoDream.Spider.Programs
             var toUri = new Uri(fromUri, uri);
             var fullUri = toUri.ToString();
             var relativeUri = fromUri.MakeRelativeUri(toUri);
-            if (!Application.RuleProvider.Cannable(fullUri))
+            if (!Application.RuleProvider.Cannable(fullUri, uriType))
             {
                 return Uri.UnescapeDataString(relativeUri.ToString());
             }

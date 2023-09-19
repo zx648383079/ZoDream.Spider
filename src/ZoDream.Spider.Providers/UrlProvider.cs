@@ -12,13 +12,7 @@ namespace ZoDream.Spider.Providers
         public UrlProvider(ISpider spider)
         {
             Application = spider;
-            foreach (var item in spider.Project.EntryItems)
-            {
-                foreach (var url in Html.GenerateUrl(item))
-                {
-                    Add(url, UriType.Html);
-                }
-            }
+            SyncEntry();
         }
 
         private readonly ISpider Application;
@@ -28,7 +22,18 @@ namespace ZoDream.Spider.Providers
         public event UrlChangedEventHandler? UrlChanged;
         public event ProgressEventHandler? ProgressChanged;
 
-        public int Count {  get {  return Items.Count; }  }
+        public int Count => Items.Count;
+
+        public void SyncEntry()
+        {
+            foreach (var item in Application.Project.EntryItems)
+            {
+                foreach (var url in Html.GenerateUrl(item))
+                {
+                    Add(url, UriType.Html);
+                }
+            }
+        }
 
         public void Add(string url)
         {
