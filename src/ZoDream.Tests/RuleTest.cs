@@ -21,7 +21,7 @@ namespace ZoDream.Tests
                 MatchValue = "zodream.cn",
             };
 
-            Assert.IsFalse(rule.IsAllow("http://zodream.com/"));
+            Assert.IsFalse(rule.IsAllow("http://zodream.com/", UriType.Html));
         }
 
         //[TestMethod]
