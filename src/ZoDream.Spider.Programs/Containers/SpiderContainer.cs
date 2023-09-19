@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AngleSharp.Dom;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -8,6 +9,7 @@ using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
+using ZoDream.Spider.Providers;
 
 namespace ZoDream.Spider.Programs
 {
@@ -77,7 +79,6 @@ namespace ZoDream.Spider.Programs
             var rule = Rules[RuleIndex];
             await rule.RenderAsync(this);
             Application.UrlProvider.EmitProgress(Url, RuleIndex + 1, Rules.Count, false);
-            return;
         }
 
         public void EmitProgress(long step, long count)

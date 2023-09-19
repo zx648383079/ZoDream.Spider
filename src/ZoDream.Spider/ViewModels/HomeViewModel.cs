@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
@@ -336,6 +334,7 @@ namespace ZoDream.Spider.ViewModels
                 if (item.Source == uri.Source)
                 {
                     App.ViewModel.DispatcherQueue.Invoke(() => {
+                        item.Status = uri.Status;
                         item.Progress = uri.Progress.Value;
                     });
                     return;
@@ -350,16 +349,24 @@ namespace ZoDream.Spider.ViewModels
                 App.ViewModel.DispatcherQueue.Invoke(() => {
                     UrlItems.Clear();
                 });
+                Progress = 0;
                 return;
             }
             if (url == null)
             {
                 App.ViewModel.DispatcherQueue.Invoke(() => {
                     UrlItems.Clear();
+                    var done = 0;
                     foreach (var item in Instance.UrlProvider)
                     {
+                        if (item.Status == UriCheckStatus.Done 
+                        || item.Status == UriCheckStatus.Error || item.Status == UriCheckStatus.Jump)
+                        {
+                            done++;
+                        }
                         UrlItems.Add(new UriLoadItem(item));
                     }
+                    Progress = done <= 0 ?  0 : done * 100 / UrlItems.Count;
                 });
                 return;
             }
@@ -376,12 +383,37 @@ namespace ZoDream.Spider.ViewModels
                         item.Title = url.Title;
                         item.Status = url.Status;
                     });
+                    UpdateProgress();
                     return;
                 }
             }
             App.ViewModel.DispatcherQueue.Invoke(() => {
                 UrlItems.Add(new UriLoadItem(url));
             });
+            UpdateProgress();
+        }
+
+        private void UpdateProgress()
+        {
+            var done = 0;
+            var error = 0;
+            var jump = 0;
+            foreach (var item in UrlItems)
+            {
+                if (item.Status == UriCheckStatus.Done)
+                {
+                    done++;
+                } else if (item.Status == UriCheckStatus.Error)
+                {
+                    error++;
+                }
+                else if (item.Status == UriCheckStatus.Jump)
+                {
+                    jump++;
+                }
+            }
+            Message = $"完成 {done} |错误 {error} |跳过 {jump} |总 {UrlItems.Count}";
+            Progress = UrlItems.Count <= 0 ? 0 : ((done + error + jump) * 100 / UrlItems.Count);
         }
 
         public void Close()

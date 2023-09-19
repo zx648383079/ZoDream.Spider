@@ -19,6 +19,11 @@ namespace ZoDream.Shared.Models
             
         }
 
+        public UriItem(string url)
+        {
+            Source = url;
+        }
+
         public UriItem(UriLoadItem uri)
         {
             Title = uri.Title;

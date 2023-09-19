@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -48,7 +49,6 @@ namespace ZoDream.Spider.Pages
             };
             logger.OnProgress += (s, e, msg) => {
                 App.ViewModel.DispatcherQueue.Invoke(() => {
-                    ViewModel.Progress = s * 100 / e;
                     if (isLastProgress)
                     {
                         InfoTb.ReplaceLine($"{s}/{e} {msg}");
@@ -75,11 +75,11 @@ namespace ZoDream.Spider.Pages
             if (val)
             {
                 RowDef.Height = new GridLength(Math.Max(60, ActualHeight / 5));
-                InfoTb.Visibility = Visibility.Visible;
+                Splitter.Visibility = InfoTb.Visibility = Visibility.Visible;
             } else
             {
                 RowDef.Height = new GridLength(1);
-                InfoTb.Visibility = Visibility.Collapsed;
+                Splitter.Visibility = InfoTb.Visibility = Visibility.Collapsed;
             }
         }
 

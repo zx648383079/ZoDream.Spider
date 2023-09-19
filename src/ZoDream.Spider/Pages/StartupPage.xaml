@@ -27,7 +27,9 @@
 
         <StackPanel Grid.Column="1">
             <TextBlock Text="欢迎使用" Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBlock Text="介绍" Style="{StaticResource CaptionTextBlockStyle}"/>
+            <TextBlock Text="本程序是一个开源的爬虫软件，主要用网站备份、转静态网页的运维性工具。" 
+                       TextWrapping="Wrap"
+                       Style="{StaticResource CaptionTextBlockStyle}"/>
 
             <!--<InfoBar IsOpen="True" Severity="Error" Title="{Binding Tip}" Message="h"/>-->
 

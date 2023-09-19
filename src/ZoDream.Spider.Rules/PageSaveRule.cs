@@ -30,7 +30,7 @@ namespace ZoDream.Spider.Rules
         {
             return new IFormInput[] {
                 Input.Text(nameof(FileName), "保存地址"),
-                Input.Text(nameof(UseContentType), "开启内容判断(不支持浏览器)"),
+                Input.Switch(nameof(UseContentType), "开启内容判断(不支持浏览器)"),
             };
         }
         public void Ready(RuleItem option)
@@ -122,8 +122,12 @@ namespace ZoDream.Spider.Rules
             {
                 return;
             }
-            
-            var type = ParseType(response.Headers);
+            var responseFileName = response.Content.Headers.ContentDisposition?.FileName;
+            if (!string.IsNullOrWhiteSpace(responseFileName))
+            {
+                container.Url.Title = responseFileName!;
+            }
+            var type = ParseType(response.Content.Headers.ContentType?.MediaType);
             if (type != UriType.Css && type != UriType.Html)
             {
                 var fullPath = storage.GetAbsolutePath(fileName);
@@ -152,6 +156,19 @@ namespace ZoDream.Spider.Rules
             writer.Write(content);
             writer.Flush();
             fs.SetLength(fs.Position);
+        }
+
+        private UriType ParseType(string? contentType)
+        {
+            if (contentType == "text/css")
+            {
+                return UriType.Css;
+            }
+            if (contentType == "text/html")
+            {
+                return UriType.Html;
+            }
+            return UriType.File;
         }
 
         private UriType ParseType(HttpResponseHeaders headers)

@@ -49,6 +49,7 @@
         <ListBox x:Name="UrlListBox" Grid.Row="1" 
                  ItemsSource="{Binding UrlItems}" 
                  SelectionChanged="UrlListBox_SelectionChanged"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  HorizontalContentAlignment="Stretch">
             <ListBox.ContextMenu>
                 <ContextMenu Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
@@ -107,8 +108,8 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <sctl:ConsolePanel x:Name="InfoTb" Grid.Row="2"/>
-        <GridSplitter Grid.Row="2" Height="2" VerticalAlignment="Top" 
-              HorizontalAlignment="Stretch" ResizeDirection="Rows" Visibility="{Binding ElementName=InfoToggle, Path=IsChecked, Converter={StaticResource BoolConverter}}"/>
+        <GridSplitter x:Name="Splitter" Grid.Row="2" Height="2" VerticalAlignment="Top" 
+              HorizontalAlignment="Stretch" ResizeDirection="Rows"/>
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="3*"/>

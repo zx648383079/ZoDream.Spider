@@ -12,6 +12,7 @@ using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
 using ZoDream.Shared.Utils;
 using ZoDream.Spider.Providers;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ZoDream.Spider.Programs
 {
@@ -222,10 +223,19 @@ namespace ZoDream.Spider.Programs
             Logger?.Info($"{url.Source} has {items.Count} rule groups");
             UrlProvider.EmitUpdate(url, UriCheckStatus.Doing);
             var i = 0;
+            var success = true;
             UrlProvider.EmitProgress(url, i, items.Count);
             foreach (var item in items)
             {
-                await item.NextAsync();
+                try
+                {
+                    await item.NextAsync();
+                }
+                catch (Exception ex)
+                {
+                    success = false;
+                    Logger?.Error($"{url.Source}: {ex.Message}");
+                }
                 UrlProvider.EmitProgress(url, ++i, items.Count);
                 if (Paused)
                 {
@@ -233,7 +243,7 @@ namespace ZoDream.Spider.Programs
                     return;
                 }
             }
-            UrlProvider.EmitUpdate(url, UriCheckStatus.Done);
+            UrlProvider.EmitUpdate(url, success ? UriCheckStatus.Done : UriCheckStatus.Error);
         }
 
         public async Task ExecuteAsync(UriItem url)
@@ -257,7 +267,12 @@ namespace ZoDream.Spider.Programs
             return new RequestData(url,
                     Project.HeaderItems,
                     ProxyProvider.Get(),
-                    Project.GetHostMap(url));
+                    Project.GetHostMap(url))
+            {
+                Timeout = Project.TimeOut,
+                RetryTime = Project.RetryTime,
+                RetryCount = Project.RetryCount,
+            };
         }
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
@@ -337,7 +352,7 @@ namespace ZoDream.Spider.Programs
                 catch (Exception ex)
                 {
                     success = false;
-                    Logger?.Error(ex.Message);
+                    Logger?.Error($"{url}: {ex.Message}");
                 }
                 UrlProvider.EmitProgress(uri, ++i, rules.Count);
             }

@@ -68,7 +68,7 @@ namespace ZoDream.Spider.ViewModels
                 {
                     new RuleItem()
                     {
-                        Name = "网页保存"
+                        Name = "网页保存",
                     }
                 }
             });

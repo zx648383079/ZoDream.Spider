@@ -130,7 +130,7 @@
                            PrimaryCommand="{Binding DialogConfirmCommand}"
                            Grid.RowSpan="2"
                            DialogHeight="340">
-            <ScrollViewer>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <TextBlock Text="组名称" Style="{StaticResource InputHeaderStyle}"/>
                     <TextBox Text="{Binding GroupName}" Style="{StaticResource InputEntryStyle}"/>
@@ -146,7 +146,7 @@
                    PrimaryCommand="{Binding RuleConfirmCommand}"
                    DialogHeight="400"
                    Grid.RowSpan="2">
-            <ScrollViewer>
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
                 <StackPanel>
                     <TextBlock Text="插件" Style="{StaticResource InputHeaderStyle}"/>
                     <ComboBox ItemsSource="{Binding PluginItems}" 
