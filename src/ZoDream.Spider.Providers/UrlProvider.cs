@@ -40,13 +40,23 @@ namespace ZoDream.Spider.Providers
             Add(url, uriType, UriCheckStatus.None);
         }
 
+        public void Add(int level, string url, UriType uriType)
+        {
+            Add(level, url, uriType, UriCheckStatus.None);
+        }
+
         public void Add(string url, UriType uriType, UriCheckStatus status)
+        {
+            Add(0, url, uriType, status);
+        }
+
+        public void Add(int level, string url, UriType uriType, UriCheckStatus status)
         {
             if (Contains(url))
             {
                 return;
             }
-            var item = new UriItem() { Source = url, Type = uriType, Status = status };
+            var item = new UriItem() { Source = url, Type = uriType, Status = status, Level = level };
             Items.Add(item);
             UrlChanged?.Invoke(item, true);
         }

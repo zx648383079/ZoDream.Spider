@@ -60,7 +60,7 @@ namespace ZoDream.Spider.Programs
             {
                 return Uri.UnescapeDataString(relativeUri.ToString());
             }
-            Application.UrlProvider.Add(fullUri, uriType);
+            Application.UrlProvider.Add(Url.Level + 1, fullUri, uriType);
             var saveFileName = Application.RuleProvider.GetFileName(fullUri);
             if (!string.IsNullOrEmpty(saveFileName))
             {

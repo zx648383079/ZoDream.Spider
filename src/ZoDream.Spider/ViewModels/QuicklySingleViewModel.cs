@@ -35,6 +35,14 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref workspace, value);
         }
 
+        private bool withResource;
+
+        public bool WithResource {
+            get => withResource;
+            set => Set(ref withResource, value);
+        }
+
+
         public ICommand BackCommand { get; private set; }
         public ICommand ConfirmCommand { get; private set; }
         private void TapBack(object? _)

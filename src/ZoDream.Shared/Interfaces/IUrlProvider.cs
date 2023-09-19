@@ -21,6 +21,7 @@ namespace ZoDream.Shared.Interfaces
         public void Add(string url);
 
         public void Add(string url, UriType uriType);
+        public void Add(int level, string url, UriType uriType);
 
         public void Add(IEnumerable<string> urls);
 

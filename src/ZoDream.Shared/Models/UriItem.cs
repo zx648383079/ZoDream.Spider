@@ -8,6 +8,9 @@ namespace ZoDream.Shared.Models
         public string Title { get; set; } = string.Empty;
 
         public string Source { get; set; } = string.Empty;
+
+        public int Level { get; set; }
+
         public UriCheckStatus Status { get; set; } = UriCheckStatus.None;
 
         public UriType Type { get; set; } = UriType.File;

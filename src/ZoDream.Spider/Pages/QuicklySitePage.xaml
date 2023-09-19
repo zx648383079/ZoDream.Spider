@@ -37,6 +37,12 @@
                 <ctl:InputGroup Label="保存地址">
                     <ctl:FileInput FileName="{Binding Workspace, Mode=TwoWay}" IsFile="False"/>
                 </ctl:InputGroup>
+                <ctl:InputGroup Label="服务器IP">
+                    <TextBox Text="{Binding ServerIp, Mode=TwoWay}" MaxLines="1"/>
+                </ctl:InputGroup>
+                <ctl:InputGroup Label="开启内容识别">
+                    <sctl:SwitchInput Value="{Binding UseContentType}"/>
+                </ctl:InputGroup>
             </StackPanel>
         </ScrollViewer>
     </Grid>

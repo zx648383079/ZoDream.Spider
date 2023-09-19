@@ -31,6 +31,21 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref workspace, value);
         }
 
+        private string serverIp = string.Empty;
+
+        public string ServerIp {
+            get => serverIp;
+            set => Set(ref serverIp, value);
+        }
+
+        private bool useContentType = true;
+
+        public bool UseContentType {
+            get => useContentType;
+            set => Set(ref useContentType, value);
+        }
+
+
         public ICommand BackCommand { get; private set; }
         public ICommand ConfirmCommand { get; private set; }
         private void TapBack(object? _)
@@ -60,15 +75,24 @@ namespace ZoDream.Spider.ViewModels
                 Workspace = Workspace,
             };
             project.EntryItems.Add(InputEntry);
+            var host = Html.MatchHost(InputEntry);
+            if (!string.IsNullOrWhiteSpace(ServerIp))
+            {
+                project.HostItems.Add(new HostItem(host, ServerIp));
+            }
             project.RuleItems.Add(new RuleGroupItem()
             {
                 MatchType = RuleMatchType.Host,
-                MatchValue = Html.MatchHost(InputEntry),
+                MatchValue = host,
                 Rules =
                 {
                     new RuleItem()
                     {
                         Name = "网页保存",
+                        Values =
+                        {
+                            new(nameof(UseContentType), UseContentType)
+                        }
                     }
                 }
             });
