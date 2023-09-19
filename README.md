@@ -1,5 +1,9 @@
 # ZoDream Spider
 
+## 预览图
+
+![ZoDream Spider](sceen/1.png)
+
 ## 主要结构
 
 > 主页面 显示所有网址及执行情况  包括停止开始
