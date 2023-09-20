@@ -1,6 +1,4 @@
-using JiebaNet.Segmenter;
 using Newtonsoft.Json;
-using System;
 using System.Threading.Tasks;
 using ZoDream.Shared.Form;
 using ZoDream.Shared.Http;

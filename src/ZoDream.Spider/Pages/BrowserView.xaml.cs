@@ -239,6 +239,23 @@ namespace ZoDream.Spider.Pages
             coreWebView.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
             coreWebView.DownloadStarting += CoreWebView_DownloadStarting;
             // coreWebView.DOMContentLoaded += CoreWebView_DOMContentLoaded;
+            // 过滤网址
+            // coreWebView.AddWebResourceRequestedFilter("https://zodream.cn/*", CoreWebView2WebResourceContext.All);
+            // coreWebView.WebResourceResponseReceived += CoreWebView_WebResourceResponseReceived;
+        }
+
+        private async void CoreWebView_WebResourceResponseReceived(object? sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
+        {
+            // 获取页面所有请求的资源
+            if (e.Response.StatusCode == 206)
+            {
+                var header = e.Response.Headers.GetHeader("Content-Type");
+                if (header == "video/mp4")
+                {
+                    // 保存响应内容
+                    var stream = await e.Response.GetContentAsync();
+                }
+            }
         }
 
         private void CoreWebView_DownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)

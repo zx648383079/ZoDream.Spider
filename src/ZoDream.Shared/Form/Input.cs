@@ -29,9 +29,9 @@ namespace ZoDream.Shared.Form
 
         public static File File(string name, string label, 
             bool required = false, 
-            bool isSave = false)
+            bool isSave = false, bool isFolder = false)
         {
-            return new File(name, label, required);
+            return new File(name, label, required, isSave, isFolder);
         }
 
         public static Select Select(string name, string label, DataItem[] items)
