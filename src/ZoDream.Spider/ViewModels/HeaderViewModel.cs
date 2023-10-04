@@ -82,12 +82,16 @@ namespace ZoDream.Spider.ViewModels
 
         private void TapGet(object? _)
         {
-            var page = new BrowserView(BrowserFlags.CONFIRM);
+            var page = new BrowserDebugView(BrowserFlags.CONFIRM);
             if (page.ShowDialog() != true)
             {
                 return;
             }
             var items = page.HeaderItems;
+            if (items is null)
+            {
+                return;
+            }
             foreach (var item in items)
             {
                 AddHeader(item.Name, item.Value);

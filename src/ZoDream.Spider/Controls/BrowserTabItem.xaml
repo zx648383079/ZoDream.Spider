@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="ZoDream.Spider.Controls.BrowserTabItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ZoDream.Spider.Controls"
+             mc:Ignorable="d" 
+             xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/BrowserSkin.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="HomeBtn" Content="&#xE10F;" 
+            Style="{StaticResource IconBtn}" Click="HomeBtn_Click"/>
+            <Button x:Name="BeforeBtn" Content="&#xE0A6;" 
+            Style="{StaticResource IconBtn}" Grid.Column="1" Visibility="Collapsed" Click="BeforeBtn_Click"/>
+            <Button x:Name="ForwardBtn" Content="&#xE0AB;" 
+            Style="{StaticResource IconBtn}" Grid.Column="2" Visibility="Collapsed" Click="ForwardBtn_Click"/>
+            <Button x:Name="RefreshBtn" Content="&#xE149;" 
+            Style="{StaticResource IconBtn}" 
+            Grid.Column="3" Visibility="Collapsed"
+            Click="RefreshBtn_Click"/>
+            <Button x:Name="StopBtn" Content="&#xE894;" 
+            Style="{StaticResource IconBtn}" 
+            Grid.Column="4" Visibility="Collapsed"
+            Click="StopBtn_Click"/>
+            <ComboBox x:Name="SearchCb" SelectedIndex="0" Grid.Column="5">
+                <ComboBoxItem Content="百度"/>
+                <ComboBoxItem Content="谷歌"/>
+                <ComboBoxItem Content="必应"/>
+                <ComboBoxItem Content="360"/>
+                <ComboBoxItem Content="搜狗"/>
+            </ComboBox>
+            <TextBox x:Name="UrlTb" Grid.Column="6" Text="https://www.baidu.com" KeyDown="UrlTb_KeyDown"/>
+            <Button x:Name="EnterBtn" Content="&#xE721;" Style="{StaticResource IconBtn}" 
+            Grid.Column="7" Click="EnterBtn_Click"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <wv2:WebView2 x:Name="Browser"
+                  NavigationStarting="Browser_NavigationStarting"
+                  NavigationCompleted="Browser_NavigationCompleted"
+                  SourceChanged="Browser_SourceChanged"
+                  CoreWebView2InitializationCompleted="Browser_CoreWebView2InitializationCompleted"
+                  Source="https://www.baidu.com"/>
+        </Grid>
+    </Grid>
+</UserControl>

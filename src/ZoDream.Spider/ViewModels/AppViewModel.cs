@@ -59,13 +59,13 @@ namespace ZoDream.Spider.ViewModels
         /// </summary>
         public Dispatcher DispatcherQueue => Application.Current.Dispatcher;
 
-        private BrowserView? browserRequest;
+        private BrowserDebugView? browserRequest;
 
-        public BrowserView BrowserRequest {
+        public BrowserDebugView BrowserRequest {
             get {
                 if (browserRequest == null)
                 {
-                    browserRequest = new BrowserView();
+                    browserRequest = new BrowserDebugView();
                     browserRequest.Closed += (s, arg) => {
                         browserRequest = null;
                     };

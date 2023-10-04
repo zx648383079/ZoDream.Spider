@@ -9,6 +9,7 @@ using ZoDream.Shared.Routes;
 using ZoDream.Shared.Utils;
 using ZoDream.Shared.ViewModel;
 using ZoDream.Spider.Loggers;
+using ZoDream.Spider.Pages;
 using ZoDream.Spider.Programs;
 using ZoDream.Spider.Providers;
 
@@ -205,8 +206,9 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            var browser = App.ViewModel.BrowserRequest;
-            _ = browser.NavigateUrlAsync(SelectedItem.Source, 
+            var browser = new BrowserView();
+            browser.Show();
+            browser.Navigate(SelectedItem.Source, 
                 Instance?.GetRequestData(SelectedItem.Source));
         }
 
