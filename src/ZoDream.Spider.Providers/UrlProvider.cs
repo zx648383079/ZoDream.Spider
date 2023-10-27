@@ -63,7 +63,7 @@ namespace ZoDream.Spider.Providers
             }
             var item = new UriItem() { Source = url, Type = uriType, Status = status, Level = level };
             Items.Add(item);
-            UrlChanged?.Invoke(item, true);
+            UrlChanged?.Invoke(new UrlChangedEventArgs(item, true));
         }
 
         public void Add(IEnumerable<string> items)
@@ -113,7 +113,7 @@ namespace ZoDream.Spider.Providers
                     Items.RemoveAt(i);
                 }
             }
-            UrlChanged?.Invoke(null, true);
+            UrlChanged?.Invoke(new UrlChangedEventArgs(true));
         }
 
         public void Remove(IEnumerable<UriItem> urls)
@@ -122,7 +122,7 @@ namespace ZoDream.Spider.Providers
             {
                 Items.Remove(item);
             }
-            UrlChanged?.Invoke(null, true);
+            UrlChanged?.Invoke(new UrlChangedEventArgs(true));
         }
         public void Remove(UriCheckStatus status)
         {
@@ -133,12 +133,12 @@ namespace ZoDream.Spider.Providers
                     Items.RemoveAt(i);
                 }
             }
-            UrlChanged?.Invoke(null, true);
+            UrlChanged?.Invoke(new UrlChangedEventArgs(true));
         }
         public void Clear()
         {
             Items.Clear();
-            UrlChanged?.Invoke(null, true);
+            UrlChanged?.Invoke(new UrlChangedEventArgs(true));
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -194,9 +194,15 @@ namespace ZoDream.Spider.Providers
             EmitUpdate(item);
         }
 
+        public void EmitUpdate(UriItem item, UriCheckStatus status, string message)
+        {
+            item.Status = status;
+            UrlChanged?.Invoke(new UrlChangedEventArgs(item, message));
+        }
+
         public void EmitUpdate(UriItem item)
         {
-            UrlChanged?.Invoke(item, false);
+            UrlChanged?.Invoke(new UrlChangedEventArgs(item));
         }
 
         public void EmitProgress(UriItem url, int groupIndex, int groupCount)

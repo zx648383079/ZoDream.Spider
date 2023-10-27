@@ -25,6 +25,13 @@ namespace ZoDream.Shared.Interfaces
         public FolderT? EntranceFolder { set; }
 
         public Task CreateAsync(string fileName, byte[] data);
+        /// <summary>
+        /// 以UTF8 no-bom 写入文本内容
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public Task CreateAsync(string fileName, string content);
 
         public Task CreateAsync(UriItem uri, byte[] data);
 

@@ -33,20 +33,20 @@ namespace ZoDream.Spider.Controls
         private TabItem? _contextMenuSource;
 
 
-        private void tabItem_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void TabHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
 
         }
-        private void tabItem_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        private void TabHeader_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             _contextMenuSource = (sender as Grid)?.TemplatedParent as TabItem;
-            this.menu.PlacementTarget = sender as Grid;
-            this.menu.Placement = PlacementMode.MousePoint;
-            this.menu.IsOpen = true;
+            HeaderMenu.PlacementTarget = sender as Grid;
+            HeaderMenu.Placement = PlacementMode.MousePoint;
+            HeaderMenu.IsOpen = true;
         }
 
         #region TabItem右键菜单点击事件
-        private void menuItemClick(object sender, RoutedEventArgs e)
+        private void HeaderMenuItemClick(object sender, RoutedEventArgs e)
         {
             var btn = e.Source as MenuItem;
             int data = Convert.ToInt32(btn?.CommandParameter.ToString());
@@ -107,7 +107,7 @@ namespace ZoDream.Spider.Controls
         }
         #endregion
 
-        private void btnTabItemClose_Click(object sender, RoutedEventArgs e)
+        private void PART_HeaderClose_Click(object sender, RoutedEventArgs e)
         {
             var btn = sender as Button;
             var tmpParent = (btn?.Parent as Grid)?.TemplatedParent;
@@ -125,6 +125,10 @@ namespace ZoDream.Spider.Controls
         /// </summary>
         private void CloseTabItem(TabItem tabItem)
         {
+            if (Items.Count < 2)
+            {
+                return;
+            }
             //if (tabItem.Content is BrowserTabItem o)
             //{
                 

@@ -14,6 +14,7 @@ namespace ZoDream.Shared.Http
         {
             var client = new Client()
             {
+                AllowAutoRedirect = request.AllowAutoRedirect,
                 MaxRetries = request.RetryCount,
                 RetryTime = request.RetryTime,
                 TimeOut = request.Timeout * 1000,

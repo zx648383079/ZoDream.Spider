@@ -44,6 +44,7 @@ namespace ZoDream.Shared.Interfaces
         public void EmitUpdate(int index, UriCheckStatus status);
 
         public void EmitUpdate(UriItem item, UriCheckStatus status);
+        public void EmitUpdate(UriItem item, UriCheckStatus status, string message);
 
         public void EmitUpdate(UriItem url);
         public void EmitProgress(UriItem url, int groupIndex, int groupCount);

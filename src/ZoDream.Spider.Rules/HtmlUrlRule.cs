@@ -84,7 +84,8 @@ namespace ZoDream.Spider.Rules
             var matches = Regex.Matches(html, @"url\([""']?([^""'\s\<\>]*)[""']?\)", RegexOptions.IgnoreCase);
             foreach (Match item in matches)
             {
-                if (item.Groups[1].Value.IndexOf("base64,") >= 0)
+                if (string.IsNullOrEmpty(item.Groups[1].Value) || 
+                    item.Groups[1].Value.IndexOf("base64,") >= 0)
                 {
                     continue;
                 }

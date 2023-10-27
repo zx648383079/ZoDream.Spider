@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:ZoDream.Spider.Pages"
         xmlns:ctl="clr-namespace:ZoDream.Spider.Controls"
         mc:Ignorable="d"
-        Title="浏览器" Height="450" Width="800" WindowStartupLocation="CenterScreen">
+        Title="浏览器" Height="450" Width="800" WindowStartupLocation="CenterScreen"
+        Background="{StaticResource WindowBodyBrush}">
 
     <Grid>
         <ctl:TabControlEx x:Name="TabPanel"/>

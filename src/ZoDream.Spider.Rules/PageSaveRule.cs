@@ -116,9 +116,25 @@ namespace ZoDream.Spider.Rules
             var url = container.Url.Source;
             var storage = container.Application.Storage;
             var fileName = GetFileName(url);
-            using var client = container.Application.RequestProvider.Getter().Create(container.Application.GetRequestData(url));
+            var request = container.Application.GetRequestData(url);
+            request.AllowAutoRedirect = false;
+            using var client = container.Application.RequestProvider.Getter()
+                .Create(request);
             using var response = await client.ReadResponseAsync();
-            if (response is null || response.StatusCode != HttpStatusCode.OK)
+            if (response is null) {
+                return;
+            }
+            if (response.StatusCode == HttpStatusCode.Redirect || 
+                response.StatusCode == HttpStatusCode.Moved)
+            {
+                
+                var relativeUri = container.AddUri(response.Headers.Location.ToString(), container.Url.Type);
+                await storage.CreateAsync(fileName, 
+                    RenderRedirect(relativeUri)
+                    );
+                return;
+            }
+            if (response.StatusCode != HttpStatusCode.OK)
             {
                 return;
             }
@@ -169,6 +185,11 @@ namespace ZoDream.Spider.Rules
                 return UriType.Html;
             }
             return UriType.File;
+        }
+
+        private string RenderRedirect(string url)
+        {
+            return $"<!DOCTYPE html><html><head><meta http-equiv=\"refresh\" content=\"0.1;url={url}\"></head></html>";
         }
 
         private UriType ParseType(HttpResponseHeaders headers)

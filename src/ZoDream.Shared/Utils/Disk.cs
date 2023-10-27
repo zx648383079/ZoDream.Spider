@@ -18,38 +18,62 @@ namespace ZoDream.Shared.Utils
 
         public static string RenderFile(string url)
         {
-            var m = Regex.Match(url, @"//(.*?)/?(([^/\?]*?(\.[\w]+)?(\?.+?)?)(#.+)?)$");
-            //m.Groups[1].Value 文件路径  
-            //m.Groups[2].Value 文件名 
-            //m.Groups[3].Value 文件名 不包含 #部分
-            //m.Groups[4].Value 拓展名 
-            //m.Groups[5].Value 参数 
-            //m.Groups[6].Value #id部分
-            var fileName = m.Groups[3].Value;
-            var pageExt = m.Groups[4].Value.ToLower();
+            var i = url.IndexOf("//");
+            var host = string.Empty;
+            if (i >= 0)
+            {
+                url = url.Substring(i + 2).TrimStart('/');
+                i = url.IndexOf('/');
+                if (i > 0)
+                {
+                    host = url.Substring(0, i);
+                    url = url.Substring(i + 1);
+                } else
+                {
+                    host = url;
+                    url = string.Empty;
+                }
+            }
+            url = url.TrimStart('/');
+            i = url.IndexOf('#');
+            if (i >= 0)
+            {
+                url = url.Substring(0, i);
+            }
+            i = url.IndexOf('?');
+            var query = string.Empty;
+            if (i >= 0)
+            {
+                query = url.Substring(i + 1);
+                url = url.Substring(0, i);
+            }
+            var pageExt = string.Empty;
+            var m = Regex.Match(url, @"\.[\w]+$");
+            var fileName = url;
+            if (m.Success)
+            {
+                pageExt = m.Value;
+                fileName = url.Substring(0, url.Length - pageExt.Length);
+            }
+            fileName = $"{fileName.Trim()}{query}".Trim();
             var ext = pageExt switch
             {
-                ".asp" or ".aspx" or ".php" => ".html",
+                ".asp" or ".aspx" or ".php" or "" => ".html",
                  _ => pageExt
             };
-            if (!string.IsNullOrEmpty(m.Groups[5].Value))
+            if (string.IsNullOrWhiteSpace(fileName) || fileName.EndsWith("/"))
             {
-                fileName = GetFileName(m.Groups[3].Value) + ext;
-            }
-            if (string.IsNullOrEmpty(fileName))
-            {
-                fileName = "index.html";
-            }
-
-            if (fileName == ext)
-            {
-                fileName = "index" + ext;
+                fileName  += "index";
             }
             if (fileName.Length > 255)
             {
-                fileName = fileName.Substring(0, 255 - ext.Length) + ext;
+                fileName = fileName.Substring(0, 255 - ext.Length);
             }
-            return (string.IsNullOrEmpty(m.Groups[1].Value) ? "" : m.Groups[1].Value.Replace('/', '\\') + '\\') + fileName;
+            if (!string.IsNullOrWhiteSpace(host))
+            {
+                fileName = $"{host}\\{fileName}";
+            }
+            return $"{fileName}{ext}".Replace('/', '\\').ToLower();
         }
         public static string GetFileName(string fileName)
         {

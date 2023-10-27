@@ -8,31 +8,34 @@
                d:DesignHeight="300" d:DesignWidth="300" SelectionChanged="TabControl_SelectionChanged" >
     <TabControl.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-            </ResourceDictionary.MergedDictionaries>
+            <SolidColorBrush x:Key="HeaderBackground" Color="#f4f4f4"/>
+            <SolidColorBrush x:Key="HeaderForeground" Color="#333333"/>
+            <SolidColorBrush x:Key="HeaderBorder" Color="LightGray"/>
+            <SolidColorBrush x:Key="HoverForeground" Color="#000000"/>
+            <SolidColorBrush x:Key="SelectedBackground" Color="White"/>
             <!--菜单样式-->
-            <ControlTemplate x:Key="menuTemplate" TargetType="ContextMenu">
-                <Border Name="bd" Background="#99001133">
+            <ControlTemplate x:Key="HeaderMenuTemplate" TargetType="ContextMenu">
+                <Border Name="bd" Background="{StaticResource SelectedBackground}">
                     <ItemsPresenter/>
                 </Border>
             </ControlTemplate>
-            <ControlTemplate x:Key="menuSeperatorTemplate" TargetType="Separator">
-                <Border Background="#6fff">
+            <ControlTemplate x:Key="HeaderMenuSeperatorTemplate" TargetType="Separator">
+                <Border Background="{StaticResource HeaderBorder}">
                 </Border>
             </ControlTemplate>
-            <ControlTemplate x:Key="menuItemTemplate" TargetType="MenuItem">
-                <Border Name="bd" Height="30" Background="Transparent">
+            <ControlTemplate x:Key="HeaderMenuItemTemplate" TargetType="MenuItem">
+                <Border Name="PART_Root" Height="30" Background="Transparent">
                     <StackPanel Orientation="Horizontal">
-                        <Image x:Name="img" Stretch="None" Margin="10,0,10,0" Source="/SunCreate.Common.Controls;Component/Images/Controls/二级菜单左箭头.png"></Image>
-                        <TextBlock x:Name="tb" Margin="0,0,10,0" Foreground="#fff" VerticalAlignment="Center" Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"/>
+                        <TextBlock x:Name="PART_IconTb" Text="" Margin="10,0,10,0" Style="{StaticResource IconLabel}"/>
+                        <TextBlock x:Name="PART_HeaderTb" Margin="0,0,10,0" Foreground="{StaticResource HeaderForeground}" VerticalAlignment="Center" Text="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}"/>
                     </StackPanel>
                 </Border>
                 <ControlTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="bd" Property="Background" Value="#99001133" />
-                        <Setter TargetName="tb" Property="Foreground" Value="#ff5e5e" />
-                        <Setter TargetName="tb" Property="Margin" Value="0,0,9,0" />
-                        <Setter TargetName="img" Property="Source" Value="/SunCreate.Common.Controls;Component/Images/Controls/左箭头_选中.png"></Setter>
+                        <Setter TargetName="PART_Root" Property="Background" Value="{StaticResource HeaderBackground}" />
+                        <!--<Setter TargetName="PART_HeaderTb" Property="Foreground" Value="#ff5e5e" />-->
+                        <Setter TargetName="PART_HeaderTb" Property="Margin" Value="0,0,9,0" />
+                        <!--<Setter TargetName="PART_IconTb" Property="Text" Value="&#xE0A2;"></Setter>-->
                     </Trigger>
                 </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -45,34 +48,48 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TabItem">
-                                <Grid x:Name="gridTabItem" Tag="{Binding ElementName=tabCloseBtn}" HorizontalAlignment="Center" MouseLeftButtonDown="tabItem_MouseLeftButtonDown" MouseRightButtonUp="tabItem_MouseRightButtonUp" >
+                                <Grid x:Name="PART_TabHeader" 
+                                      Tag="{Binding ElementName=PART_TabCloseBtn}" 
+                                      HorizontalAlignment="Center" 
+                                      MouseLeftButtonDown="TabHeader_MouseLeftButtonDown" 
+                                      MouseRightButtonUp="TabHeader_MouseRightButtonUp" 
+                                      ToolTip="{TemplateBinding Header}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition></ColumnDefinition>
                                         <ColumnDefinition></ColumnDefinition>
                                         <ColumnDefinition Width="16"></ColumnDefinition>
                                         <ColumnDefinition></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <Path x:Name="pathLeft" Height="4" Width="5" Data="M 0,4 L 5,4 5,0 C 5,0 5,4 0,4 Z" Fill="#096691" StrokeThickness="0" VerticalAlignment="Bottom" Visibility="Collapsed" SnapsToDevicePixels="True" >
+                                    <Path x:Name="PART_HeaderLeft" Height="4" Width="5" Data="M 0,4 L 5,4 5,0 C 5,0 5,4 0,4 Z" 
+                                          Fill="{StaticResource HeaderBackground}" StrokeThickness="0" VerticalAlignment="Bottom" Visibility="Collapsed" SnapsToDevicePixels="True" >
                                     </Path>
-                                    <Path x:Name="pathRight" Height="4" Width="5" Data="M 0,0 L 0,4 5,4 C 5,4 0,4 0,0 Z" Grid.Column="3" Fill="#096691" StrokeThickness="0" VerticalAlignment="Bottom" Visibility="Collapsed" SnapsToDevicePixels="True" >
+                                    <Path x:Name="PART_HeaderRight" Height="4" Width="5" Data="M 0,0 L 0,4 5,4 C 5,4 0,4 0,0 Z" Grid.Column="3" 
+                                          Fill="{StaticResource HeaderBackground}" StrokeThickness="0" VerticalAlignment="Bottom" Visibility="Collapsed" SnapsToDevicePixels="True" >
                                     </Path>
-                                    <Border x:Name="bdText" Grid.Column="1" Margin="0 0 0 0" Background="#096691" CornerRadius="3 0 0 0" SnapsToDevicePixels="True" >
-                                        <TextBlock x:Name="txt" Margin="15 0 10 0" FontSize="12" Foreground="#fff" FontFamily="微软雅黑,黑体" Text="{TemplateBinding Header}" VerticalAlignment="Center"></TextBlock>
+                                    <Border x:Name="PART_HeaderPanel" Grid.Column="1" Margin="0 0 0 0" Background="{StaticResource HeaderBackground}" CornerRadius="3 0 0 0" SnapsToDevicePixels="True" >
+                                        <TextBlock x:Name="PART_HeaderTb" Margin="15 0 10 0" FontSize="12" FontFamily="微软雅黑,黑体" 
+                                                   Text="{TemplateBinding Header}" 
+                                                   MaxWidth="100"
+                                                   Foreground="{StaticResource HeaderForeground}"
+                                                   VerticalAlignment="Center"></TextBlock>
                                     </Border>
-                                    <Border x:Name="bdBtn" Grid.Column="2" Margin="0 0 0 0" Background="#096691" CornerRadius="0 3 0 0" SnapsToDevicePixels="True" >
+                                    <Border x:Name="PART_HeaderBtn" Grid.Column="2" Margin="0 0 0 0" 
+                                            Background="{StaticResource HeaderBackground}" 
+                                            CornerRadius="0 3 0 0" SnapsToDevicePixels="True" >
                                     </Border>
-                                    <Button x:Name="btnTabItemClose" Grid.Column="2" Width="7" Height="7" HorizontalAlignment="Right" Click="btnTabItemClose_Click" VerticalAlignment="Top"  Margin="0,5,5,0">
+                                    <Button x:Name="PART_HeaderClose" Grid.Column="2" Width="7" Height="7" HorizontalAlignment="Right" 
+                                            Click="PART_HeaderClose_Click" VerticalAlignment="Top"  Margin="0,5,5,0">
                                         <Button.Template>
                                             <ControlTemplate TargetType="{x:Type Button}">
                                                 <Border Background="Transparent">
-                                                    <Image Stretch="Fill" x:Name="imgTabClose" Source="/SunCreate.Common.Controls;Component/Images/Controls/菜单关闭.png" ></Image>
+                                                    <TextBlock x:Name="PART_HeaderCloseIcon" Text="&#xE10A;" Style="{StaticResource IconLabel}"/>
                                                 </Border>
                                                 <ControlTemplate.Triggers>
                                                     <Trigger Property="IsPressed" Value="true">
-                                                        <Setter TargetName="imgTabClose"  Property="Margin" Value="1"></Setter>
+                                                        <Setter TargetName="PART_HeaderCloseIcon"  Property="Margin" Value="1"></Setter>
                                                     </Trigger>
                                                     <Trigger Property="IsMouseOver" Value="true">
-                                                        <Setter TargetName="imgTabClose"  Property="Margin" Value="1"></Setter>
+                                                        <Setter TargetName="PART_HeaderCloseIcon"  Property="Margin" Value="1"></Setter>
                                                     </Trigger>
                                                 </ControlTemplate.Triggers>
                                             </ControlTemplate>
@@ -81,20 +98,21 @@
                                 </Grid>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsSelected" Value="true">
-                                        <Setter TargetName="bdText" Property="Background" Value="#012f3f"></Setter>
-                                        <Setter TargetName="bdBtn" Property="Background" Value="#012f3f"></Setter>
-                                        <Setter TargetName="pathLeft" Property="Fill" Value="#012f3f"></Setter>
-                                        <Setter TargetName="pathRight" Property="Fill" Value="#012f3f"></Setter>
-                                        <Setter TargetName="pathLeft" Property="Visibility" Value="Visible"></Setter>
-                                        <Setter TargetName="pathRight" Property="Visibility" Value="Visible"></Setter>
-                                        <Setter TargetName="gridTabItem" Property="Margin" Value="0 0 -8 0"></Setter>
+                                        <Setter TargetName="PART_HeaderPanel" Property="Background" Value="{StaticResource SelectedBackground}"></Setter>
+                                        <Setter TargetName="PART_HeaderBtn" Property="Background" Value="{StaticResource SelectedBackground}"></Setter>
+                                        <!--<Setter TargetName="pathLeft" Property="Fill" Value="#012f3f"></Setter>
+                                        <Setter TargetName="pathRight" Property="Fill" Value="#012f3f"></Setter>-->
+                                        <Setter TargetName="PART_HeaderLeft" Property="Visibility" Value="Visible"></Setter>
+                                        <Setter TargetName="PART_HeaderRight" Property="Visibility" Value="Visible"></Setter>
+                                        <Setter TargetName="PART_TabHeader" Property="Margin" Value="0 0 -8 0"></Setter>
                                     </Trigger>
                                     <Trigger Property="IsSelected" Value="false">
-                                        <Setter TargetName="gridTabItem" Property="Margin" Value="5 0 -3 0"></Setter>
-                                        <Setter TargetName="txt" Property="Foreground" Value="#78a7c1"></Setter>
+                                        <Setter TargetName="PART_TabHeader" Property="Margin" Value="5 0 -3 0"></Setter>
+                                        <!--<Setter TargetName="txt" Property="Foreground" Value="#78a7c1"></Setter>-->
                                     </Trigger>
                                     <Trigger Property="IsMouseOver" Value="true">
-                                        <Setter TargetName="txt" Property="Foreground" Value="#f2f5f7"/>
+                                        <Setter TargetName="PART_HeaderTb" Property="Foreground" 
+                                                Value="{StaticResource HoverForeground}"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
@@ -108,9 +126,12 @@
                     <RowDefinition Height="1*"></RowDefinition>
                 </Grid.RowDefinitions>
                 <Border>
-                    <StackPanel MinWidth="{TemplateBinding Property=ActualWidth}" Orientation="Horizontal" Margin="2,0,0,0" IsItemsHost="True"></StackPanel>
+                    <StackPanel MinWidth="{TemplateBinding Property=ActualWidth}" 
+                                Orientation="Horizontal" 
+                                Margin="2,0,0,0" 
+                                IsItemsHost="True"></StackPanel>
                 </Border>
-                <Border Grid.Row="1" Background="#012f3f" CornerRadius="2" >
+                <Border Grid.Row="1" Background="Transparent" CornerRadius="2" >
                     <ContentPresenter  Content="{TemplateBinding Property=SelectedContent }">
                     </ContentPresenter>
                 </Border>
@@ -118,12 +139,12 @@
         </ControlTemplate>
     </TabControl.Template>
     <TabControl.ContextMenu>
-        <ContextMenu Name="menu" Template="{StaticResource menuTemplate}">
-            <MenuItem Header="关闭标签" Template="{StaticResource menuItemTemplate}" CommandParameter="0" Click="menuItemClick"></MenuItem>
-            <Separator Height="1" Template="{StaticResource menuSeperatorTemplate}" Margin="1 0 1 0"></Separator>
-            <MenuItem Header="关闭其他标签" Template="{StaticResource menuItemTemplate}" CommandParameter="1" Click="menuItemClick"></MenuItem>
-            <MenuItem Header="关闭左侧标签" Template="{StaticResource menuItemTemplate}" CommandParameter="2" Click="menuItemClick"></MenuItem>
-            <MenuItem Header="关闭右侧标签" Template="{StaticResource menuItemTemplate}" CommandParameter="3" Click="menuItemClick"></MenuItem>
+        <ContextMenu Name="HeaderMenu" Template="{StaticResource HeaderMenuTemplate}">
+            <MenuItem Header="关闭标签" Template="{StaticResource HeaderMenuItemTemplate}" CommandParameter="0" Click="HeaderMenuItemClick"></MenuItem>
+            <Separator Height="1" Template="{StaticResource HeaderMenuSeperatorTemplate}" Margin="1 0 1 0"></Separator>
+            <MenuItem Header="关闭其他标签" Template="{StaticResource HeaderMenuItemTemplate}" CommandParameter="1" Click="HeaderMenuItemClick"></MenuItem>
+            <MenuItem Header="关闭左侧标签" Template="{StaticResource HeaderMenuItemTemplate}" CommandParameter="2" Click="HeaderMenuItemClick"></MenuItem>
+            <MenuItem Header="关闭右侧标签" Template="{StaticResource HeaderMenuItemTemplate}" CommandParameter="3" Click="HeaderMenuItemClick"></MenuItem>
         </ContextMenu>
     </TabControl.ContextMenu>
 </TabControl>

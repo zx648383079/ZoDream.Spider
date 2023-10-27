@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Models
@@ -11,6 +9,10 @@ namespace ZoDream.Shared.Models
         public string Url { get; set; }
 
         public string Method { get; set; } = "GET";
+        /// <summary>
+        /// 是否允许重定向
+        /// </summary>
+        public bool AllowAutoRedirect { get; set; } = true;
 
         public IList<HeaderItem>? Headers { get; set; }
 

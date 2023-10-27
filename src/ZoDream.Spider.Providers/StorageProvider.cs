@@ -78,6 +78,15 @@ namespace ZoDream.Spider.Providers
             });
         }
 
+        public Task CreateAsync(string fileName, string content)
+        {
+            return Task.Factory.StartNew(() => {
+                var path = GetAbsolutePath(fileName);
+                Disk.CreateDirectory(path);
+                File.WriteAllText(path, content, new UTF8Encoding(false));
+            });
+        }
+
         public Task CreateAsync(UriItem uri, byte[] data)
         {
             return CreateAsync(Disk.RenderFile(uri.Source), data);

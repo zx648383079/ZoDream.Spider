@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Routes;
@@ -344,7 +345,7 @@ namespace ZoDream.Spider.ViewModels
             }
         }
 
-        private void UrlProvider_UrlChanged(UriItem? url, bool isNew)
+        private void UrlProvider_UrlChanged(UrlChangedEventArgs args)
         {
             if (Instance == null)
             {
@@ -354,7 +355,7 @@ namespace ZoDream.Spider.ViewModels
                 Progress = 0;
                 return;
             }
-            if (url == null)
+            if (args.Uri == null)
             {
                 App.ViewModel.DispatcherQueue.Invoke(() => {
                     UrlItems.Clear();
@@ -379,18 +380,22 @@ namespace ZoDream.Spider.ViewModels
             //}
             foreach (var item in UrlItems)
             {
-                if (item.Source == url.Source)
+                if (item.Source == args.Uri.Source)
                 {
                     App.ViewModel.DispatcherQueue.Invoke(() => {
-                        item.Title = url.Title;
-                        item.Status = url.Status;
+                        item.Title = args.Uri.Title;
+                        item.Status = args.Uri.Status;
+                        if (string.IsNullOrEmpty(args.Message))
+                        {
+                            item.Message = args.Message;
+                        }
                     });
                     UpdateProgress();
                     return;
                 }
             }
             App.ViewModel.DispatcherQueue.Invoke(() => {
-                UrlItems.Add(new UriLoadItem(url));
+                UrlItems.Add(new UriLoadItem(args.Uri));
             });
             UpdateProgress();
         }

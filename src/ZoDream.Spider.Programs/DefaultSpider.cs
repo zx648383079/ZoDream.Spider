@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
@@ -224,6 +225,7 @@ namespace ZoDream.Spider.Programs
             var i = 0;
             var success = true;
             UrlProvider.EmitProgress(url, i, items.Count);
+            var sb = new StringBuilder();
             foreach (var item in items)
             {
                 try
@@ -234,6 +236,7 @@ namespace ZoDream.Spider.Programs
                 {
                     success = false;
                     Logger?.Error($"{url.Source}: {ex.Message}");
+                    sb.AppendLine(ex.Message);
                 }
                 UrlProvider.EmitProgress(url, ++i, items.Count);
                 if (Paused)
@@ -242,7 +245,7 @@ namespace ZoDream.Spider.Programs
                     return;
                 }
             }
-            UrlProvider.EmitUpdate(url, success ? UriCheckStatus.Done : UriCheckStatus.Error);
+            UrlProvider.EmitUpdate(url, success ? UriCheckStatus.Done : UriCheckStatus.Error, sb.ToString());
         }
 
         public async Task ExecuteAsync(UriItem url)
