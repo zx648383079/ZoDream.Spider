@@ -48,8 +48,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="TabItem">
-                                <Grid x:Name="PART_TabHeader" 
-                                      Tag="{Binding ElementName=PART_TabCloseBtn}" 
+                                <Grid x:Name="PART_TabHeader"
                                       HorizontalAlignment="Center" 
                                       MouseLeftButtonDown="TabHeader_MouseLeftButtonDown" 
                                       MouseRightButtonUp="TabHeader_MouseRightButtonUp" 
