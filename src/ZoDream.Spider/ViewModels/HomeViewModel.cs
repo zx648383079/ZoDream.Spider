@@ -385,7 +385,7 @@ namespace ZoDream.Spider.ViewModels
                     App.ViewModel.DispatcherQueue.Invoke(() => {
                         item.Title = args.Uri.Title;
                         item.Status = args.Uri.Status;
-                        if (string.IsNullOrEmpty(args.Message))
+                        if (!string.IsNullOrEmpty(args.Message))
                         {
                             item.Message = args.Message;
                         }

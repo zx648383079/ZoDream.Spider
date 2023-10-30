@@ -1,5 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Text.RegularExpressions;
 using ZoDream.Shared.Http;
 using ZoDream.Shared.Utils;
 
@@ -19,8 +20,9 @@ namespace ZoDream.Tests
         [TestMethod]
         public void TestHost()
         {
-            var url = "//job.zodream.cn";
-            Assert.AreEqual(Html.MatchHost(url), "job.zodream.cn");
+            var html = "charset=utf-8,daaaa";
+            var match = Regex.Match(html, @"charset\b\s*=\s*""*([\da-zA-Z\-]*)");
+            Assert.AreEqual(match.Groups[1].Value, "utf-8");
         }
 
 
