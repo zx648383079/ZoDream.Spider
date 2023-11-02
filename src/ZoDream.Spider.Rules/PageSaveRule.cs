@@ -60,7 +60,7 @@ namespace ZoDream.Spider.Rules
 
         public async Task RenderAsync(ISpiderContainer container)
         {
-            if (UseContentType)
+            if (UseContentType && !container.IsDebug)
             {
                 await SaveWithContentTypeAsync(container);
                 return;

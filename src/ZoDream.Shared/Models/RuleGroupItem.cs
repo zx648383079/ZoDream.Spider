@@ -20,6 +20,16 @@ namespace ZoDream.Shared.Models
         public List<RuleItem> Rules { get; set; } = new();
 
         /// <summary>
+        /// 判断是否是专门的过滤规则
+        /// </summary>
+        [JsonIgnore]
+        public bool IsFilterMatch => Rules.Count == 0 &&
+            !string.IsNullOrWhiteSpace(MatchValue) &&
+            (MatchType == RuleMatchType.Contains || 
+            MatchType == RuleMatchType.Regex || MatchType == RuleMatchType.StartWith 
+            || MatchType == RuleMatchType.Host);
+
+        /// <summary>
         /// 是否允许新的网址进入
         /// </summary>
         /// <param name="uri"></param>

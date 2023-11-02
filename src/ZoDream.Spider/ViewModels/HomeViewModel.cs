@@ -135,6 +135,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 o.UseBrowser = Instance.Project.UseBrowser;
             }
+            Instance.IsDebug = false;
             Instance.Start();
         }
 
@@ -237,6 +238,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 o.UseBrowser = useBrowser;
             }
+            Instance.IsDebug = true;
             _ = Instance.ExecuteAsync(new UriItem(SelectedItem));
         }
 

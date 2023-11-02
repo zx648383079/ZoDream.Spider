@@ -10,8 +10,9 @@ namespace ZoDream.Shared.Interfaces
         public ISpider Application { get; set; }
         public CancellationToken Token { get; }
 
-
         public ILogger? Logger { get; }
+
+        public bool IsDebug { get; }
 
         public UriItem Url { get; set; }
 

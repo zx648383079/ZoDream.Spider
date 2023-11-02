@@ -22,7 +22,14 @@ namespace ZoDream.Spider.Providers
         {
             foreach (var item in Items)
             {
-                if (item.IsAllow(uri, uriType))
+                if (item.IsFilterMatch && item.IsMatch(uri))
+                {
+                    return false;
+                }
+            }
+            foreach (var item in Items)
+            {
+                if (!item.IsFilterMatch && item.IsAllow(uri, uriType))
                 {
                     return true;
                 }

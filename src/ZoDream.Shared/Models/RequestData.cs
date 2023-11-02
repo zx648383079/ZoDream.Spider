@@ -34,19 +34,41 @@ namespace ZoDream.Shared.Models
         /// <summary>
         /// 获取真实的网址
         /// </summary>
-        public string RealUrl => HostMap is null ? Url : Html.ReplaceHost(Url, HostMap.Host, HostMap.Ip);
+        public string RealUrl => GetRequestUrl(Url);
+        /// <summary>
+        /// 获取实际请求的地址
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public string GetRequestUrl(string url)
+        {
+            return HostMap is null ? url : Html.ReplaceHost(url, HostMap.Host, HostMap.Ip);
+        }
+        /// <summary>
+        /// 获取实际请求的地址
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public string GetRequestUrl(Uri url)
+        {
+            return HostMap is null || url.Host != HostMap.Host ? url.ToString() : Html.ReplaceHost(url.ToString(), HostMap.Host, HostMap.Ip);
+        }
 
         /// <summary>
         /// 显示虚假的网址
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public string GetUrlByHostMap(string url)
+        public string GetSourceUrl(string url)
         {
             return HostMap is null ? url : Html.ReplaceHost(url, HostMap.Ip, HostMap.Host);
         }
-
-        public string GetUrlByHostMap(Uri url)
+        /// <summary>
+        /// 显示虚假的网址
+        /// </summary>
+        /// <param name="url"></param>
+        /// <returns></returns>
+        public string GetSourceUrl(Uri url)
         {
             return HostMap is null || url.Host != HostMap.Ip ? url.ToString() : Html.ReplaceHost(url.ToString(), HostMap.Ip, HostMap.Host);
         }

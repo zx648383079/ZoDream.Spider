@@ -110,7 +110,7 @@ namespace ZoDream.Spider.Pages
         public void NavigateUrl(string url)
         {
             url = UriRender.Render(url, SearchCb.SelectedIndex);
-            UrlTb.Text = RequestData is not null ? RequestData.GetUrlByHostMap(url) : url;
+            UrlTb.Text = RequestData is not null ? RequestData.GetSourceUrl(url) : url;
             Browser.Source = new Uri(url);
             IsLoading = true;
         }
@@ -227,7 +227,7 @@ namespace ZoDream.Spider.Pages
         private void Browser_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
         {
             var uri = Browser.Source;
-            UrlTb.Text = RequestData is not null ? RequestData.GetUrlByHostMap(uri) : uri.ToString();
+            UrlTb.Text = RequestData is not null ? RequestData.GetSourceUrl(uri) : uri.ToString();
         }
 
         private void Browser_CoreWebView2InitializationCompleted(object sender,

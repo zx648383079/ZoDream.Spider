@@ -27,6 +27,8 @@ namespace ZoDream.Spider.Programs
         }
         public ISpider Application { get; set; }
 
+        public bool IsDebug => Application.IsDebug;
+
         public CancellationToken Token { get; }
 
         public ILogger? Logger { get; private set; }

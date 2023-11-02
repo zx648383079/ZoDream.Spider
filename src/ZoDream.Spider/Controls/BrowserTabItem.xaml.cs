@@ -61,7 +61,7 @@ namespace ZoDream.Spider.Controls
         public void NavigateUrl(string url)
         {
             url = UriRender.Render(url, SearchCb.SelectedIndex);
-            UrlTb.Text = RequestData is not null ? RequestData.GetUrlByHostMap(url) : url;
+            UrlTb.Text = RequestData is not null ? RequestData.GetSourceUrl(url) : url;
             Browser.Source = new Uri(url);
             IsLoading = true;
         }
@@ -95,24 +95,10 @@ namespace ZoDream.Spider.Controls
             }
         }
 
-        private void Browser_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
+        private void Browser_NavigationStarting(object sender,
+            CoreWebView2NavigationStartingEventArgs e)
         {
             IsLoading = true;
-            // 可以自定义请求头
-            if (RequestData is not null)
-            {
-                if (RequestData.Headers is not null)
-                {
-                    foreach (var item in RequestData.Headers)
-                    {
-                        e.RequestHeaders.SetHeader(item.Name, item.Value);
-                    }
-                }
-                if (RequestData.HostMap is not null && e.Uri.Contains(RequestData.HostMap.Ip))
-                {
-                    e.RequestHeaders.SetHeader("Host", RequestData.HostMap.Host);
-                }
-            }
         }
 
         private void Browser_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
@@ -127,7 +113,7 @@ namespace ZoDream.Spider.Controls
         private void Browser_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
         {
             var uri = Browser.Source;
-            UrlTb.Text = RequestData is not null ? RequestData.GetUrlByHostMap(uri) : uri.ToString();
+            UrlTb.Text = RequestData is not null ? RequestData.GetSourceUrl(uri) : uri.ToString();
         }
 
         private void Browser_CoreWebView2InitializationCompleted(object sender,
@@ -141,8 +127,38 @@ namespace ZoDream.Spider.Controls
             coreWebView.DownloadStarting += CoreWebView_DownloadStarting;
             // coreWebView.DOMContentLoaded += CoreWebView_DOMContentLoaded;
             // 过滤网址
-            // coreWebView.AddWebResourceRequestedFilter("https://zodream.cn/*", CoreWebView2WebResourceContext.All);
+            coreWebView.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
+            coreWebView.WebResourceRequested += CoreWebView_WebResourceRequested;
             // coreWebView.WebResourceResponseReceived += CoreWebView_WebResourceResponseReceived;
+        }
+
+        private void CoreWebView_WebResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)
+        {
+            // 可以自定义请求头
+            if (RequestData is null)
+            {
+                return;
+            }
+            if (RequestData.Headers is not null && RequestData.Url == e.Request.Uri)
+            {
+                foreach (var item in RequestData.Headers)
+                {
+                    e.Request.Headers.SetHeader(item.Name, item.Value);
+                }
+            }
+            if (RequestData.HostMap is null)
+            {
+                return;
+            }
+            if (e.Request.Uri.Contains(RequestData.HostMap.Ip))
+            {
+                e.Request.Headers.SetHeader("Host", RequestData.HostMap.Host);
+            }
+            else if (e.Request.Uri.Contains(RequestData.HostMap.Host))
+            {
+                e.Request.Uri = RequestData.GetRequestUrl(e.Request.Uri);
+                e.Request.Headers.SetHeader("Host", RequestData.HostMap.Host);
+            }
         }
 
         private void CoreWebView_DownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)
@@ -166,7 +182,7 @@ namespace ZoDream.Spider.Controls
         private void CoreWebView2_NewWindowRequested(object? sender, CoreWebView2NewWindowRequestedEventArgs e)
         {
             e.Handled = true;
-            NewTabRequested?.Invoke(this, RequestData is not null ? RequestData.GetUrlByHostMap(e.Uri) : e.Uri.ToString());
+            NewTabRequested?.Invoke(this, RequestData is not null ? RequestData.GetSourceUrl(e.Uri) : e.Uri.ToString());
         }
 
         private void RefreshBtn_Click(object sender, RoutedEventArgs e)

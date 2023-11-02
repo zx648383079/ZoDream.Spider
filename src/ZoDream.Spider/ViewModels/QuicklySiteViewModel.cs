@@ -74,8 +74,9 @@ namespace ZoDream.Spider.ViewModels
             {
                 Workspace = Workspace,
             };
-            project.EntryItems.Add(InputEntry);
-            var host = Html.MatchHost(InputEntry);
+            var entry = InputEntry;
+            project.EntryItems.Add(entry.Contains("//") ? entry : $"http://{entry}");
+            var host = Html.MatchHost(entry);
             if (!string.IsNullOrWhiteSpace(ServerIp))
             {
                 project.HostItems.Add(new HostItem(host, ServerIp));
