@@ -26,7 +26,7 @@ namespace ZoDream.Shared.ViewModel
             {
                 return true;
             }
-            return CanExecute(parameter);
+            return CanExecuteFun.Invoke(parameter);
         }
 
         public void Execute(object? parameter)

@@ -1,17 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Spider.Controls
@@ -140,11 +130,13 @@ namespace ZoDream.Spider.Controls
             return type switch {
                 RuleMatchType.All => "全部",
                 RuleMatchType.Event =>  "事件",
-                RuleMatchType.Regex => "正则匹配",
-                RuleMatchType.Contains => "包含字符串",
-                RuleMatchType.StartWith => "匹配前缀",
+                RuleMatchType.Regex => "网址正则匹配",
+                RuleMatchType.Contains => "网址包含字符串",
+                RuleMatchType.StartWith => "网址匹配前缀",
                 RuleMatchType.Host =>  "匹配域名",
-                _ => "单页",
+                RuleMatchType.Page => "仅网页",
+                RuleMatchType.None => "单页",
+                _ => "-",
             };
         }
     }

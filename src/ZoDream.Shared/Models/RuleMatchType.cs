@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ZoDream.Shared.Models
+﻿namespace ZoDream.Shared.Models
 {
     public enum RuleMatchType
     {
