@@ -13,15 +13,15 @@ namespace ZoDream.Spider.ImportSearchRule
         private string ApiToken = string.Empty;
         public PluginInfo Info()
         {
-            return new PluginInfo("导入搜索引擎");
+            return new("导入搜索引擎");
         }
 
         public IFormInput[]? Form()
         {
-            return new IFormInput[] { 
+            return [ 
                 Input.Url(nameof(ApiUri), "接口地址", true),
                 Input.Text(nameof(ApiToken), "授权令牌"),
-            };
+            ];
         }
 
         public void Ready(RuleItem option)

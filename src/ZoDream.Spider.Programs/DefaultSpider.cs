@@ -318,6 +318,7 @@ namespace ZoDream.Spider.Programs
             url.Title = Html.MatchTitle(content);
             foreach (var item in items)
             {
+                item.OriginData = content;
                 item.Data = new RuleString(content);
             }
             return items;

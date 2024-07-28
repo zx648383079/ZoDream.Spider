@@ -1,5 +1,4 @@
-﻿using AngleSharp.Dom;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -9,7 +8,6 @@ using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
 using ZoDream.Shared.Utils;
-using ZoDream.Spider.Providers;
 
 namespace ZoDream.Spider.Programs
 {
@@ -34,7 +32,9 @@ namespace ZoDream.Spider.Programs
         public ILogger? Logger { get; private set; }
 
         public IDictionary<string, string> MapItems = new Dictionary<string, string>();
-        public IList<IRule> Rules { get; set; } = new List<IRule>();
+        public IList<IRule> Rules { get; set; } = [];
+
+        public string? OriginData { get; set; }
         public IRuleValue? Data { get; set; }
         public UriItem Url { get; set; }
 
@@ -90,6 +90,10 @@ namespace ZoDream.Spider.Programs
 
         public async Task<string?> GetAsync(string url)
         {
+            if (OriginData is not null)
+            {
+                return OriginData;
+            }
             return await Application.RequestProvider.Getter().GetAsync(
                Application.GetRequestData(url));
         }
@@ -99,6 +103,12 @@ namespace ZoDream.Spider.Programs
             await Application.RequestProvider.Downloader().GetAsync(
             fileName,
                 Application.GetRequestData(url), EmitProgress, Token);
+        }
+
+        public async Task SaveAsync(string fileName, string content)
+        {
+            Disk.CreateDirectory(fileName);
+            await LocationStorage.WriteAsync(fileName, content);
         }
 
         public void SetAttribute(string name, string value)
@@ -136,7 +146,7 @@ namespace ZoDream.Spider.Programs
                 case "title":
                     return Url.Title;
                 case "content":
-                    return Data.ToString();
+                    return Data?.ToString() ?? string.Empty;
                 default:
                     break;
             }

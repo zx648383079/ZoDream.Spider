@@ -18,7 +18,10 @@ namespace ZoDream.Shared.Interfaces
 
         public IList<IRule> Rules { get; set; }
         public int RuleIndex { get; }
-
+        /// <summary>
+        /// 原始内容
+        /// </summary>
+        public string? OriginData { get; set; }
         public IRuleValue? Data { get; set; }
 
         public IEnumerable<string> AttributeKeys { get; }
@@ -55,5 +58,13 @@ namespace ZoDream.Shared.Interfaces
         /// <param name="url"></param>
         /// <returns></returns>
         public Task GetAsync(string fileName, string url);
+
+        /// <summary>
+        /// 保存内容
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public Task SaveAsync(string fileName, string content);
     }
 }

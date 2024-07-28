@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
-	  <LangVersion>11</LangVersion>
+	  <LangVersion>12</LangVersion>
 	  <Nullable>enable</Nullable>
 	  <UseWPF>true</UseWPF>
 	  <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -12,7 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\ZoDream.Shared\ZoDream.Shared.csproj">
-      <Private>False</Private>
+		<Private>false</Private>
+		<ExcludeAssets>runtime</ExcludeAssets>
     </ProjectReference>
   </ItemGroup>
 

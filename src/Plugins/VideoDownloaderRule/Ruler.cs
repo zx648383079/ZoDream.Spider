@@ -14,12 +14,14 @@ namespace ZoDream.Spider.VideoDownloaderRule
 
         public PluginInfo Info()
         {
-            return new PluginInfo("视频下载");
+            return new("视频下载");
         }
 
         public IFormInput[]? Form()
         {
-            return new IFormInput[] { Input.File(nameof(BinFolder), "FFMpeg Bin 文件夹", true, false, true) };
+            return [
+                Input.File(nameof(BinFolder), "FFMpeg Bin 文件夹", true, false, true) 
+            ];
         }
 
         public string GetFileName(string url)

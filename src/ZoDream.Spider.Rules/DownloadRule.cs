@@ -19,12 +19,12 @@ namespace ZoDream.Spider.Rules
 
         public PluginInfo Info()
         {
-            return new PluginInfo("直接下载");
+            return new("直接下载");
         }
 
         public IFormInput[]? Form()
         {
-            return new IFormInput[] { Input.File(nameof(FileName), "保存路径") };
+            return [ Input.File(nameof(FileName), "保存路径") ];
         }
 
         public bool ShouldPrepare { get; } = false;

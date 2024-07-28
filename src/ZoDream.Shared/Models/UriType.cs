@@ -11,6 +11,7 @@ namespace ZoDream.Shared.Models
         Html,
         Js,
         Css,
+        Json,
         Image,
         Video,
         Audio,

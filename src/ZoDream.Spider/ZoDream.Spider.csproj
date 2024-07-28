@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
-	  <LangVersion>11</LangVersion>
+	  <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Assets\spider.ico</ApplicationIcon>
@@ -11,7 +11,7 @@
     <UseWindowsForms>True</UseWindowsForms>
 	  <Authors>zodream</Authors>
 	  <Company>zodream.cn</Company>
-	  <Copyright>Copyright © 2023 zodream.cn</Copyright>
+	  <Copyright>Copyright © 2024 zodream.cn</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2535.41" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
   </ItemGroup>
