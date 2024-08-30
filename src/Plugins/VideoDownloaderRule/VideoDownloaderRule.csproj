@@ -12,11 +12,11 @@
 
   <ItemGroup>
     <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2592.51" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2739.15" />
   </ItemGroup>
 
   <ItemGroup>
-	  <ProjectReference Include="..\..\ZoDream.Shared\ZoDream.Shared.csproj" >
+	  <ProjectReference Include="..\..\ZoDream.Shared\ZoDream.Shared.csproj">
 		  <Private>false</Private>
 		  <ExcludeAssets>runtime</ExcludeAssets>
 	  </ProjectReference>

@@ -12,7 +12,7 @@ namespace ZoDream.Spider.EgretAssetRule.Models
     {
         public int X { get; set; }
         public int Y { get; set; }
-        public int w { get; set; }
+        public int W { get; set; }
         public int H { get; set; }
         public int OffX { get; set; }
         public int OffY { get; set; }

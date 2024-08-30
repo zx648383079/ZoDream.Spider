@@ -2,7 +2,7 @@
 
 ## 预览图
 
-![ZoDream Spider](sceen/1.png)
+![ZoDream Spider](screen/1.png)
 
 ## 主要结构
 
