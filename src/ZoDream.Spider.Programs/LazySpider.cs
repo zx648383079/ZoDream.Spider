@@ -1,6 +1,4 @@
-﻿using AngleSharp.Dom;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
@@ -15,7 +13,7 @@ namespace ZoDream.Spider.Programs
     /// 需要用户主动调用
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class LazySpider<T> : ISpider
+    public class LazySpider : ISpider
     {
         public LazySpider(ProjectLoader loader, IPluginLoader plugin) : this(loader, null, plugin)
         {
@@ -36,6 +34,10 @@ namespace ZoDream.Spider.Programs
             Logger = logger;
             PluginLoader = plugin;
         }
+
+
+        private IWebView? _browser;
+        private UriItem? _lastUri;
 
         public bool IsDebug { get; set; } = false;
 
@@ -64,6 +66,15 @@ namespace ZoDream.Spider.Programs
 
         public void Pause()
         {
+            if (_browser is not null)
+            {
+                if (_lastUri is not null)
+                {
+                    InvokeDestroy(_lastUri, _browser);
+                }
+                _browser.Destroy();
+                _browser = null;
+            }
             Paused = true;
             PausedChanged?.Invoke(Paused);
         }
@@ -116,11 +127,18 @@ namespace ZoDream.Spider.Programs
             }
         }
 
-        public Task ExecuteAsync(UriItem url)
+        public async Task ExecuteAsync(UriItem url)
         {
             Stop();
+            if (RequestProvider is not IWebViewProvider p)
+            {
+                return;
+            }
+            _browser = p.AsWebView();
+            await _browser.ReadyAsync();
             PausedChanged?.Invoke(Paused = false);
-            return Task.CompletedTask;
+            InvokeReady(url, _browser);
+            await _browser.OpenAsync(GetRequestData(url.Source));
         }
 
         public RequestData GetRequestData(string url)
@@ -177,35 +195,36 @@ namespace ZoDream.Spider.Programs
             await Task.CompletedTask;
         }
 
-        public void InvokeReady(UriItem url, T host)
+        public void InvokeReady(UriItem url, IWebView host)
         {
             InvokeReady(GetContainer(url), host);
         }
-        public void InvokeReady(IList<ISpiderContainer> items, T host)
+
+        public void InvokeReady(IList<ISpiderContainer> items, IWebView host)
         {
             foreach (var item in items)
             {
                 foreach (var it in item.Rules)
                 {
-                    if (it is IRuleCustomLoader<T> o)
+                    if (it is IWebViewRule o)
                     {
-                        o.Ready(host);
+                        o.Ready(host, item);
                     }
                 }
             }
         }
 
-        public void InvokeDestroy(UriItem url, T host)
+        public void InvokeDestroy(UriItem url, IWebView host)
         {
             InvokeDestroy(GetContainer(url), host);
         }
-        public void InvokeDestroy(IList<ISpiderContainer> items, T host)
+        public void InvokeDestroy(IList<ISpiderContainer> items, IWebView host)
         {
             foreach (var item in items)
             {
                 foreach (var it in item.Rules)
                 {
-                    if (it is IRuleCustomLoader<T> o)
+                    if (it is IWebViewRule o)
                     {
                         o.Destroy(host);
                     }

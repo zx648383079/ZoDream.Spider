@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Microsoft.Web.WebView2.Wpf;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -34,11 +34,12 @@ namespace ZoDream.Spider.ViewModels
         }
 
         private bool IsUpdated = false;
+
         private RuleGroupItem? EditGroup;
         private RuleItem? EditRule;
 
 
-        private IList<PluginItem> pluginItems = new List<PluginItem>();
+        private IList<PluginItem> pluginItems = [];
 
         public IList<PluginItem> PluginItems
         {
@@ -46,7 +47,7 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref pluginItems, value);
         }
 
-        private ObservableCollection<RuleGroupItem> groupItems = new();
+        private ObservableCollection<RuleGroupItem> groupItems = [];
 
         public ObservableCollection<RuleGroupItem> GroupItems {
             get => groupItems;
@@ -55,7 +56,7 @@ namespace ZoDream.Spider.ViewModels
 
 
 
-        private ObservableCollection<RuleItem> ruleItems = new();
+        private ObservableCollection<RuleItem> ruleItems = [];
 
         public ObservableCollection<RuleItem> RuleItems
         {

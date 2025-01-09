@@ -202,6 +202,10 @@ namespace ZoDream.Spider.Controls
         /// <returns></returns>
         public async Task AddProxyAsync(object? proxy)
         {
+            if (proxy is null)
+            {
+                return;
+            }
             var data = proxy?.ToString();
             var options = new CoreWebView2EnvironmentOptions();
             if (!string.IsNullOrWhiteSpace(data))

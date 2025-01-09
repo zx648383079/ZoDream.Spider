@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net9.0-windows7.0</TargetFramework>
 	  <LangVersion>12</LangVersion>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
@@ -20,15 +20,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\HttpRequester\shared\ZoDream.Shared.Controls\ZoDream.Shared.Controls.csproj" />
+    <ProjectReference Include="..\Plugins\VideoDownloaderRule\VideoDownloaderRule.csproj" />
     <ProjectReference Include="..\ZoDream.Shared\ZoDream.Shared.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Loggers\ZoDream.Spider.Loggers.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Programs\ZoDream.Spider.Programs.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2739.15" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2903.40" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="8.0.0" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -19,6 +19,7 @@ using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Spider.JsObjects;
+using ZoDream.Spider.Providers;
 
 namespace ZoDream.Spider.Pages
 {
@@ -97,6 +98,8 @@ namespace ZoDream.Spider.Pages
 
         public event ConfirmEventHandler? OnConfirm;
 
+
+        public IWebView AsWeView() => new BrowserControl(Browser);
 
         private void WebView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {

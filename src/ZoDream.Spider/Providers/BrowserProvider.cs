@@ -3,7 +3,7 @@ using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Spider.Providers
 {
-    public class BrowserProvider : IRequestProvider
+    public class BrowserProvider : IRequestProvider, IWebViewProvider
     {
         private readonly ISpider Application;
 
@@ -15,6 +15,11 @@ namespace ZoDream.Spider.Providers
 
         public bool UseBrowser { get; set; } = false;
         public bool SupportTask => UseBrowser;
+
+        public IWebView AsWebView()
+        {
+            return App.ViewModel.BrowserRequest.AsWeView();
+        }
 
         public IDownloadRequest Downloader()
         {

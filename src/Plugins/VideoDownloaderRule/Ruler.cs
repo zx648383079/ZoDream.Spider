@@ -1,12 +1,11 @@
-﻿using Microsoft.Web.WebView2.Wpf;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Spider.VideoDownloaderRule
 {
-    public class Ruler : IRule, IRuleSaver, IRuleCustomLoader<WebView2>
+    public class Ruler : IRule, IRuleSaver, IWebViewRule
     {
         private string BinFolder = string.Empty;
         public bool ShouldPrepare => false;
@@ -40,33 +39,34 @@ namespace ZoDream.Spider.VideoDownloaderRule
 
         }
 
-        public void Ready(WebView2 loader)
+        public void Ready(IWebView loader, ISpiderContainer container)
         {
-            var coreView = loader.CoreWebView2;
-            coreView.WebResourceResponseReceived += CoreView_WebResourceResponseReceived;
+            loader.ResponseReceived += CoreView_WebResourceResponseReceived;
         }
 
-        private async void CoreView_WebResourceResponseReceived(object? sender, Microsoft.Web.WebView2.Core.CoreWebView2WebResourceResponseReceivedEventArgs e)
+        private async void CoreView_WebResourceResponseReceived(IWebViewRequest request, IWebViewResponse response)
         {
-            if (e.Response.StatusCode != 206)
+            if (response.StatusCode != 206)
             {
                 return;
             }
-            var header = e.Response.Headers.GetHeader("Content-Type");
-            if (header == "video/mp4")
+            var header = response.ContentType;
+            if (header.StartsWith("video/"))
             {
                 // 保存响应内容
-                var stream = await e.Response.GetContentAsync();
-            } else if (header == "application/octet-stream")
+                var range = response.ContentRange;
+                var stream = await response.GetContentAsync();
+            }
+            else if (header == "application/octet-stream" || header.StartsWith("audio/"))
             {
                 // 保存音频
-                var stream = await e.Response.GetContentAsync();
+                var stream = await response.GetContentAsync();
             }
         }
 
-        public void Destroy(WebView2 loader)
+        public void Destroy(IWebView loader)
         {
-            loader.CoreWebView2.WebResourceResponseReceived -= CoreView_WebResourceResponseReceived;
+            loader.ResponseReceived -= CoreView_WebResourceResponseReceived;
         }
     }
 }

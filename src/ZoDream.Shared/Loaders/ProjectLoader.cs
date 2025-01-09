@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -33,14 +32,14 @@ namespace ZoDream.Shared.Loaders
         /// </summary>
         public string Workspace { get; set; } = string.Empty;
 
-        public List<HeaderItem> HeaderItems { get; set; } = new();
+        public List<HeaderItem> HeaderItems { get; set; } = [];
 
-        public List<string> ProxyItems { get; set; } = new();
-        public List<string> EntryItems { get; set; } = new();
+        public List<string> ProxyItems { get; set; } = [];
+        public List<string> EntryItems { get; set; } = [];
 
-        public List<HostItem> HostItems { get; set; } = new();
+        public List<HostItem> HostItems { get; set; } = [];
 
-        public List<RuleGroupItem> RuleItems { get; set; } = new();
+        public List<RuleGroupItem> RuleItems { get; set; } = [];
 
         public void Deserializer(StreamReader reader)
         {

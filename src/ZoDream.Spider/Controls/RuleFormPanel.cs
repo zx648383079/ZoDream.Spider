@@ -171,6 +171,7 @@ namespace ZoDream.Spider.Controls
             var ctl = new FileInput()
             {
                 FileName = GetValue<string>(item.Name) ?? string.Empty,
+                IsFile = item is File f ? !f.IsFolder : true,
                 Height = 32,
             };
             ctl.FileChanged += (s, o) => {

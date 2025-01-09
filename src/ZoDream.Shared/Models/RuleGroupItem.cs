@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using ZoDream.Shared.Utils;
 
 namespace ZoDream.Shared.Models
@@ -17,7 +16,7 @@ namespace ZoDream.Shared.Models
 
         public string MatchValue { get; set; } = string.Empty;
 
-        public List<RuleItem> Rules { get; set; } = new();
+        public List<RuleItem> Rules { get; set; } = [];
 
         /// <summary>
         /// 判断是否是专门的过滤规则

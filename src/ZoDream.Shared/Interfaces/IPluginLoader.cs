@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Interfaces
@@ -11,6 +9,8 @@ namespace ZoDream.Shared.Interfaces
         public bool Can(string name);
         public bool Can(RuleItem rule);
 
+        public bool IsUseLazy(string name);
+        public bool IsUseLazy(RuleItem rule);
         public bool IsSaver(string name);
         public bool IsSaver(RuleItem rule);
 

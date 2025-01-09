@@ -23,6 +23,11 @@ namespace ZoDream.Shared.Models
 
         public bool IsSaver { get; set; } = false;
 
+        /// <summary>
+        /// 是否只能使用 lazy spider
+        /// </summary>
+        public bool IsUseLazy { get; set; }
+
         public PluginItem()
         {
 

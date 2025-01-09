@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net8.0-windows7.0</TargetFramework>
+	  <TargetFramework>net9.0-windows7.0</TargetFramework>
 	  <LangVersion>12</LangVersion>
 	  <Nullable>enable</Nullable>
 	  <UseWPF>true</UseWPF>
@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.2739.15" />
   </ItemGroup>
 
   <ItemGroup>

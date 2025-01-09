@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Input;
 using ZoDream.Shared.Events;
 using ZoDream.Shared.Interfaces;
+using ZoDream.Shared.Loaders;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Routes;
 using ZoDream.Shared.Utils;
@@ -83,7 +84,7 @@ namespace ZoDream.Spider.ViewModels
             set => Set(ref message, value);
         }
 
-        private ObservableCollection<UriLoadItem> urlItems = new();
+        private ObservableCollection<UriLoadItem> urlItems = [];
 
         public ObservableCollection<UriLoadItem> UrlItems
         {
@@ -320,7 +321,11 @@ namespace ZoDream.Spider.ViewModels
         public void Load()
         {
             Logger = new EventLogger();
-            Instance = new DefaultSpider(App.ViewModel.Project!, Logger, App.ViewModel.Plugin);
+            var project = App.ViewModel.Project!;
+            var plugin = App.ViewModel.Plugin;
+            Instance = IsUseLazyProject(project, plugin) ? 
+                new LazySpider(project, Logger, plugin) 
+                : new DefaultSpider(project!, Logger, plugin);
             Instance.RequestProvider = new BrowserProvider(Instance);
             Instance.UrlProvider.UrlChanged += UrlProvider_UrlChanged;
             Instance.UrlProvider.ProgressChanged += UrlProvider_UrlChanged;
@@ -330,6 +335,21 @@ namespace ZoDream.Spider.ViewModels
                     Paused = v;
                 });
             };
+        }
+
+        private bool IsUseLazyProject(ProjectLoader project, IPluginLoader plugin)
+        {
+            foreach (var item in project.RuleItems)
+            {
+                foreach (var rule in item.Rules)
+                {
+                    if (plugin.IsUseLazy(rule))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         private void UrlProvider_UrlChanged(UriItem uri)

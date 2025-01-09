@@ -1,9 +1,9 @@
 ﻿namespace ZoDream.Shared.Interfaces
 {
-    public interface IRuleCustomLoader<T>
+    public interface IWebViewRule
     {
-        public void Ready(T loader);
+        public void Ready(IWebView loader, ISpiderContainer container);
 
-        public void Destroy(T loader);
+        public void Destroy(IWebView loader);
     }
 }

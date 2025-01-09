@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 
@@ -35,6 +34,18 @@ namespace ZoDream.Spider.Plugins
         {
             return Can(name) && PluginItems[name].IsSaver;
         }
+
+        public bool IsUseLazy(string name)
+        {
+            return Can(name) && PluginItems[name].IsUseLazy;
+        }
+
+        public bool IsUseLazy(RuleItem rule)
+        {
+            return IsUseLazy(rule.Name);
+        }
+
+
         public bool IsSaver(RuleItem rule)
         {
             return IsSaver(rule.Name);
@@ -56,7 +67,7 @@ namespace ZoDream.Spider.Plugins
             {
                 return null;
             }
-            return ctor.Invoke(Array.Empty<object>()) as IRule;
+            return ctor.Invoke([]) as IRule;
         }
 
         public IRule? Render(RuleItem rule)
@@ -188,13 +199,15 @@ namespace ZoDream.Spider.Plugins
             }
             var info = instance.Info();
             var isSaver = instance is IRuleSaver;
+            var isUseLazy = instance is IWebViewRule;
             PluginItems.Add(info.Name, new PluginItem(info)
             {
                 Callback = rule,
                 FileName = fileName,
                 ShouldPrepare = isSaver && (instance as IRuleSaver)!.ShouldPrepare,
                 CanNext = isSaver && (instance as IRuleSaver)!.CanNext,
-                IsSaver = isSaver
+                IsSaver = isSaver,
+                IsUseLazy = isUseLazy,
             });
         }
 

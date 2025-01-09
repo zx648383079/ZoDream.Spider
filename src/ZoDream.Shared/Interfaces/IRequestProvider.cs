@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ZoDream.Shared.Interfaces
+﻿namespace ZoDream.Shared.Interfaces
 {
     public interface IRequestProvider
     {
@@ -13,5 +7,10 @@ namespace ZoDream.Shared.Interfaces
         public IRequest Getter();
 
         public IDownloadRequest Downloader();
+    }
+
+    public interface IWebViewProvider
+    {
+        public IWebView AsWebView();
     }
 }

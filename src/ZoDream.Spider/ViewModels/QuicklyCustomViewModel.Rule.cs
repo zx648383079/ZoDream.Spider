@@ -14,14 +14,14 @@ namespace ZoDream.Spider.ViewModels
         private RuleGroupItem? EditGroup;
         private RuleItem? EditRule;
 
-        private IList<PluginItem> pluginItems = new List<PluginItem>();
+        private IList<PluginItem> pluginItems = [];
 
         public IList<PluginItem> PluginItems {
             get => pluginItems;
             set => Set(ref pluginItems, value);
         }
 
-        private ObservableCollection<RuleGroupItem> groupItems = new();
+        private ObservableCollection<RuleGroupItem> groupItems = [];
 
         public ObservableCollection<RuleGroupItem> GroupItems {
             get => groupItems;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ZoDream.Shared.Models
 {
@@ -11,7 +6,7 @@ namespace ZoDream.Shared.Models
     {
         public string Name { get; set; } = string.Empty;
 
-        public IList<DataItem> Values { get; set; } = new List<DataItem>();
+        public IList<DataItem> Values { get; set; } = [];
 
         public T? Get<T>(string key)
         {
