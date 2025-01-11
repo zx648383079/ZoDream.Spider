@@ -1,13 +1,14 @@
-﻿<Application x:Class="ZoDream.Spider.App"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ZoDream.Spider"
-             StartupUri="MainWindow.xaml">
+﻿<Application
+    x:Class="ZoDream.Spider.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:ZoDream.Spider"
+    StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/BaseSkin.xaml"/>
-                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/LightTheme.xaml"/>
+                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/BaseSkin.xaml" />
+                <ResourceDictionary Source="/ZoDream.Spider;component/Themes/LightTheme.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

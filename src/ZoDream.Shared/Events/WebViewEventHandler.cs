@@ -2,5 +2,7 @@
 
 namespace ZoDream.Shared.Events
 {
-    public delegate void WebViewResponseReceivedEventHandler(IWebViewRequest request, IWebViewResponse response);
+    public delegate void WebViewResponseReceivedEventHandler(IWebView sender, IWebViewRequest request, IWebViewResponse response);
+
+    public delegate void WebViewDocumentChangedEventHandler(IWebView sender, string uri);
 }

@@ -169,17 +169,17 @@ namespace ZoDream.Spider.Plugins
         public void LoadDll(string path)
         {
             var loadContext = new PluginLoadContext(path);
-            var assem = loadContext.LoadFromAssemblyName(AssemblyName.GetAssemblyName(path));
-            if (assem == null)
+            var assembly = loadContext.LoadFromAssemblyName(AssemblyName.GetAssemblyName(path));
+            if (assembly == null)
             {
                 return;
             }
-            LoadPlugin(assem.GetTypes(), path);
+            LoadPlugin(assembly.GetTypes(), path);
         }
 
-        public void AddRule(Assembly assemby)
+        public void AddRule(Assembly assembly)
         {
-            LoadPlugin(assemby.GetTypes(), string.Empty);
+            LoadPlugin(assembly.GetTypes(), string.Empty);
         }
 
         public void AddRule(Type rule)

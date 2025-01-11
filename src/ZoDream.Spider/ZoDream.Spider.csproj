@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\HttpRequester\shared\ZoDream.Shared.Controls\ZoDream.Shared.Controls.csproj" />
-    <ProjectReference Include="..\Plugins\VideoDownloaderRule\VideoDownloaderRule.csproj" />
     <ProjectReference Include="..\ZoDream.Shared\ZoDream.Shared.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Loggers\ZoDream.Spider.Loggers.csproj" />
     <ProjectReference Include="..\ZoDream.Spider.Programs\ZoDream.Spider.Programs.csproj" />

@@ -61,9 +61,15 @@ namespace ZoDream.Spider.Providers
             {
                 return;
             }
+            AddUrl(level, url, uriType, status);
+        }
+
+        private UriItem AddUrl(int level, string url, UriType uriType, UriCheckStatus status)
+        {
             var item = new UriItem() { Source = url, Type = uriType, Status = status, Level = level };
             Items.Add(item);
             UrlChanged?.Invoke(new UrlChangedEventArgs(item, true));
+            return item;
         }
 
         public void Add(IEnumerable<string> items)
@@ -97,6 +103,16 @@ namespace ZoDream.Spider.Providers
                 }
             }
             return null;
+        }
+
+        public UriItem? TryAdd(string url, UriType uriType)
+        {
+            var item = Get(url);
+            if (item is not null)
+            {
+                return item;
+            }
+            return AddUrl(0, url, uriType, UriCheckStatus.Doing);
         }
 
         public IEnumerator<UriItem> GetEnumerator()

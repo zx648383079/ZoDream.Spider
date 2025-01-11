@@ -31,7 +31,7 @@ namespace ZoDream.Spider.Pages
             Loaded += HomePage_Loaded;
         }
 
-        private HomeViewModel ViewModel => DataContext as HomeViewModel;
+        private HomeViewModel ViewModel => (HomeViewModel)DataContext;
 
         private void HomePage_Loaded(object sender, RoutedEventArgs e)
         {

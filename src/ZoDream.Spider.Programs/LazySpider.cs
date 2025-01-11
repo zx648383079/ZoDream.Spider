@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using AngleSharp.Dom;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
@@ -72,6 +73,9 @@ namespace ZoDream.Spider.Programs
                 {
                     InvokeDestroy(_lastUri, _browser);
                 }
+                _browser.DocumentLoaded -= WebView_DocumentLoaded;
+                _browser.DocumentUnLoaded -= WebView_DocumentUnLoaded;
+                _browser.DocumentReady -= WebView_DocumentReady;
                 _browser.Destroy();
                 _browser = null;
             }
@@ -135,10 +139,50 @@ namespace ZoDream.Spider.Programs
                 return;
             }
             _browser = p.AsWebView();
+            _browser.DocumentLoaded += WebView_DocumentLoaded;
+            _browser.DocumentUnLoaded += WebView_DocumentUnLoaded;
+            _browser.DocumentReady += WebView_DocumentReady;
+            Logger?.Info($"Ready: {url.Source}");
             await _browser.ReadyAsync();
             PausedChanged?.Invoke(Paused = false);
-            InvokeReady(url, _browser);
             await _browser.OpenAsync(GetRequestData(url.Source));
+        }
+
+        private void WebView_DocumentReady(IWebView sender, string uri)
+        {
+            var url = UrlProvider.Get(uri);
+            if (url is null)
+            {
+                return;
+            }
+            url.Title = sender.DocumentTitle;
+            UrlProvider.EmitUpdate(url);
+        }
+
+        private void WebView_DocumentUnLoaded(IWebView sender, string uri)
+        {
+            var url = UrlProvider.Get(uri);
+            if (url is null)
+            {
+                return;
+            }
+            InvokeDestroy(url, sender);
+        }
+
+        private void WebView_DocumentLoaded(IWebView sender, string uri)
+        {
+            
+            if (!RuleProvider.Cannable(uri, UriType.Html))
+            {
+                return;
+            }
+            var url = UrlProvider.TryAdd(uri, UriType.Html);
+            if (url is null)
+            {
+                return;
+            }
+            Logger?.Info($"Listening: {uri}");
+            InvokeReady(url, sender);
         }
 
         public RequestData GetRequestData(string url)
@@ -208,6 +252,7 @@ namespace ZoDream.Spider.Programs
                 {
                     if (it is IWebViewRule o)
                     {
+                        Logger?.Info($"Rule Ready: {it.Info().Name}");
                         o.Ready(host, item);
                     }
                 }

@@ -7,6 +7,8 @@ namespace ZoDream.Spider.VideoDownloaderRule
 {
     public class Ruler : IRule, IRuleSaver, IWebViewRule
     {
+
+        private ISpiderContainer? _container;
         private string BinFolder = string.Empty;
         public bool ShouldPrepare => false;
         public bool CanNext => false;
@@ -41,32 +43,36 @@ namespace ZoDream.Spider.VideoDownloaderRule
 
         public void Ready(IWebView loader, ISpiderContainer container)
         {
-            loader.ResponseReceived += CoreView_WebResourceResponseReceived;
+            _container = container;
+            loader.ResponseReceived += WebView_WebResourceResponseReceived;
         }
 
-        private async void CoreView_WebResourceResponseReceived(IWebViewRequest request, IWebViewResponse response)
+        private async void WebView_WebResourceResponseReceived(IWebView sender, IWebViewRequest request, IWebViewResponse response)
         {
             if (response.StatusCode != 206)
             {
                 return;
             }
+            _container?.Logger?.Info($"Request: {request.Url}");
             var header = response.ContentType;
             if (header.StartsWith("video/"))
             {
                 // 保存响应内容
                 var range = response.ContentRange;
+                _container?.Logger?.Info($"Response: {header}; {range}");
                 var stream = await response.GetContentAsync();
             }
             else if (header == "application/octet-stream" || header.StartsWith("audio/"))
             {
                 // 保存音频
                 var stream = await response.GetContentAsync();
+
             }
         }
 
         public void Destroy(IWebView loader)
         {
-            loader.ResponseReceived -= CoreView_WebResourceResponseReceived;
+            loader.ResponseReceived -= WebView_WebResourceResponseReceived;
         }
     }
 }

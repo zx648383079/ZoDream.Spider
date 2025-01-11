@@ -1,78 +1,95 @@
-﻿<Page x:Class="ZoDream.Spider.Pages.HomePage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ZoDream.Spider.Pages"
-      xmlns:sctl="clr-namespace:ZoDream.Shared.Controls;assembly=ZoDream.Shared.Controls"
-      xmlns:vm="clr-namespace:ZoDream.Spider.ViewModels"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="首页">
+﻿<Page
+    x:Class="ZoDream.Spider.Pages.HomePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ZoDream.Spider.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sctl="clr-namespace:ZoDream.Shared.Controls;assembly=ZoDream.Shared.Controls"
+    xmlns:vm="clr-namespace:ZoDream.Spider.ViewModels"
+    Title="首页"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
 
     <Page.Resources>
-        <ResourceDictionary Source="/Themes/MainSkin.xaml"/>
+        <ResourceDictionary Source="/Themes/MainSkin.xaml" />
     </Page.Resources>
 
     <Page.DataContext>
-        <vm:HomeViewModel/>
+        <vm:HomeViewModel />
     </Page.DataContext>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition x:Name="RowDef" Height="1"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="50" />
+            <RowDefinition Height="*" />
+            <RowDefinition x:Name="RowDef" Height="1" />
+            <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <sctl:IconButton Icon="&#xE102;" 
-                    Label="开始" Command="{Binding StartCommand}" Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}"/>
-                <sctl:IconButton Icon="&#xE103;" 
-                    Label="暂停" Command="{Binding PauseCommand}" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
-                <sctl:IconButton Icon="&#xE15B;" 
-                    Label="停止" Command="{Binding StopCommand}" Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}"/>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <sctl:IconButton
+                    Command="{Binding StartCommand}"
+                    Icon="&#xE102;"
+                    Label="开始"
+                    Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}" />
+                <sctl:IconButton
+                    Command="{Binding PauseCommand}"
+                    Icon="&#xE103;"
+                    Label="暂停"
+                    Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}" />
+                <sctl:IconButton
+                    Command="{Binding StopCommand}"
+                    Icon="&#xE15B;"
+                    Label="停止"
+                    Visibility="{Binding Paused, Converter={StaticResource FalseConverter}}" />
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Grid.Column="1"  Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
-                <sctl:IconButton Icon="&#xE710;" 
-                    Label="添加网址" Command="{Binding EntryCommand}"/>
-                <sctl:IconButton Icon="&#xE115;" 
-                    Label="设置" Command="{Binding SettingCommand}"/>
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Horizontal"
+                Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
+                <sctl:IconButton
+                    Command="{Binding EntryCommand}"
+                    Icon="&#xE710;"
+                    Label="添加网址" />
+                <sctl:IconButton
+                    Command="{Binding SettingCommand}"
+                    Icon="&#xE115;"
+                    Label="设置" />
             </StackPanel>
         </Grid>
 
-        <ListBox x:Name="UrlListBox" Grid.Row="1" 
-                 ItemsSource="{Binding UrlItems}" 
-                 SelectionChanged="UrlListBox_SelectionChanged"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 HorizontalContentAlignment="Stretch">
+        <ListBox
+            x:Name="UrlListBox"
+            Grid.Row="1"
+            HorizontalContentAlignment="Stretch"
+            ItemsSource="{Binding UrlItems}"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            SelectionChanged="UrlListBox_SelectionChanged">
             <ListBox.ContextMenu>
                 <ContextMenu Visibility="{Binding Paused, Converter={StaticResource BoolConverter}}">
-                    <MenuItem Header="任务" >
-                        <MenuItem Header="编辑" Command="{Binding SettingCommand}"/>
-                        <MenuItem Header="打开" Command="{Binding OpenCommand}"/>
-                        <MenuItem Header="保存" Command="{Binding SaveCommand}"/>
+                    <MenuItem Header="任务">
+                        <MenuItem Command="{Binding SettingCommand}" Header="编辑" />
+                        <MenuItem Command="{Binding OpenCommand}" Header="打开" />
+                        <MenuItem Command="{Binding SaveCommand}" Header="保存" />
                     </MenuItem>
-                    <MenuItem Header="添加网址" Command="{Binding EntryCommand}"/>
-                    <MenuItem Header="添加代理" Command="{Binding ProxyCommand}"/>
-                    <MenuItem Header="手动同步网址" Command="{Binding SyncUrlCommand}"/>
+                    <MenuItem Command="{Binding EntryCommand}" Header="添加网址" />
+                    <MenuItem Command="{Binding ProxyCommand}" Header="添加代理" />
+                    <MenuItem Command="{Binding SyncUrlCommand}" Header="手动同步网址" />
                     <MenuItem Header="调试">
-                        <MenuItem Header="浏览器打开" 
-                              Command="{Binding BrowserOpenCommand}"/>
-                        <MenuItem Header="浏览器调试" 
-                                Command="{Binding BrowserTestCommand}"/>
-                        <MenuItem Header="Http调试" 
-                              Command="{Binding HttpTestCommand}"/>
+                        <MenuItem Command="{Binding BrowserOpenCommand}" Header="浏览器打开" />
+                        <MenuItem Command="{Binding BrowserTestCommand}" Header="浏览器调试" />
+                        <MenuItem Command="{Binding HttpTestCommand}" Header="Http调试" />
                     </MenuItem>
                     <MenuItem Header="删除">
-                        <MenuItem Header="选中" Command="{Binding DeleteSelectedCommand}"/>
-                        <MenuItem Header="已完成" Command="{Binding DeleteDoneCommand}"/>
-                        <MenuItem Header="全部" Command="{Binding ClearCommand}"/>
+                        <MenuItem Command="{Binding DeleteSelectedCommand}" Header="选中" />
+                        <MenuItem Command="{Binding DeleteDoneCommand}" Header="已完成" />
+                        <MenuItem Command="{Binding ClearCommand}" Header="全部" />
                     </MenuItem>
                 </ContextMenu>
             </ListBox.ContextMenu>
@@ -80,45 +97,61 @@
                 <DataTemplate>
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition/>
-                            <RowDefinition/>
+                            <RowDefinition />
+                            <RowDefinition />
                         </Grid.RowDefinitions>
-                        <ProgressBar Grid.Column="1" Grid.RowSpan="2" 
-                                     Value="{Binding Progress}"
-                                     Visibility="{Binding Status,Converter={StaticResource ProgressCvt}}"
-                                     Foreground="LightBlue"
-                                     BorderThickness="0"
-                                     Background="Transparent"/>
-                        <TextBlock Text="{Binding Status, Converter={StaticResource StatusIconCvt}}" 
-                               Foreground="{Binding Status, Converter={StaticResource StatusColorCvt}}"
-                               Grid.RowSpan="2"
-                               Style="{StaticResource IconLabel}" 
-                                   FontSize="20"
-                                   Margin="5,0"/>
-                        <TextBlock Grid.Column="1" Text="{Binding Path=Title}" FontWeight="Bold" VerticalAlignment="Center"/>
-                        <TextBlock Grid.Column="1" Grid.Row="1" 
-                                   Text="{Binding Path=Source}"
-                                   Style="{StaticResource MetaLabelStyle}"/>
+                        <ProgressBar
+                            Grid.RowSpan="2"
+                            Grid.Column="1"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="LightBlue"
+                            Visibility="{Binding Status, Converter={StaticResource ProgressCvt}}"
+                            Value="{Binding Progress}" />
+                        <TextBlock
+                            Grid.RowSpan="2"
+                            Margin="5,0"
+                            FontSize="20"
+                            Foreground="{Binding Status, Converter={StaticResource StatusColorCvt}}"
+                            Style="{StaticResource IconLabel}"
+                            Text="{Binding Status, Converter={StaticResource StatusIconCvt}}" />
+                        <TextBlock
+                            Grid.Column="1"
+                            VerticalAlignment="Center"
+                            FontWeight="Bold"
+                            Text="{Binding Path=Title}" />
+                        <TextBlock
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Style="{StaticResource MetaLabelStyle}"
+                            Text="{Binding Path=Source}" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <sctl:ConsolePanel x:Name="InfoTb" Grid.Row="2"/>
-        <GridSplitter x:Name="Splitter" Grid.Row="2" Height="2" VerticalAlignment="Top" 
-              HorizontalAlignment="Stretch" ResizeDirection="Rows"/>
+        <sctl:ConsolePanel x:Name="InfoTb" Grid.Row="2" />
+        <GridSplitter
+            x:Name="Splitter"
+            Grid.Row="2"
+            Height="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Top"
+            ResizeDirection="Rows" />
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <TextBlock Text="{Binding Message}"/>
-            <ProgressBar Grid.Column="1" Height="10" 
-                         Value="{Binding Progress}"
-                 Visibility="{Binding Path=Paused, Converter={StaticResource FalseConverter}}"/>
+            <TextBlock Text="{Binding Message}" />
+            <ProgressBar
+                Grid.Column="1"
+                Height="10"
+                Visibility="{Binding Path=Paused, Converter={StaticResource FalseConverter}}"
+                Value="{Binding Progress}" />
         </Grid>
     </Grid>
 </Page>

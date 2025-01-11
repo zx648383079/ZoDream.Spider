@@ -176,12 +176,12 @@ namespace ZoDream.Spider.Pages
         private async Task LoadHeaderAsync()
         {
             var cookie = await Browser.CoreWebView2.CookieManager.GetCookiesAsync(Browser.Source.ToString());
-            HeaderItems = new List<HeaderItem> {
+            HeaderItems = [
                 new("Accept", HttpAccept.Html),
                 new("Cookie", string.Join(';', cookie.Select(i => i.ToSystemNetCookie().ToString()))),
                 new("Referer", Browser.Source.ToString()),
                 new("User-Agent", HttpUserAgent.Chrome)
-            };
+            ];
             DialogResult = true;
         }
 
@@ -248,19 +248,6 @@ namespace ZoDream.Spider.Pages
             // coreWebView.WebResourceResponseReceived += CoreWebView_WebResourceResponseReceived;
         }
 
-        private async void CoreWebView_WebResourceResponseReceived(object? sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
-        {
-            // 获取页面所有请求的资源
-            if (e.Response.StatusCode == 206)
-            {
-                var header = e.Response.Headers.GetHeader("Content-Type");
-                if (header == "video/mp4")
-                {
-                    // 保存响应内容
-                    var stream = await e.Response.GetContentAsync();
-                }
-            }
-        }
 
         private void CoreWebView_DownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)
         {
