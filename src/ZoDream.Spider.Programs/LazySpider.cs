@@ -1,5 +1,4 @@
-﻿using AngleSharp.Dom;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
@@ -39,7 +38,7 @@ namespace ZoDream.Spider.Programs
 
         private IWebView? _browser;
         private UriItem? _lastUri;
-
+        private readonly Dictionary<UriItem, ISpiderContainer> _containerItems = [];
         public bool IsDebug { get; set; } = false;
 
         private volatile bool _paused = true;
@@ -118,6 +117,7 @@ namespace ZoDream.Spider.Programs
         public void Stop()
         {
             Pause();
+            _containerItems.Clear();
             UrlProvider.Reset();
         }
 
@@ -200,7 +200,13 @@ namespace ZoDream.Spider.Programs
 
         public ISpiderContainer GetContainer(UriItem url, IList<IRule> rules)
         {
-            return new SpiderContainer(this, url, rules);
+            if (_containerItems.TryGetValue(url, out var container))
+            {
+                return container;
+            }
+            container = new SpiderContainer(this, url, rules);
+            _containerItems.Add(url, container);
+            return container;
         }
 
         public IList<ISpiderContainer> GetContainer(UriItem url)

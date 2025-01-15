@@ -18,6 +18,10 @@ namespace ZoDream.Spider.Providers
 
         public string GetHeader(string name)
         {
+            if (!request.Headers.Contains(name))
+            {
+                return string.Empty;
+            }
             return request.Headers.GetHeader(name);
         }
     }
@@ -49,6 +53,10 @@ namespace ZoDream.Spider.Providers
         }
         public string GetHeader(string name)
         {
+            if (!response.Headers.Contains(name))
+            {
+                return string.Empty;
+            }
             return response.Headers.GetHeader(name);
         }
 
