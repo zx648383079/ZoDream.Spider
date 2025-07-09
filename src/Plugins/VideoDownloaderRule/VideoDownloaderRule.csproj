@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	  <TargetFramework>net9.0-windows7.0</TargetFramework>
-	  <LangVersion>12</LangVersion>
+	  <LangVersion>13</LangVersion>
 	  <Nullable>enable</Nullable>
 	  <UseWPF>true</UseWPF>
 	  <EnableDynamicLoading>true</EnableDynamicLoading>
@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FFmpeg.AutoGen" Version="7.0.0" />
+    <PackageReference Include="FFmpeg.AutoGen" Version="7.1.1" />
   </ItemGroup>
 
   <ItemGroup>

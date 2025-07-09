@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-	  <LangVersion>12</LangVersion>
+	  <LangVersion>13</LangVersion>
       <Nullable>enable</Nullable>
 	  <BaseOutputPath>..\bin\</BaseOutputPath>
 	  <SignAssembly>true</SignAssembly>
@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="9.0.7" />
   </ItemGroup>
 
   <ItemGroup>
