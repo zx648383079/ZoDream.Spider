@@ -1,4 +1,4 @@
-﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Core;
 using System;
 using System.IO;
 using System.Net.Http.Headers;
@@ -36,28 +36,11 @@ namespace ZoDream.Spider.Providers
 
         public long ContentLength => long.TryParse(GetHeader("Content-Length"), out var res) ? res : 0;
 
-        public string FileName {
-            get {
-                var header = GetHeader("Content-Disposition");
-                if (string.IsNullOrWhiteSpace(header))
-                {
-                    return string.Empty;
-                }
-                var match = Regex.Match(header, @"filename=""?([^"";]+)");
-                if (match.Success)
-                {
-                    return match.Groups[1].Value;
-                }
-                return string.Empty;
-            }
-        }
+        public string FileName => WebViewResponse.ParseContentDisposition(GetHeader("Content-Disposition"));
+
         public string GetHeader(string name)
         {
-            if (!response.Headers.Contains(name))
-            {
-                return string.Empty;
-            }
-            return response.Headers.GetHeader(name);
+            return WebViewResponse.GetHeader(response.Headers, name);
         }
 
         public Task<Stream> GetContentAsync()

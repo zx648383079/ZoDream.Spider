@@ -1,15 +1,19 @@
-﻿<Window x:Class="ZoDream.Spider.Pages.BrowserView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ZoDream.Spider.Pages"
-        xmlns:ctl="clr-namespace:ZoDream.Spider.Controls"
-        mc:Ignorable="d"
-        Title="浏览器" Height="450" Width="800" WindowStartupLocation="CenterScreen"
-        Background="{StaticResource WindowBodyBrush}">
+<Window
+    x:Class="ZoDream.Spider.Pages.BrowserView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ctl="clr-namespace:ZoDream.Spider.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:ZoDream.Spider.Pages"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="浏览器"
+    Width="800"
+    Height="450"
+    Background="{StaticResource WindowBodyBrush}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
 
     <Grid>
-        <ctl:TabControlEx x:Name="TabPanel"/>
+        <ctl:TabControlEx x:Name="TabPanel" />
     </Grid>
 </Window>

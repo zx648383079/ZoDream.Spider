@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -58,5 +58,6 @@ namespace ZoDream.Shared.Interfaces
         /// <returns></returns>
         public Task ExecuteAsync(UriItem url);
         public Task InvokeAsync(string url, string html);
+        public Task InvokeAsync(string url, IHttpResponse response);
     }
 }

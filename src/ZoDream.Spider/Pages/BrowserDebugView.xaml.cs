@@ -1,20 +1,14 @@
-﻿using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
@@ -26,7 +20,7 @@ namespace ZoDream.Spider.Pages
     /// <summary>
     /// BrowserDebugView.xaml 的交互逻辑
     /// </summary>
-    public partial class BrowserDebugView : Window, IRequest
+    public partial class BrowserDebugView : Window, IHttpRequest
     {
         public BrowserDebugView()
         {
@@ -39,15 +33,18 @@ namespace ZoDream.Spider.Pages
             BrowserFlag = flag;
         }
 
-        private readonly SpiderBridge bridge = new();
+        private IRequestHost _host;
+
+        private readonly SpiderBridge _bridge = new();
+
         public bool SupportTask { get; } = false;
 
-        private BrowserFlags browserFlag;
+        private BrowserFlags _browserFlag;
 
         public BrowserFlags BrowserFlag {
-            get { return browserFlag; }
+            get { return _browserFlag; }
             set {
-                browserFlag = value;
+                _browserFlag = value;
                 switch (value)
                 {
                     case BrowserFlags.NONE:
@@ -238,16 +235,44 @@ namespace ZoDream.Spider.Pages
         {
             var coreWebView = Browser.CoreWebView2;
             coreWebView.NewWindowRequested += CoreWebView2_NewWindowRequested;
-            coreWebView.AddHostObjectToScript("zreSpider", bridge);
+            coreWebView.AddHostObjectToScript("zreSpider", _bridge);
             coreWebView.AddScriptToExecuteOnDocumentCreatedAsync("var zreSpider = window.chrome.webview.hostObjects.zreSpider;");
             coreWebView.DocumentTitleChanged += CoreWebView2_DocumentTitleChanged;
             coreWebView.DownloadStarting += CoreWebView_DownloadStarting;
+            coreWebView.IsDefaultDownloadDialogOpenChanged += CoreWebView_IsDefaultDownloadDialogOpenChanged;
             // coreWebView.DOMContentLoaded += CoreWebView_DOMContentLoaded;
             // 过滤网址
-            // coreWebView.AddWebResourceRequestedFilter("https://zodream.cn/*", CoreWebView2WebResourceContext.All);
-            // coreWebView.WebResourceResponseReceived += CoreWebView_WebResourceResponseReceived;
+            coreWebView.AddWebResourceRequestedFilter("*", CoreWebView2WebResourceContext.All);
+            coreWebView.WebResourceResponseReceived += CoreWebView_WebResourceResponseReceived;
+            // coreWebView.WebResourceRequested += CoreWebView_WebResourceRequested;
         }
 
+        private void CoreWebView_IsDefaultDownloadDialogOpenChanged(object? sender, object e)
+        {
+            if (sender is not WebView2 webView)
+            {
+                return;
+            }
+            if (webView.CoreWebView2.IsDefaultDownloadDialogOpen)
+            {
+                webView.CoreWebView2.CloseDefaultDownloadDialog();
+            }
+        }
+
+        private async void CoreWebView_WebResourceResponseReceived(object? sender, CoreWebView2WebResourceResponseReceivedEventArgs e)
+        {
+            if (RequestData is null || _host is null)
+            {
+                return;
+            }
+            await _host.InvokeAsync(RequestData.GetSourceUrl(e.Request.Uri), new WebViewResponse(this, e.Response.StatusCode, e.Response.Headers, e));
+        }
+
+        private void CoreWebView_WebResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)
+        {
+            // TODO 处理响应头
+            // _response = new WebViewResponse(this, e);
+        }
 
         private void CoreWebView_DownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)
         {
@@ -255,6 +280,24 @@ namespace ZoDream.Spider.Pages
             // e.DownloadOperation.Uri;
             // e.DownloadOperation.BytesReceivedChanged
             // 可以获取下载文件的进度及相关信息
+            if (RequestData is null || _host is null)
+            {
+                e.Cancel = true;
+                return;
+            }
+            var deferral = e.GetDeferral();
+            var sourceUri = RequestData.GetSourceUrl(e.DownloadOperation.Uri);
+            SynchronizationContext.Current.Post(async _ => {
+                using (deferral)
+                {
+                    if (!_host.Cannable(sourceUri, UriType.File))
+                    {
+                        e.Cancel = true;
+                        return;
+                    }
+                    await _host.InvokeAsync(sourceUri, new DownloadResponse(e));
+                }
+            }, null);
         }
 
         private void CoreWebView_DOMContentLoaded(object? sender, CoreWebView2DOMContentLoadedEventArgs e)
@@ -329,7 +372,7 @@ namespace ZoDream.Spider.Pages
             await Browser.EnsureCoreWebView2Async();
             if (isCallback)
             {
-                bridge.ContentReady += func;
+                _bridge.ContentReady += func;
             }
             var res = await Browser.ExecuteScriptAsync(script);
             if (!isCallback)
@@ -342,7 +385,7 @@ namespace ZoDream.Spider.Pages
                     Thread.Sleep(100);
                 }
             });
-            bridge.ContentReady -= func;
+            _bridge.ContentReady -= func;
             return funcRes;
         }
 
@@ -403,9 +446,15 @@ namespace ZoDream.Spider.Pages
             return res;
         }
 
-        public IHttpClient Create(RequestData request)
+        public async Task SendAsync(RequestData request, IRequestHost host)
         {
-            return new HttpRequest().Create(request);
+            _host = host;
+            var html = await GetAsync(request);
+            if (string.IsNullOrWhiteSpace(html))
+            {
+                return;
+            }
+            await host.InvokeAsync(request.Url, new HttpContentResponse(html));
         }
     }
 

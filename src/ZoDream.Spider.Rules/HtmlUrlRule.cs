@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
@@ -77,17 +77,33 @@ namespace ZoDream.Spider.Rules
 
         public void GetUrlFromCss(ISpiderContainer container, ref string html)
         {
-            var matches = Regex.Matches(html, @"url\([""']?([^""'\s\<\>]*)[""']?\)", RegexOptions.IgnoreCase);
+            var matches = Regex.Matches(html, @"url\([""']?([^""'\s\<\>]*?)[""']?\)", RegexOptions.IgnoreCase);
             foreach (Match item in matches)
             {
-                if (string.IsNullOrEmpty(item.Groups[1].Value) || 
-                    item.Groups[1].Value.IndexOf("base64,") >= 0)
+                var url = item.Groups[1].Value;
+
+                if (string.IsNullOrEmpty(url) ||
+                    url.IndexOf("base64,") >= 0)
                 {
                     continue;
                 }
-                var uri = container.AddUri(item.Groups[1].Value, UriType.File);
+                var next = url.IndexOf('#');
+                if (next >= 0)
+                {
+                    url = url.Substring(0, next);
+                }
+                next = url.LastIndexOf(": 0x");
+                if (next >= 0)
+                {
+                    url = url.Substring(0, next);
+                }
+                if (url.EndsWith("?"))
+                {
+                    url = url.Substring(0, url.Length - 1);
+                }
+                var uri = container.AddUri(url, UriType.File);
                 html = html.Replace(item.Value,
-                    item.Value.Replace(item.Groups[1].Value, uri));
+                    item.Value.Replace(url, uri));
             }
         }
     }

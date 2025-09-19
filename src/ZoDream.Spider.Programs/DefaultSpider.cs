@@ -1,4 +1,4 @@
-﻿using AngleSharp.Dom;
+using AngleSharp.Dom;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,6 +13,7 @@ using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
 using ZoDream.Shared.Utils;
 using ZoDream.Spider.Providers;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ZoDream.Spider.Programs
 {
@@ -362,6 +363,42 @@ namespace ZoDream.Spider.Programs
             UrlProvider.EmitUpdate(uri, success ? UriCheckStatus.Done : UriCheckStatus.Error);
             Paused = true;
             PausedChanged?.Invoke(Paused);
+        }
+
+        public async Task InvokeAsync(string url, IHttpResponse response)
+        {
+            var uri = UrlProvider.Get(url);
+            if (uri == null)
+            {
+                Logger?.Error($"{url}: 没有获取到网址");
+                return;
+            }
+            var rules = RuleProvider.Get(url);
+            if (rules == null || rules.Count < 1)
+            {
+                Logger?.Error("没有获取到规则");
+                return;
+            }
+            UrlProvider.EmitUpdate(uri, UriCheckStatus.Doing);
+            var success = true;
+            var i = 0;
+            UrlProvider.EmitProgress(uri, i, rules.Count);
+            foreach (var item in rules)
+            {
+                var con = GetContainer(uri, PluginLoader.Render(item.Rules));
+                con.Data = new RuleSource(response);
+                try
+                {
+                    await con.NextAsync();
+                }
+                catch (Exception ex)
+                {
+                    success = false;
+                    Logger?.Error($"{url}: {ex.Message}");
+                }
+                UrlProvider.EmitProgress(uri, ++i, rules.Count);
+            }
+            UrlProvider.EmitUpdate(uri, success ? UriCheckStatus.Done : UriCheckStatus.Error);
         }
     }
 }

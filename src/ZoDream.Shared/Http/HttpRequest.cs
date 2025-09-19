@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
@@ -6,11 +6,12 @@ using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Http
 {
-    public class HttpRequest : IRequest, IDownloadRequest
+    public class HttpRequest : IHttpRequest, IDownloadRequest
     {
         public bool SupportTask { get; } = true;
 
-        public IHttpClient Create(RequestData request)
+
+        private Client Create(RequestData request)
         {
             var client = new Client()
             {
@@ -33,6 +34,13 @@ namespace ZoDream.Shared.Http
                 client.Headers.Add("Host", request.HostMap.Host);
             }
             return client;
+        }
+
+        public async Task SendAsync(RequestData request, IRequestHost host)
+        {
+            var client = Create(request);
+            using var response = new HttpResponse(client, await client.ReadResponseAsync());
+            await host.InvokeAsync(request.Url, response);
         }
 
         public Task<string?> GetAsync(string url)

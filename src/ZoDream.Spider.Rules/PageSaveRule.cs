@@ -1,20 +1,25 @@
-﻿using AngleSharp.Io;
+using AngleSharp.Io;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
+using ZoDream.Shared.Rules.Values;
 using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Rules
 {
-    public class PageSaveRule : IRule, IRuleSaver
+    public class PageSaveRule : IRule, IRuleSaver, IRequestHost
     {
+
+        private ISpiderContainer _container;
         private string FileName = string.Empty;
 
         private bool UseContentType = false;
@@ -60,13 +65,73 @@ namespace ZoDream.Spider.Rules
 
         public async Task RenderAsync(ISpiderContainer container)
         {
+            _container = container;
             if (UseContentType && !container.IsDebug)
             {
                 await SaveWithContentTypeAsync(container);
+            } else
+            {
+                await SaveWithTypeAsync(container);
+            }
+            _container = null;
+        }
+
+        public async Task InvokeAsync(string url, IHttpResponse response)
+        {
+            if (_container is null)
+            {
                 return;
             }
-            await SaveWithTypeAsync(container);
+            if (url == _container.Url.Source)
+            {
+                await SaveWithContentTypeAsync(_container, response);
+                return;
+            }
+            var uriType = ParseType(response.ContentTypeMediaType);
+            if (!_container.Application.RuleProvider.Cannable(url, uriType))
+            {
+                return;
+            }
+            _container.Application.UrlProvider.Add(_container.Url.Level + 1, url, uriType);
+            await _container.Application.InvokeAsync(url, response);
         }
+
+        public bool Cannable(string url, UriType type)
+        {
+            if (_container is null)
+            {
+                return false;
+            }
+            if (url == _container.Url.Source)
+            {
+                return true;
+            }
+            return _container.Application.RuleProvider.Cannable(url, type);
+        }
+
+        public bool TrySave(string url, out string outputPath)
+        {
+            outputPath = string.Empty;
+            if (_container is null)
+            {
+                return false;
+            }
+            var storage = _container.Application.Storage;
+            if (url == _container.Url.Source)
+            {
+                outputPath = storage.GetAbsolutePath(GetFileName(url));
+                return true;
+            }
+            var uriType = UriType.File;
+            if (!_container.Application.RuleProvider.Cannable(url, uriType))
+            {
+                return false;
+            }
+            _container.Application.UrlProvider.Add(_container.Url.Level + 1, url, uriType);
+            outputPath = storage.GetAbsolutePath(GetFileName(url));
+            return true;
+        }
+
         /// <summary>
         /// 根据推测的类型判断
         /// </summary>
@@ -113,23 +178,34 @@ namespace ZoDream.Spider.Rules
         /// <returns></returns>
         public async Task SaveWithContentTypeAsync(ISpiderContainer container)
         {
+            if (container.Data is RuleSource s)
+            {
+                await SaveWithContentTypeAsync(container, s.Source);
+                return;
+            }
+            var url = container.Url.Source;
+            var request = container.Application.GetRequestData(url);
+            request.AllowAutoRedirect = false;
+            await container.Application.RequestProvider.Getter()
+                .SendAsync(request, this);
+            //await SaveWithContentTypeAsync(container, response);
+        }
+
+        public async Task SaveWithContentTypeAsync(ISpiderContainer container, IHttpResponse response)
+        {
             var url = container.Url.Source;
             var storage = container.Application.Storage;
             var fileName = GetFileName(url);
-            var request = container.Application.GetRequestData(url);
-            request.AllowAutoRedirect = false;
-            using var client = container.Application.RequestProvider.Getter()
-                .Create(request);
-            using var response = await client.ReadResponseAsync();
-            if (response is null) {
+            if (response is null)
+            {
                 return;
             }
-            if (response.StatusCode == HttpStatusCode.Redirect || 
+            if (response.StatusCode == HttpStatusCode.Redirect ||
                 response.StatusCode == HttpStatusCode.Moved)
             {
-                
-                var relativeUri = container.AddUri(response.Headers.Location.ToString(), container.Url.Type);
-                await storage.CreateAsync(fileName, 
+
+                var relativeUri = container.AddUri(response.RedirectLocation, container.Url.Type);
+                await storage.CreateAsync(fileName,
                     RenderRedirect(relativeUri)
                     );
                 return;
@@ -138,21 +214,20 @@ namespace ZoDream.Spider.Rules
             {
                 return;
             }
-            var responseFileName = response.Content.Headers.ContentDisposition?.FileName;
+            var responseFileName = response.ContentDispositionFileName;
             if (!string.IsNullOrWhiteSpace(responseFileName))
             {
                 container.Url.Title = responseFileName!;
             }
-            var type = ParseType(response.Content.Headers.ContentType?.MediaType);
+            var type = ParseType(response.ContentTypeMediaType);
             if (type != UriType.Css && type != UriType.Html)
             {
                 var fullPath = storage.GetAbsolutePath(fileName);
                 Disk.CreateDirectory(fullPath);
-                await client.SaveAsync(response,
-                    fullPath, container.EmitProgress, container.Token);
+                await response.SaveAsync(fullPath, container.EmitProgress, container.Token);
                 return;
             }
-            var content = await client.ReadAsync(response);
+            var content = await response.ReadAsync();
             if (content is null)
             {
                 return;
@@ -211,5 +286,7 @@ namespace ZoDream.Spider.Rules
             }
             return UriType.File;
         }
+
+        
     }
 }

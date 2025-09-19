@@ -1,10 +1,7 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Shared.Rules.Values
@@ -29,7 +26,7 @@ namespace ZoDream.Shared.Rules.Values
             }
         }
 
-        public IRuleValue Clone()
+        public object Clone()
         {
             throw new NotImplementedException();
         }

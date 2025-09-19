@@ -1,4 +1,4 @@
-﻿using ZoDream.Shared.Http;
+using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Spider.Providers
@@ -14,7 +14,7 @@ namespace ZoDream.Spider.Providers
         }
 
         public bool UseBrowser { get; set; } = false;
-        public bool SupportTask => UseBrowser;
+        public bool SupportTask => !UseBrowser;
 
         public IWebView AsWebView()
         {
@@ -26,7 +26,7 @@ namespace ZoDream.Spider.Providers
             return new HttpRequest();
         }
 
-        public IRequest Getter()
+        public IHttpRequest Getter()
         {
             return UseBrowser ? App.ViewModel.BrowserRequest : new HttpRequest();
         }

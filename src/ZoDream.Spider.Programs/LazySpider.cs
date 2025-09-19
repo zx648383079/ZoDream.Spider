@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using ZoDream.Shared.Events;
@@ -243,6 +243,11 @@ namespace ZoDream.Spider.Programs
             Paused = false;
             PausedChanged?.Invoke(Paused);
             await Task.CompletedTask;
+        }
+
+        public async Task InvokeAsync(string url, IHttpResponse response)
+        {
+            await InvokeAsync(url, await response.ReadAsync());
         }
 
         public void InvokeReady(UriItem url, IWebView host)

@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
@@ -65,7 +66,13 @@ namespace ZoDream.Spider.ViewModels
             get {
                 if (browserRequest == null)
                 {
-                    browserRequest = new BrowserDebugView();
+                    DispatcherQueue.Invoke(() => {
+                        browserRequest = new BrowserDebugView();
+                    });
+                    while (browserRequest is null)
+                    {
+                        Thread.Sleep(50);
+                    }
                     browserRequest.Closed += (s, arg) => {
                         browserRequest = null;
                     };

@@ -1,4 +1,4 @@
-﻿using ZoDream.Shared.Http;
+using ZoDream.Shared.Http;
 using ZoDream.Shared.Interfaces;
 
 namespace ZoDream.Spider.Providers
@@ -19,7 +19,7 @@ namespace ZoDream.Spider.Providers
             return new HttpRequest();
         }
 
-        public IRequest Getter()
+        public IHttpRequest Getter()
         {
             return new HttpRequest();
         }
