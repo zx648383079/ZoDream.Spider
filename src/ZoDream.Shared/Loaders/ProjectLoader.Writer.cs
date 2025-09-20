@@ -1,5 +1,5 @@
-﻿using Newtonsoft.Json;
 using System.IO;
+using System.Text.Json;
 
 namespace ZoDream.Shared.Loaders
 {
@@ -90,7 +90,7 @@ namespace ZoDream.Shared.Loaders
 
         private void WriteRule(StreamWriter writer)
         {
-            writer.WriteLine(JsonConvert.SerializeObject(RuleItems));
+            writer.WriteLine(JsonSerializer.Serialize(RuleItems));
         }
 
         private void WriteUrl(StreamWriter writer)

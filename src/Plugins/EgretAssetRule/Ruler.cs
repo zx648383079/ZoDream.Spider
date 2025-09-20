@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
@@ -69,7 +69,7 @@ namespace ZoDream.Spider.EgretAssetRule
 
         private async Task RenderResAsync(ISpiderContainer container, string content)
         {
-            var data = JsonConvert.DeserializeObject<ResMap>(content);
+            var data = JsonSerializer.Deserialize<ResMap>(content);
             if (data?.Resources is null)
             {
                 return;
@@ -96,7 +96,7 @@ namespace ZoDream.Spider.EgretAssetRule
         }
         private async Task RenderTexAsync(ISpiderContainer container, string content)
         {
-            var data = JsonConvert.DeserializeObject<JsonFile>(content);
+            var data = JsonSerializer.Deserialize<JsonFile>(content);
             if (data is null)
             {
                 return;
@@ -105,7 +105,7 @@ namespace ZoDream.Spider.EgretAssetRule
         }
         private async Task RenderSheetAsync(ISpiderContainer container, string content)
         {
-            var data = JsonConvert.DeserializeObject<FrameSheetFile>(content);
+            var data = JsonSerializer.Deserialize<FrameSheetFile>(content);
             if (data is null)
             {
                 return;

@@ -1,23 +1,7 @@
-﻿using AngleSharp.Io;
-using Microsoft.Web.WebView2.Core;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using ZoDream.Shared.Http;
-using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Spider.Controls;
-using ZoDream.Spider.JsObjects;
 
 namespace ZoDream.Spider.Pages
 {

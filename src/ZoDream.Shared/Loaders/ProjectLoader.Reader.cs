@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Xml.Linq;
 using ZoDream.Shared.Models;
 
 namespace ZoDream.Shared.Loaders
@@ -127,7 +125,7 @@ namespace ZoDream.Shared.Loaders
             {
                 return;
             }
-            var items = JsonConvert.DeserializeObject<List<RuleGroupItem>>(sb.ToString());
+            var items = JsonSerializer.Deserialize<List<RuleGroupItem>>(sb.ToString());
             if (items is not null)
             {
                 RuleItems = items;
