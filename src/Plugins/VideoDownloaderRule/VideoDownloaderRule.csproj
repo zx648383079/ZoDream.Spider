@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFramework>net9.0-windows7.0</TargetFramework>
+	  <TargetFramework>net10.0-windows7.0</TargetFramework>
 	  <LangVersion>13</LangVersion>
 	  <Nullable>enable</Nullable>
 	  <UseWPF>true</UseWPF>
@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FFmpeg.AutoGen" Version="7.1.1" />
+    <PackageReference Include="FFmpeg.AutoGen" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
