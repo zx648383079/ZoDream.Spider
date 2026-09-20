@@ -1,10 +1,16 @@
 using System.IO;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace ZoDream.Shared.Loaders
 {
     public partial class ProjectLoader
     {
+        internal static JsonSerializerOptions Options = new()
+        {
+            WriteIndented = false,
+            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
 
         private void Write(StreamWriter writer)
         {
@@ -90,7 +96,7 @@ namespace ZoDream.Shared.Loaders
 
         private void WriteRule(StreamWriter writer)
         {
-            writer.WriteLine(JsonSerializer.Serialize(RuleItems));
+            writer.WriteLine(JsonSerializer.Serialize(RuleItems, Options));
         }
 
         private void WriteUrl(StreamWriter writer)

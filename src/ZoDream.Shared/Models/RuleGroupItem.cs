@@ -12,6 +12,7 @@ namespace ZoDream.Shared.Models
         /// 规则组命名，可以为空
         /// </summary>
         public string Name { get; set; } = string.Empty;
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public RuleMatchType MatchType { get; set; } = RuleMatchType.All;
 
         public string MatchValue { get; set; } = string.Empty;

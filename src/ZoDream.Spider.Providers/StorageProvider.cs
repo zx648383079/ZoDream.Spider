@@ -92,21 +92,21 @@ namespace ZoDream.Spider.Providers
             return CreateAsync(Disk.RenderFile(uri.Source), data);
         }
 
-        public Task<Stream?> CreateStreamAsync(string fileName)
+        public Task<Stream> CreateStreamAsync(string fileName)
         {
             return Task.Factory.StartNew(() =>
             {
                 var path = GetAbsolutePath(fileName);
-                if (File.Exists(path))
-                {
-                    return null;
-                }
+                //if (File.Exists(path))
+                //{
+                //    return null;
+                //}
                 Disk.CreateDirectory(path);
-                return (Stream?)File.Create(path);
+                return (Stream)File.Create(path);
             });
         }
 
-        public Task<Stream?> CreateStreamAsync(UriItem uri)
+        public Task<Stream> CreateStreamAsync(UriItem uri)
         {
             return CreateStreamAsync(Disk.RenderFile(uri.Source));
         }

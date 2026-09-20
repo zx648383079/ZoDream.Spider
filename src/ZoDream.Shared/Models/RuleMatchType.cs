@@ -9,6 +9,9 @@
         Host,
         StartWith,
         Event,
-        Page, // 单页包含资源
+        /// <summary>
+        /// 单页包含资源
+        /// </summary>
+        Page,
     }
 }

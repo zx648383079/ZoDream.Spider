@@ -7,7 +7,7 @@ namespace ZoDream.Spider.Providers
 {
     public class RuleProvider : IRuleProvider
     {
-        public List<RuleGroupItem> Items { get; private set; } = new();
+        public List<RuleGroupItem> Items { get; private set; } = [];
 
         
         private readonly ISpider Application;

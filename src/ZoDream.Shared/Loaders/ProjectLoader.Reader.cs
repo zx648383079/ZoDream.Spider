@@ -68,7 +68,7 @@ namespace ZoDream.Shared.Loaders
                 {
                     return;
                 }
-                var args = line.Split(new char[] { ':' }, 2);
+                var args = line.Split([':'], 2);
                 var name = args[0].Trim();
                 if (!string.IsNullOrWhiteSpace(args[1]))
                 {
@@ -86,7 +86,7 @@ namespace ZoDream.Shared.Loaders
                 {
                     return;
                 }
-                var args = line.Trim().Split(new char[] { ' ' }, 2);
+                var args = line.Trim().Split([' '], 2);
                 var ip = args[0].Trim();
                 var host = args[1].Trim();
                 if (!string.IsNullOrWhiteSpace(ip) && !string.IsNullOrWhiteSpace(host))
@@ -125,7 +125,7 @@ namespace ZoDream.Shared.Loaders
             {
                 return;
             }
-            var items = JsonSerializer.Deserialize<List<RuleGroupItem>>(sb.ToString());
+            var items = JsonSerializer.Deserialize<List<RuleGroupItem>>(sb.ToString(), Options);
             if (items is not null)
             {
                 RuleItems = items;
@@ -176,7 +176,7 @@ namespace ZoDream.Shared.Loaders
                 {
                     return;
                 }
-                var args = line.Split(new char[] { ':' }, 2);
+                var args = line.Split([':'], 2);
                 var name = args[0].Trim();
                 switch (name)
                 {

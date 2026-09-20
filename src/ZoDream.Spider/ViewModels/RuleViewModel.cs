@@ -20,6 +20,7 @@ namespace ZoDream.Spider.ViewModels
             SettingCommand = new RelayCommand(TapSetting);
             AddCommand = new RelayCommand(TapAdd);
             EditCommand = new RelayCommand(TapEdit);
+            RuleListCommand = new RelayCommand(TapRuleList);
             DialogConfirmCommand = new RelayCommand(TapDialogConfirm);
             RuleAddCommand = new RelayCommand(TapRuleAdd);
             RuleConfirmCommand = new RelayCommand(TapRuleConfirm);
@@ -148,6 +149,7 @@ namespace ZoDream.Spider.ViewModels
         public ICommand SettingCommand { get; private set; }
         public ICommand AddCommand { get; private set; }
         public ICommand EditCommand { get; private set; }
+        public ICommand RuleListCommand { get; private set; }
         public ICommand DeleteCommand { get; private set; }
         public ICommand RuleDeleteCommand { get; private set; }
         public ICommand PanelConfirmCommand { get; private set; }
@@ -175,10 +177,18 @@ namespace ZoDream.Spider.ViewModels
 
         private void TapAdd(object? _)
         {
-            DialogVisible = true;
+            OpenGroupDialog();
         }
 
         private void TapEdit(object? arg)
+        {
+            if (arg is RuleGroupItem o)
+            {
+                OpenGroupDialog(o);
+            }
+        }
+
+        private void TapRuleList(object? arg)
         {
             if (arg is RuleGroupItem o)
             {
@@ -197,6 +207,7 @@ namespace ZoDream.Spider.ViewModels
             if (arg is RuleGroupItem o)
             {
                 GroupItems.Remove(o);
+                EditGroup = null;
                 IsUpdated = true;
             }
         }
@@ -209,7 +220,7 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            EditGroup.Rules = RuleItems.ToList();
+            EditGroup.Rules = [.. RuleItems];
         }
 
         private void TapRuleDelete(object? arg)
@@ -227,21 +238,33 @@ namespace ZoDream.Spider.ViewModels
             {
                 return;
             }
-            var item = new RuleGroupItem()
+            var isAdd = EditGroup is null;
+            RuleGroupItem target = EditGroup is null ? new() : EditGroup;
+            target.MatchValue = GroupMatchValue;
+            target.MatchType = GroupType;
+            target.Name = GroupName;
+            if (isAdd)
             {
-                MatchValue = GroupMatchValue,
-                MatchType = GroupType,
-                Name = GroupName,
-            };
-            GroupItems.Add(item);
+                GroupItems.Add(target);
+            }
             IsUpdated = true;
             GroupName = string.Empty;
-            EditGroup = item;
-            PanelTitle = item.Name;
+            EditGroup = target;
+            PanelTitle = target.Name;
             RuleItems.Clear();
             DialogVisible = false;
             PanelVisible = true;
         }
+
+        private void OpenGroupDialog(RuleGroupItem? data = null)
+        {
+            GroupName = data?.Name ?? string.Empty;
+            GroupMatchValue = data?.MatchValue ?? string.Empty;
+            GroupType = data is null ? RuleMatchType.None : data.MatchType;
+            EditGroup = data;
+            DialogVisible = true;
+        }
+
 
         private void TapRuleAdd(object? _)
         {
