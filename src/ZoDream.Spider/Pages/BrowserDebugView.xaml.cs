@@ -190,8 +190,8 @@ namespace ZoDream.Spider.Pages
                 return html;
             }
             html = Regex.Unescape(html);
-            html = html.Remove(0, 1);
-            return html.Remove(html.Length - 1, 1);
+            html = html[1..];
+            return html[..^1];
         }
 
         private void Browser_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
@@ -265,7 +265,12 @@ namespace ZoDream.Spider.Pages
             {
                 return;
             }
-            await _host.InvokeAsync(RequestData.GetSourceUrl(e.Request.Uri), new WebViewResponse(this, e.Response.StatusCode, e.Response.Headers, e));
+            var sourceUri = RequestData.GetSourceUrl(e.Request.Uri);
+            if (_host.IsInvoked(sourceUri))
+            {
+                return;
+            }
+            await _host.InvokeAsync(sourceUri, new WebViewResponse(this, e.Response.StatusCode, e.Response.Headers, e));
         }
 
         private void CoreWebView_WebResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)

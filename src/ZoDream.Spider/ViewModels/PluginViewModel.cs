@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
-using ZoDream.Shared.Models;
 using ZoDream.Shared.Routes;
 using ZoDream.Shared.ViewModel;
 using ZoDream.Spider.Models;
-using ZoDream.Spider.Plugins;
 
 namespace ZoDream.Spider.ViewModels
 {

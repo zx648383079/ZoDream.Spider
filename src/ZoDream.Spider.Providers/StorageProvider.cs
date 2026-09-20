@@ -10,7 +10,7 @@ using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Providers
 {
-    public class StorageProvider : IStorageProvider<string, string, FileStream>
+    public class StorageProvider : IStorageProvider<string, string, Stream>
     {
         public StorageProvider(ISpider spider)
         {
@@ -92,22 +92,26 @@ namespace ZoDream.Spider.Providers
             return CreateAsync(Disk.RenderFile(uri.Source), data);
         }
 
-        public Task<FileStream> CreateStreamAsync(string fileName)
+        public Task<Stream?> CreateStreamAsync(string fileName)
         {
             return Task.Factory.StartNew(() =>
             {
                 var path = GetAbsolutePath(fileName);
+                if (File.Exists(path))
+                {
+                    return null;
+                }
                 Disk.CreateDirectory(path);
-                return new FileStream(path, FileMode.Create);
+                return (Stream?)File.Create(path);
             });
         }
 
-        public Task<FileStream> CreateStreamAsync(UriItem uri)
+        public Task<Stream?> CreateStreamAsync(UriItem uri)
         {
             return CreateStreamAsync(Disk.RenderFile(uri.Source));
         }
 
-        public Task<FileStream?> OpenStreamAsync(string fileName)
+        public Task<Stream?> OpenStreamAsync(string fileName)
         {
             return Task.Factory.StartNew(() =>
             {
@@ -120,7 +124,7 @@ namespace ZoDream.Spider.Providers
                 {
                     return null;
                 }
-                return new FileStream(path, FileMode.Open);
+                return (Stream?)File.Open(path, FileMode.Open);
             });
         }
 
@@ -129,7 +133,7 @@ namespace ZoDream.Spider.Providers
             return Application.RuleProvider.GetFileName(uri.Source);
         }
 
-        public Task<FileStream?> OpenStreamAsync(UriItem uri)
+        public Task<Stream?> OpenStreamAsync(UriItem uri)
         {
             return OpenStreamAsync(GetFileName(uri));
         }

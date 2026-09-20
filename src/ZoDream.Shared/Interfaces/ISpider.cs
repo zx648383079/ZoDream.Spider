@@ -20,7 +20,7 @@ namespace ZoDream.Shared.Interfaces
         public bool Paused { get; }
         public ProjectLoader Project { get;}
 
-        public IStorageProvider<string, string, FileStream> Storage { get; set; }
+        public IStorageProvider<string, string, Stream> Storage { get; set; }
 
         public IUrlProvider UrlProvider { get; set; }
 

@@ -1,7 +1,4 @@
-﻿using System;
-using ZoDream.Shared.ViewModel;
-
-namespace ZoDream.Shared.Models
+﻿namespace ZoDream.Shared.Models
 {
     public class UriItem
     {

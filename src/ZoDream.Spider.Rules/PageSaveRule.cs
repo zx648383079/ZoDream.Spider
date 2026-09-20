@@ -30,10 +30,10 @@ namespace ZoDream.Spider.Rules
 
         public IFormInput[]? Form()
         {
-            return new IFormInput[] {
+            return [
                 Input.Text(nameof(FileName), "保存地址"),
                 Input.Switch(nameof(UseContentType), "开启内容判断(不支持浏览器)"),
-            };
+            ];
         }
         public void Ready(RuleItem option)
         {
@@ -104,6 +104,20 @@ namespace ZoDream.Spider.Rules
                 return true;
             }
             return _container.Application.RuleProvider.Cannable(url, type);
+        }
+
+        public bool IsInvoked(string url)
+        {
+            if (_container is null)
+            {
+                return false;
+            }
+            if (url == _container.Url.Source)
+            {
+                return false;
+            }
+            var item = _container.Application.UrlProvider.Get(url);
+            return item is not null && (item.Status is not UriCheckStatus.None and not UriCheckStatus.Error);
         }
 
         public bool TrySave(string url, out string outputPath)

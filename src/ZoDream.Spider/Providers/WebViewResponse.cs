@@ -1,4 +1,3 @@
-using AngleSharp.Io;
 using Microsoft.Web.WebView2.Core;
 using System;
 using System.IO;
@@ -23,16 +22,23 @@ namespace ZoDream.Spider.Providers
 
         public string ContentTypeMediaType => MediaTypeHeaderValue.TryParse(GetHeader(headers, "Content-Type"), out var res) && !string.IsNullOrEmpty(res.MediaType) ? res.MediaType : string.Empty;
 
+        private Task<Stream> GetContentAsync()
+        {
+            return App.ViewModel.DispatcherQueue.Invoke(async () => {
+                return await args.Response.GetContentAsync();
+            });
+        }
+
         public async Task<string> ReadAsync()
         {
             /// 编码问题
-            using var input = await args.Response.GetContentAsync();
+            using var input = await GetContentAsync();
             return new StreamReader(input).ReadToEnd();
         }
 
         public async Task<bool> SaveAsync(string file, Action<long, long>? progress = null, CancellationToken token = default)
         {
-            using var input = await args.Response.GetContentAsync();
+            using var input = await GetContentAsync();
             if (input is null)
             {
                 return false;

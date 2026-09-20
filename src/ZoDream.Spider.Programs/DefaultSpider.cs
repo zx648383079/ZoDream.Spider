@@ -1,4 +1,3 @@
-using AngleSharp.Dom;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,7 +12,6 @@ using ZoDream.Shared.Models;
 using ZoDream.Shared.Rules.Values;
 using ZoDream.Shared.Utils;
 using ZoDream.Spider.Providers;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ZoDream.Spider.Programs
 {
@@ -59,7 +57,7 @@ namespace ZoDream.Spider.Programs
         }
         public ProjectLoader Project { get; private set; }
 
-        public IStorageProvider<string, string, FileStream> Storage { get; set; }
+        public IStorageProvider<string, string, Stream> Storage { get; set; }
 
         public IUrlProvider UrlProvider { get; set; }
         public IRuleProvider RuleProvider { get; set; }

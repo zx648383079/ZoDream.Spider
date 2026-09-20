@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -8,7 +7,6 @@ using ZoDream.Shared.Form;
 using ZoDream.Shared.Interfaces;
 using ZoDream.Shared.Models;
 using ZoDream.Shared.Storage;
-using ZoDream.Shared.Utils;
 
 namespace ZoDream.Spider.Rules
 {
@@ -38,10 +36,10 @@ namespace ZoDream.Spider.Rules
 
         public IFormInput[]? Form()
         {
-            return new IFormInput[] {
+            return [
                 Input.Text(nameof(RuleGroupName), "规则组名称"),
                 Input.Text(nameof(FileNamePattern), "文件匹配"),
-            };
+            ];
         }
 
         public void Ready(RuleItem option)
@@ -80,7 +78,7 @@ namespace ZoDream.Spider.Rules
             }
         }
 
-        private Dictionary<string, List<string>> FindRegex(IStorageProvider<string, string, System.IO.FileStream> storage, IEnumerable<UriItem> source, Regex regex)
+        private Dictionary<string, List<string>> FindRegex(IStorageProvider<string, string, System.IO.Stream> storage, IEnumerable<UriItem> source, Regex regex)
         {
             var matches = Regex.Matches(FileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
             var data = new Dictionary<string, List<string>>();
@@ -106,7 +104,7 @@ namespace ZoDream.Spider.Rules
             return data;
         }
 
-        private Dictionary<string, List<string>> FindHost(IStorageProvider<string, string, System.IO.FileStream> storage, IEnumerable<UriItem> source, string host)
+        private Dictionary<string, List<string>> FindHost(IStorageProvider<string, string, System.IO.Stream> storage, IEnumerable<UriItem> source, string host)
         {
             var matches = Regex.Matches(FileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
             var data = new Dictionary<string, List<string>>();
@@ -132,7 +130,7 @@ namespace ZoDream.Spider.Rules
             return data;
         }
 
-        private Dictionary<string, List<string>> FindAll(IStorageProvider<string, string, System.IO.FileStream> storage, IEnumerable<UriItem> source)
+        private Dictionary<string, List<string>> FindAll(IStorageProvider<string, string, System.IO.Stream> storage, IEnumerable<UriItem> source)
         {
             var matches = Regex.Matches(FileNamePattern, @"\$\{([a-zA-Z0-9_]+)\}");
             var data = new Dictionary<string, List<string>>();
@@ -153,7 +151,7 @@ namespace ZoDream.Spider.Rules
             return data;
         }
 
-        private async Task SaveFileAsync(IStorageProvider<string, string, System.IO.FileStream> storage, string fileName, IList<string> files)
+        private async Task SaveFileAsync(IStorageProvider<string, string, System.IO.Stream> storage, string fileName, IList<string> files)
         {
             var writer = LocationStorage.Writer(await storage.CreateStreamAsync(fileName), true);
             foreach (var item in files)

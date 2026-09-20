@@ -49,7 +49,7 @@ namespace ZoDream.Spider.Programs
         }
         public ProjectLoader Project { get; private set; }
 
-        public IStorageProvider<string, string, FileStream> Storage { get; set; }
+        public IStorageProvider<string, string, Stream> Storage { get; set; }
 
         public IUrlProvider UrlProvider { get; set; }
         public IRuleProvider RuleProvider { get; set; }
